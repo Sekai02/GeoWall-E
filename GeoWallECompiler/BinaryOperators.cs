@@ -2,7 +2,7 @@
 public abstract class BinaryOperation : GSharpExpression
 {
     #region Methods
-    public override object GetValue() => Evaluate(LeftArgument.GetValue(), RightArgument.GetValue());
+    public override GSharpObject GetValue() => Evaluate(LeftArgument.GetValue(), RightArgument.GetValue());
     public override GSharpTypes CheckType()
     {
         if (EnteredType == GSharpTypes.Undetermined)
@@ -15,10 +15,10 @@ public abstract class BinaryOperation : GSharpExpression
             throw new SemanticError($"Operator `{OperationToken}`", EnteredType.ToString(), rightType.ToString());
         return ReturnedType;
     }
-    public object Evaluate(object left, object right)
+    public GSharpObject Evaluate(GSharpObject left, GSharpObject right)
     {
-        if (left.GetType() == AcceptedType && right.GetType() == AcceptedType || AcceptedType == typeof(object))
-            return Operation((double)left, (double)right);
+        if (left.GetType() == AcceptedType && right.GetType() == AcceptedType)
+            return Operation(left, right);
         var conflictiveType = left.GetType() != AcceptedType ? left.GetType().Name : right.GetType().Name;
         throw new SemanticError($"Operator `{OperationToken}`", ReturnedType.ToString(), conflictiveType);
     }
@@ -31,7 +31,7 @@ public abstract class BinaryOperation : GSharpExpression
     public Type AcceptedType { get; protected set; }
     public string OperationToken { get; protected set; }
     public BinaryFunc Operation { get; protected set; }
-    public delegate double BinaryFunc(double left, double right);
+    public delegate GSharpObject BinaryFunc(GSharpObject left, GSharpObject right);
     #endregion
 }
 #region Conditionals
@@ -43,12 +43,12 @@ public class Conjunction : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = GSharpTypes.GObject;
         EnteredType = GSharpTypes.GObject;
-        AcceptedType = typeof(object); //aqui se va a cambiar por Gobject
+        AcceptedType = typeof(GSharpObject);
         OperationToken = "and";
-        double func(double a, double b)
+        GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            bool result = a == 1 && b == 1;
-            return result ? 1 : 0;
+            bool result = a.ToValueOfTruth() == 1 && b.ToValueOfTruth() == 1;
+            return result ? new GSharpNumber(1) : new GSharpNumber(0);
         }
         Operation = func;
     }
@@ -61,12 +61,12 @@ public class Disjunction : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = GSharpTypes.GObject;
         EnteredType = GSharpTypes.GObject;
-        AcceptedType = typeof(object); //aqui se va a cambiar por Gobject
+        AcceptedType = typeof(GSharpObject);
         OperationToken = "or";
-        double func(double a, double b)
+        GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            bool result = a == 1 || b == 1;
-            return result ? 1 : 0;
+            bool result = a.ToValueOfTruth() == 1 || b.ToValueOfTruth() == 1;
+            return result ? new GSharpNumber(1) : new GSharpNumber(0);
         }
         Operation = func;
     }
@@ -81,12 +81,12 @@ public class LowerThan : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType =GSharpTypes.GNumber;
         EnteredType =GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = "<";
-        double func(double a, double b) 
+        GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            bool result = a < b;
-            return result ? 1 : 0;
+            var result = (GSharpNumber)a < (GSharpNumber)b;
+            return result.ToValueOfTruth() == 1 ? new GSharpNumber(1) : new GSharpNumber(0);
         }
         Operation = func;
     }
@@ -97,14 +97,14 @@ public class GreaterThan : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType =GSharpTypes.GNumber;
-        EnteredType =GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
+        ReturnedType = GSharpTypes.GNumber;
+        EnteredType = GSharpTypes.GNumber;
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = ">";
-        double func(double a, double b)
+        GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            bool result = a > b;
-            return result ? 1 : 0;
+            var result = (GSharpNumber)a > (GSharpNumber)b;
+            return result.ToValueOfTruth() == 1 ? new GSharpNumber(1) : new GSharpNumber(0);
         }
         Operation = func;
     }
@@ -115,14 +115,14 @@ public class LowerEqualThan : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType =GSharpTypes.GNumber;
-        EnteredType =GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
+        ReturnedType = GSharpTypes.GNumber;
+        EnteredType = GSharpTypes.GNumber;
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = "<=";
-        double func(double a, double b)
+        GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            bool result = a <= b;
-            return result ? 1 : 0;
+            var result = (GSharpNumber)a <= (GSharpNumber)b;
+            return result.ToValueOfTruth() == 1 ? new GSharpNumber(1) : new GSharpNumber(0);
         }
         Operation = func;
     }
@@ -133,14 +133,14 @@ public class GreaterEqualThan : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType =GSharpTypes.GNumber;
-        EnteredType =GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
+        ReturnedType = GSharpTypes.GNumber;
+        EnteredType = GSharpTypes.GNumber;
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = ">=";
-        double func(double a, double b)
+        GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            bool result = a >= b;
-            return result ? 1 : 0;
+            var result = (GSharpNumber)a >= (GSharpNumber)b;
+            return result.ToValueOfTruth() == 1 ? new GSharpNumber(1) : new GSharpNumber(0);
         }
         Operation = func;
     }
@@ -151,14 +151,14 @@ public class Equal : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType =GSharpTypes.GNumber;
-        EnteredType =GSharpTypes.GNumber;
-        AcceptedType = typeof(object);
+        ReturnedType = GSharpTypes.GNumber;
+        EnteredType = GSharpTypes.GNumber;
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = "==";
-        double func(double a, double b)
+        GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            bool result = a == b;
-            return result ? 1 : 0;
+            var result = (GSharpNumber)a == (GSharpNumber)b;
+            return result.ToValueOfTruth() == 1 ? new GSharpNumber(1) : new GSharpNumber(0);
         }
         Operation = func;
     }
@@ -169,14 +169,14 @@ public class UnEqual : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType =GSharpTypes.GNumber;
-        EnteredType =GSharpTypes.GNumber;
-        AcceptedType = typeof(object);
+        ReturnedType = GSharpTypes.GNumber;
+        EnteredType = GSharpTypes.GNumber;
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = "!=";
-        double func(double a, double b)
+        GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            bool result = a != b;
-            return result ? 1 : 0;
+            var result = (GSharpNumber)a != (GSharpNumber)b;
+            return result.ToValueOfTruth() == 1 ? new GSharpNumber(1) : new GSharpNumber(0);
         }
         Operation = func;
     }
@@ -189,11 +189,11 @@ public class Addition : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType =GSharpTypes.GNumber;
-        EnteredType =GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
+        ReturnedType = GSharpTypes.GNumber;
+        EnteredType = GSharpTypes.GNumber;
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = "+";
-        double func(double a, double b) => a + b;
+        GSharpObject func(GSharpObject a, GSharpObject b) => (GSharpNumber)a + (GSharpNumber)b;
         Operation = func;
     }
 }
@@ -203,11 +203,11 @@ public class Subtraction : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType =GSharpTypes.GNumber;
-        EnteredType =GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
+        ReturnedType = GSharpTypes.GNumber;
+        EnteredType = GSharpTypes.GNumber;
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = "-";
-        double func(double a, double b) => a - b;
+        GSharpObject func(GSharpObject a, GSharpObject b) => (GSharpNumber)a - (GSharpNumber)b;
         Operation = func;
     }
 }
@@ -217,11 +217,11 @@ public class Multiplication : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType =GSharpTypes.GNumber;
-        EnteredType =GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
+        ReturnedType = GSharpTypes.GNumber;
+        EnteredType = GSharpTypes.GNumber;
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = "*";
-        double func(double a, double b) => a * b;
+        GSharpObject func(GSharpObject a, GSharpObject b) => (GSharpNumber)a * (GSharpNumber)b; 
         Operation = func;
     }
 }
@@ -233,12 +233,10 @@ public class Division : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType =GSharpTypes.GNumber;
         EnteredType =GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = "/";
-        double func(double a, double b)
-        {
-            return b == 0 ? throw new DefaultError("Atempted to divide by 0", "arithmetic") : (a / b);
-        }
+        GSharpObject func(GSharpObject a, GSharpObject b) => 
+            b.ToValueOfTruth() == 0 ? throw new DefaultError("Atempted to divide by 0", "arithmetic") : (GSharpNumber)a / (GSharpNumber)b;
         Operation = func;
     }
 }
@@ -248,14 +246,12 @@ public class Module : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType =GSharpTypes.GNumber;
-        EnteredType =GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
+        ReturnedType = GSharpTypes.GNumber;
+        EnteredType = GSharpTypes.GNumber;
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = "%";
-        double func(double a, double b)
-        {
-            return b == 0 ? throw new DefaultError("Atempted to divide by 0", "arithmetic") : (a % b);
-        }
+        GSharpObject func(GSharpObject a, GSharpObject b) =>
+            b.ToValueOfTruth() == 0 ? throw new DefaultError("Atempted to divide by 0", "arithmetic") : (GSharpNumber)a % (GSharpNumber)b;
         Operation = func;
     }
 }
@@ -265,11 +261,16 @@ public class Power : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType =GSharpTypes.GNumber;
-        EnteredType =GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
+        ReturnedType = GSharpTypes.GNumber;
+        EnteredType = GSharpTypes.GNumber;
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = "^";
-        double func(double a, double b) => Math.Pow(a, b);
+        GSharpObject func(GSharpObject a, GSharpObject b)
+        {
+            GSharpNumber left = (GSharpNumber)a;
+            GSharpNumber right = (GSharpNumber)b;
+            return new GSharpNumber(Math.Pow(left.Value,right.Value));
+        }
         Operation = func;
     }
 }

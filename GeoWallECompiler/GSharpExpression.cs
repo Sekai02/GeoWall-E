@@ -2,7 +2,7 @@
 
 public abstract class GSharpExpression
 {
-    public abstract object GetValue(); // en algun momento el tipo de retorno Object se cambiara por G#Object o algo asi
+    public abstract GSharpObject GetValue(); // en algun momento el tipo de retorno Object se cambiara por G#Object o algo asi
     public abstract GSharpTypes CheckType();
 }
 public enum GSharpTypes 

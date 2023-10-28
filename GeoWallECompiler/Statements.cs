@@ -8,7 +8,7 @@ public class IfThenElseStatement: GSharpExpression
         ElseExpression = ElseExp;
     }
     #region Methods
-    public override object GetValue() => Result(Condition, IfExpression, ElseExpression);
+    public override GSharpObject GetValue() => Result(Condition, IfExpression, ElseExpression);
     public override GSharpTypes CheckType()
     {
         Condition.CheckType();
@@ -16,20 +16,12 @@ public class IfThenElseStatement: GSharpExpression
         GSharpTypes elseType = ElseExpression.CheckType();
         return ifType == elseType ? ifType : throw new DefaultError("SemanticError", "if-then-else statements must have the same return type");
     }
-    private object Result(GSharpExpression Cond, GSharpExpression IfExp, GSharpExpression ElseExp)
+    private GSharpObject Result(GSharpExpression Cond, GSharpExpression IfExp, GSharpExpression ElseExp)
     {
-        if (Cond.GetValue() is not bool) //cambiar esto por algo equivalente a bool
-            throw new SemanticError("if-else condition", "boolean", Cond.GetValue().GetType().Name);
-        else
-        {
-            bool condition = (bool)Cond.GetValue();
-            if (condition)
-                return IfExp.GetValue();
-            if (IfExp != null)
-                if (ElseExp == null)
-                    return null;
-            return ElseExp.GetValue();
-        }
+        bool condition = Cond.GetValue().ToValueOfTruth() == 1;
+        if (condition)
+            return IfExp.GetValue();
+        return ElseExp.GetValue();
     }
     #endregion
     #region Properties

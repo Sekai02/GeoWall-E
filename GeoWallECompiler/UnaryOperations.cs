@@ -1,17 +1,17 @@
 ﻿namespace GeoWallECompiler;
 public abstract class UnaryOperation : GSharpExpression
 {
-    public override object GetValue() => Evaluate(Argument.GetValue());
-    public object Evaluate(object arg)
+    public override GSharpObject GetValue() => Evaluate(Argument.GetValue());
+    public GSharpObject Evaluate(GSharpObject arg)
     {
         return arg.GetType() == AcceptedType
-            ? Operation((double)arg)
+            ? Operation(arg)
             : throw new SemanticError($"Operator `{OperationToken}`", EnteredType.ToString(), arg.GetType().Name);
     }
     public override GSharpTypes CheckType()
     {
-        GSharpGSharpTypes argType = Argument.CheckType();
-        return argType != GSharpGSharpTypes.Undetermined && argType != EnteredType
+        GSharpTypes argType = Argument.CheckType();
+        return argType != GSharpTypes.Undetermined && argType != EnteredType
             ? throw new SemanticError($"Operator `{OperationToken}`", EnteredType.ToString(), argType.ToString())
             : ReturnedType;
     }
@@ -21,7 +21,7 @@ public abstract class UnaryOperation : GSharpExpression
     public Type AcceptedType { get; protected set; }
     public string OperationToken { get; protected set; }
     public UnaryFunc Operation { get; protected set; }
-    public delegate double UnaryFunc(double arg);
+    public delegate GSharpObject UnaryFunc(GSharpObject arg);
 }
 #region Boolean
 public class Negation : UnaryOperation
@@ -30,10 +30,10 @@ public class Negation : UnaryOperation
     {
         Argument = Arg;
         ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
-        OperationToken = "!";
-        double func(double a) => a == 0 ? 1 : 0;
+        EnteredType = GSharpTypes.GObject;
+        AcceptedType = typeof(GSharpObject);
+        OperationToken = "not";
+        GSharpNumber func(GSharpObject a) => a.ToValueOfTruth() == 0 ? new GSharpNumber(1) : new GSharpNumber(0);
         Operation = func;
     }
 }
@@ -46,9 +46,9 @@ public class Positive : UnaryOperation
         Argument = Arg;
         ReturnedType = GSharpTypes.GNumber;
         EnteredType = GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = "+";
-        double func(double a) => a;
+        GSharpNumber func(GSharpObject a) => (GSharpNumber)a;
         Operation = func;
     }
 }
@@ -59,11 +59,14 @@ public class Negative : UnaryOperation
         Argument = Arg;
         ReturnedType = GSharpTypes.GNumber;
         EnteredType = GSharpTypes.GNumber;
-        AcceptedType = typeof(double);
+        AcceptedType = typeof(GSharpNumber);
         OperationToken = "-";
-        double func(double a) => -a;
+        GSharpNumber func(GSharpObject a)
+        {
+            var arg = a as GSharpNumber;
+            return new GSharpNumber(-arg.Value);
+        }
         Operation = func;
     }
 }
-
 #endregion
