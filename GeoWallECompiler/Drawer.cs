@@ -1,11 +1,16 @@
 ﻿namespace GeoWallECompiler;
-public class Drawer
+public interface IDrawer
 {
-    public Drawer(DrawFunc drawFunc) => Draw = drawFunc;
-    public DrawFunc Draw { get; private set; }
-    public delegate void DrawFunc(IDrawable figure);
+    public void DrawPoint(GSharpPoint point);
+    public void DrawLine();
+    public void DrawSegment();
+    public void DrawCircle();
+    public void DrawArc();
+    public void DrawRay();
+    public void DrawString(GSharpString gString);
+    public void DrawSequence();
 }
 public interface IDrawable
 {
-    public void Draw();
+    public void Draw(IDrawer drawer);
 }

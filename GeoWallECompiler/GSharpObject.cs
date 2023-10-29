@@ -41,6 +41,18 @@ public class GSharpPoint : GSharpObject, IDrawable
             Coordinates = null;
     }
     public override double ToValueOfTruth() => Coordinates is null? 0 : 1;
-    public void Draw() => throw new NotImplementedException();
+    public void Draw(IDrawer drawer) => drawer.DrawPoint(this);
     public (GSharpNumber X, GSharpNumber Y)? Coordinates { get; private set; }
+}
+public class GSharpLine : GSharpObject, IDrawable
+{
+    public GSharpLine(GSharpPoint? point1, GSharpPoint? point2)
+    {
+        Point1 = point1;
+        Point2 = point2;
+    }
+    public GSharpPoint? Point1 { get; private set; }
+    public GSharpPoint? Point2 { get; private set; }
+    public void Draw(IDrawer drawer) => throw new NotImplementedException();
+    public override double ToValueOfTruth() => Point1 is null || Point2 is null ? 0 : 1;
 }
