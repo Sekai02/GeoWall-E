@@ -1,4 +1,9 @@
 ﻿namespace GeoWallECompiler;
+
+/// <summary>
+/// Clase abstracta de la que heredan los objetos que representan
+/// a las operaciones binarias en un arbol de expresion.
+/// </summary>
 public abstract class BinaryOperation : GSharpExpression
 {
     #region Methods
@@ -15,7 +20,14 @@ public abstract class BinaryOperation : GSharpExpression
             throw new SemanticError($"Operator `{OperationToken}`", EnteredType.ToString(), rightType.ToString());
         return ReturnedType;
     }
-    public GSharpObject Evaluate(GSharpObject left, GSharpObject right)
+    /// <summary>
+    /// Evalua la expresion binaria, luego de chequear que los tipos de entrada sean correctos
+    /// </summary>
+    /// <param name="left">Valor del miembro izquierdo</param>
+    /// <param name="right">Valor del miembro derecho</param>
+    /// <returns>Resultado de evaluar la operacion binaria</returns>
+    /// <exception cref="SemanticError">Se lanza cuando los tipos de entrada no son los mismos que los tipos de entrada de la operacion</exception>
+    private GSharpObject Evaluate(GSharpObject left, GSharpObject right)
     {
         if (left.GetType() == AcceptedType && right.GetType() == AcceptedType)
             return Operation(left, right);
@@ -24,19 +36,51 @@ public abstract class BinaryOperation : GSharpExpression
     }
     #endregion
     #region Properties
+    /// <summary>
+    /// Expresion de G# que representa al argumeto izquierdo de la operacion binaria
+    /// </summary>
     public GSharpExpression LeftArgument { get; protected set; }
+    /// <summary>
+    /// Expresion de G# que representa al argumeto derecho de la operacion binaria
+    /// </summary>
     public GSharpExpression RightArgument { get; protected set; }
+    /// <summary>
+    /// Tipo de retorno de la operacion binaria en forma de enum
+    /// </summary>
     public GSharpTypes ReturnedType { get; protected set; }
+    /// <summary>
+    /// Tipo de entrada de la operacion binaria en forma de enum
+    /// </summary>
     public GSharpTypes EnteredType { get; protected set; }
+    /// <summary>
+    /// Tipo aceptado de la operacion binaria en forma de Type
+    /// </summary>
     public Type AcceptedType { get; protected set; }
+    /// <summary>
+    /// Token de la operacion binaria
+    /// </summary>
     public string OperationToken { get; protected set; }
+    /// <summary>
+    /// Funcion que efectuará la operacion binaria
+    /// </summary>
     public BinaryFunc Operation { get; protected set; }
+    /// <summary>
+    /// Funcion que efectuará la operacion binaria
+    /// </summary>
     public delegate GSharpObject BinaryFunc(GSharpObject left, GSharpObject right);
     #endregion
 }
 #region Conditionals
+/// <summary>
+/// Clase que representa el nodo de una operacion de conjuncion en un arbol de expresion
+/// </summary>
 public class Conjunction : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion AND
+    /// </summary>
+    /// <param name="leftArgument">Miembro izquierdo</param>
+    /// <param name="rightArgument">Miembro derecho</param>
     public Conjunction(GSharpExpression leftArgument, GSharpExpression rightArgument)
     {
         LeftArgument = leftArgument;
@@ -53,8 +97,16 @@ public class Conjunction : BinaryOperation
         Operation = func;
     }
 }
+/// <summary>
+/// Clase que representa el nodo de una operacion de disyuncion en un arbol de expresion
+/// </summary>
 public class Disjunction : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion OR
+    /// </summary>
+    /// <param name="leftArgument">Miembro izquierdo</param>
+    /// <param name="rightArgument">Miembro derecho</param>
     public Disjunction(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -73,8 +125,16 @@ public class Disjunction : BinaryOperation
 }
 #endregion
 #region Comparison
+/// <summary>
+/// Clase que representa el nodo de una operacion "menor que" en un arbol de expresion
+/// </summary>
 public class LowerThan : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion <
+    /// </summary>
+    /// <param name="leftArgument">Miembro izquierdo</param>
+    /// <param name="rightArgument">Miembro derecho</param>
     public LowerThan(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -91,8 +151,16 @@ public class LowerThan : BinaryOperation
         Operation = func;
     }
 }
+/// <summary>
+/// Clase que representa el nodo de una operacion "mayor que" en un arbol de expresion
+/// </summary>
 public class GreaterThan : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion >
+    /// </summary>
+    /// <param name="leftArgument">Miembro izquierdo</param>
+    /// <param name="rightArgument">Miembro derecho</param>
     public GreaterThan(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -109,8 +177,16 @@ public class GreaterThan : BinaryOperation
         Operation = func;
     }
 }
+/// <summary>
+/// Clase que representa el nodo de una operacion "menor igual que" en un arbol de expresion
+/// </summary>
 public class LowerEqualThan : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion <=
+    /// </summary>
+    /// <param name="leftArgument">Miembro izquierdo</param>
+    /// <param name="rightArgument">Miembro derecho</param>
     public LowerEqualThan(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -127,8 +203,16 @@ public class LowerEqualThan : BinaryOperation
         Operation = func;
     }
 }
+/// <summary>
+/// Clase que representa el nodo de una operacion "mayor igual que" en un arbol de expresion
+/// </summary>
 public class GreaterEqualThan : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion >=
+    /// </summary>
+    /// <param name="leftArgument">Miembro izquierdo</param>
+    /// <param name="rightArgument">Miembro derecho</param>
     public GreaterEqualThan(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -145,8 +229,16 @@ public class GreaterEqualThan : BinaryOperation
         Operation = func;
     }
 }
+/// <summary>
+/// Clase que representa el nodo de una operacion de igualdad en un arbol de expresion
+/// </summary>
 public class Equal : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion ==
+    /// </summary>
+    /// <param name="leftArgument">Miembro izquierdo</param>
+    /// <param name="rightArgument">Miembro derecho</param>
     public Equal(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -163,8 +255,16 @@ public class Equal : BinaryOperation
         Operation = func;
     }
 }
+/// <summary>
+/// Clase que representa el nodo de una operacion de desigualdad en un arbol de expresion
+/// </summary>
 public class UnEqual : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion !=
+    /// </summary>
+    /// <param name="leftArgument">Miembro izquierdo</param>
+    /// <param name="rightArgument">Miembro derecho</param>
     public UnEqual(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -185,6 +285,11 @@ public class UnEqual : BinaryOperation
 #region Arithmetic Basic Operations
 public class Addition : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion +
+    /// </summary>
+    /// <param name="leftArgument">Sumando izquierdo</param>
+    /// <param name="rightArgument">Sumando derecho</param>
     public Addition(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -197,8 +302,16 @@ public class Addition : BinaryOperation
         Operation = func;
     }
 }
+/// <summary>
+/// Clase que representa el nodo de una operacion de adición en un arbol de expresion
+/// </summary>
 public class Subtraction : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion -
+    /// </summary>
+    /// <param name="leftArgument">Expresion minuendo</param>
+    /// <param name="rightArgument">Expresion sustraendo</param>
     public Subtraction(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -211,8 +324,16 @@ public class Subtraction : BinaryOperation
         Operation = func;
     }
 }
+/// <summary>
+/// Clase que representa el nodo de una operacion de sustracción en un arbol de expresion
+/// </summary>
 public class Multiplication : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion *
+    /// </summary>
+    /// <param name="leftArgument">Producto izquierdo</param>
+    /// <param name="rightArgument">Producto derecho</param>
     public Multiplication(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -225,8 +346,16 @@ public class Multiplication : BinaryOperation
         Operation = func;
     }
 }
+/// <summary>
+/// Clase que representa el nodo de una operacion de multiplicación en un arbol de expresion
+/// </summary>
 public class Division : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion /
+    /// </summary>
+    /// <param name="leftArgument">Expresion divisor</param>
+    /// <param name="rightArgument">Expresion dividendo</param>
     public Division(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -240,8 +369,16 @@ public class Division : BinaryOperation
         Operation = func;
     }
 }
+/// <summary>
+/// Clase que representa el nodo de una operacion de division en un arbol de expresion
+/// </summary>
 public class Module : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion %
+    /// </summary>
+    /// <param name="leftArgument">Expresion divisor</param>
+    /// <param name="rightArgument">Expresion dividendo</param>
     public Module(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -255,8 +392,16 @@ public class Module : BinaryOperation
         Operation = func;
     }
 }
+/// <summary>
+/// Clase que representa el nodo de una operacion de modulo o resto en un arbol de expresion
+/// </summary>
 public class Power : BinaryOperation
 {
+    /// <summary>
+    /// Crea una instancia de una clase que representa a la operacion ^
+    /// </summary>
+    /// <param name="leftArgument">Expresion base</param>
+    /// <param name="rightArgument">Expresion exponente</param>
     public Power(GSharpExpression leftArgument, GSharpExpression rightArgument) 
     {
         LeftArgument = leftArgument;
@@ -274,4 +419,7 @@ public class Power : BinaryOperation
         Operation = func;
     }
 }
+/// <summary>
+/// Clase que representa el nodo de una operacion de potencia en un arbol de expresion
+/// </summary>
 #endregion

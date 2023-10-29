@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="GSharpObject.cs~RF11d5da94.TMP" />
+  </ItemGroup>
+
 </Project>
