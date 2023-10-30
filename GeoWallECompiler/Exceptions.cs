@@ -10,15 +10,27 @@ public abstract class GSharpException : Exception
     /// <summary>
     /// Mensaje de la excepcion
     /// </summary>
-    public override string Message => (MessageStart + MessageDefinition + ".").Replace("Gtring", "string");
+    public override string Message
+    {
+        get
+        {
+            string line = LineNumber is null ? "" : $"(line {LineNumber})";
+            string result = MessageStart + MessageDefinition + line  + ".";
+            return result;
+        }
+    }
     /// <summary>
-    /// Inicio del mensaje
-    /// </summary>
+     /// Inicio del mensaje de la excepcion
+     /// </summary>
     public string MessageStart { get; protected set; }
     /// <summary>
-    /// Definicion del mensaje
+    /// Definicion del mensaje de la excepcion
     /// </summary>
     public string MessageDefinition { get; protected set; }
+    /// <summary>
+    /// Numero de la linea en la que ocurre el error
+    /// </summary>
+    public int? LineNumber { get; protected set; }
 }
 /// <summary>
 /// Representa una excepcion capturada en una linea o instruccion
@@ -47,21 +59,25 @@ public class DefaultError : GSharpException
     /// Instancia un error generico de G# sin ninguna especificacion
     /// </summary>
     /// <param name="message">Mensaje del error</param>
-    public DefaultError(string message)
+    public DefaultError(string message, int? lineNumber)
     {
         MessageStart = "! ERROR : ";
         MessageDefinition = message;
+        LineNumber = lineNumber;
     }
     /// <summary>
     /// Instancia un error generico de G# con especificacion
     /// </summary>
     /// <param name="message">Mensaje del error</param>
     /// <param name="errorEspecification">Especificacion del tipo de error</param>
-    public DefaultError(string message, string errorEspecification)
+    /// <param name="lineNumber">Numero de la linea en la que ocurre el error</param>
+    public DefaultError(string message, string errorEspecification, int? lineNumber)
     {
         errorEspecification = errorEspecification.ToUpper(new CultureInfo("en-US"));
         MessageStart = $"! {errorEspecification} ERROR :";
         MessageDefinition = message;
+        LineNumber = lineNumber;
+
     }
 }
 /// <summary>
@@ -73,12 +89,14 @@ public class LexicalError : GSharpException
     /// Instancia un error lexico de G# sin especificar el token esperado
     /// </summary>
     /// <param name="invalidToken">Token incorrecto</param>
-    public LexicalError(string invalidToken)
+    /// <param name="lineNumber">Numero de la linea en la que ocurre el error</param>
+    public LexicalError(string invalidToken, int? lineNumber)
     {
         MessageStart = "! LEXICAL ERROR : ";
         InvalidToken = invalidToken;
         ExpectedToken = "token";
         MessageDefinition = $"`{InvalidToken}` is not a valid {ExpectedToken}";
+        LineNumber = lineNumber;
 
     }
     /// <summary>
@@ -86,12 +104,14 @@ public class LexicalError : GSharpException
     /// </summary>
     /// <param name="invalidToken">Token incorrecto</param>
     /// <param name="expectedToken">Token esperado</param>
-    public LexicalError(string invalidToken, string expectedToken)
+    /// <param name="lineNumber">Numero de la linea en la que ocurre el error</param>
+    public LexicalError(string invalidToken, string expectedToken, int? lineNumber)
     {
         MessageStart = "! LEXICAL ERROR : ";
         InvalidToken = invalidToken;
         ExpectedToken = expectedToken;
         MessageDefinition = $"`{InvalidToken}` is not a valid {ExpectedToken}";
+        LineNumber = lineNumber;
     }
     /// <summary>
     /// Token invalido
@@ -112,12 +132,14 @@ public class SyntaxError : GSharpException
     /// </summary>
     /// <param name="missingPart">Miembro de la expresion faltante</param>
     /// <param name="place">Nombre de la expresion incompleta</param>
-    public SyntaxError(string missingPart, string place)
+    /// <param name="lineNumber">Numero de la linea en la que ocurre el error</param>
+    public SyntaxError(string missingPart, string place, int? lineNumber)
     {
         MessageStart = "! SYNTAX ERROR : ";
         MissingPart = missingPart;
         MissingPlace = place;
         MessageDefinition = $"Missing {MissingPart} in {MissingPlace}";
+        LineNumber = lineNumber;
     }
     /// <summary>
     /// Parte de la expresion faltante
@@ -139,13 +161,15 @@ public class SemanticError : GSharpException
     /// <param name="expression">Tipo de expresion en la que ocurre el error</param>
     /// <param name="expected">Tipo esperado</param>
     /// <param name="received">Tipo recivido</param>
-    public SemanticError(string expression, string expected, string received)
+    /// <param name="lineNumber">Numero de la linea en la que ocurre el error</param>
+    public SemanticError(string expression, string expected, string received, int? lineNumber)
     {
         MessageStart = "! SEMANTIC ERROR : ";
         Expression = expression;
         ExpressionReceived = received;
         ExpressionExpected = expected;
         MessageDefinition = $"{Expression} receives `{expected}`, not `{received}`";
+        LineNumber = lineNumber;
     }
     /// <summary>
     /// Tipo de la expresion en la que ocurre el error
@@ -169,11 +193,13 @@ public class OverFlowError : GSharpException
     /// Instancia un error producido cuando se excede el limite de llamados a una funcion
     /// </summary>
     /// <param name="functionName">Nombre de la funcion que excede el limite</param>
-    public OverFlowError(string functionName)
+    /// <param name="lineNumber">Numero de la linea en la que ocurre el error</param>
+    public OverFlowError(string functionName, int? lineNumber)
     {
         FunctionName = functionName;
         MessageStart = "! FUNCTION ERROR : ";
         MessageDefinition = $"Function '{FunctionName}' reached call stack limit (callstack limit is {1000})";
+        LineNumber = lineNumber;
     }
     /// <summary>
     /// Nombre de la funcion que excede el limite
