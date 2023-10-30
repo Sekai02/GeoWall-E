@@ -3,12 +3,29 @@ using System.Dynamic;
 using System.Security.Principal;
 
 namespace GeoWallECompiler;
+
+
 public class Scanner
 {
+    /// <summary>
+    /// Codigo a tokenizar
+    /// </summary>
     private readonly string source;
+    /// <summary>
+    /// Lista de Tokens
+    /// </summary>
     private readonly List<Token> tokens = new List<Token>();
+    /// <summary>
+    /// inicio del Token actual
+    /// </summary>
     private int start = 0;
+    /// <summary>
+    /// Posicion del caracter actual que se esta analizando en la linea
+    /// </summary>
     private int current = 0;
+    /// <summary>
+    /// Linea actual en que se encuentra ejecutandose el programa
+    /// </summary>
     public static int Line = 0;
 
     private static readonly Dictionary<string, TokenType> keywords = new Dictionary<string, TokenType>(){
@@ -37,12 +54,20 @@ public class Scanner
         {"E",TokenType.EULER}
     };
 
+    /// <summary>
+    /// Constructor para escanear una linea
+    /// </summary>
+    /// <param name="source"></param>
     public Scanner(string source)
     {
         Line++;
         this.source = source;
     }
 
+    /// <summary>
+    /// Escanea la linea actual dada en el constructor
+    /// </summary>
+    /// <returns>List<Token></returns>
     public List<Token> ScanTokens()
     {
         while (!IsAtEnd())
@@ -55,6 +80,9 @@ public class Scanner
         return tokens;
     }
 
+    /// <summary>
+    /// Escanea el Token actual
+    /// </summary>
     private void ScanToken()
     {
         char c = Advance();
@@ -75,6 +103,9 @@ public class Scanner
             case '&': AddToken(TokenType.AND); break;
             case '|': AddToken(TokenType.OR); break;
 
+            case '.':
+                if (Match('.') && Match('.')) AddToken(TokenType.ELLIPSIS);
+                break;
             case '!':
                 AddToken(Match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
                 break;
@@ -120,6 +151,9 @@ public class Scanner
         }
     }
 
+    /// <summary>
+    /// Escanea un identificador
+    /// </summary>
     private void Identifier()
     {
         while (IsAlphaNumeric(Peek())) Advance();
@@ -152,11 +186,21 @@ public class Scanner
         else AddToken(type, literal);
     }
 
+    /// <summary>
+    /// Evalua si el caracter es alfabetico(A-Za-z_)
+    /// </summary>
+    /// <param name="c"></param>
+    /// <returns>bool</returns>
     private bool IsAlpha(char c)
     {
         return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_');
     }
 
+    /// <summary>
+    /// Evalua si el caracter es alfanumerico(A-Za-z_0-9)
+    /// </summary>
+    /// <param name="c"></param>
+    /// <returns>bool</returns>
     private bool IsAlphaNumeric(char c)
     {
         return IsAlpha(c) || IsDigit(c);
@@ -176,6 +220,9 @@ public class Scanner
         AddToken(TokenType.NUMBER, Double.Parse(Substring(source, start, current)));
     }
 
+    /// <summary>
+    /// Escanea un string
+    /// </summary>
     private void _String()
     {
         while (Peek() != '"' && !IsAtEnd())
@@ -197,6 +244,11 @@ public class Scanner
         AddToken(TokenType.STRING, value);
     }
 
+    /// <summary>
+    /// Comprueba que el caracter actual matchee con el esperado
+    /// </summary>
+    /// <param name="expected"></param>
+    /// <returns>bool</returns>
     private bool Match(char expected)
     {
         if (IsAtEnd()) return false;
@@ -206,43 +258,81 @@ public class Scanner
         return true;
     }
 
+    /// <summary>
+    /// Retorna el caracter actual
+    /// </summary>
+    /// <returns>char</returns>
     private char Peek()
     {
         if (IsAtEnd()) return '\0';
         return source[current];
     }
 
+    /// <summary>
+    /// Retorna el siguiente caracter
+    /// </summary>
+    /// <returns>char</returns>
     private char PeekNext()
     {
         if (current + 1 >= source.Length) return '\0';
         return source[current + 1];
     }
 
+    /// <summary>
+    /// Comprueba si el caracter dado es digito o no
+    /// </summary>
+    /// <param name="c"></param>
+    /// <returns>bool</returns>
     private bool IsDigit(char c)
     {
         return c >= '0' && c <= '9';
     }
 
+    /// <summary>
+    /// Comprueba si se llego al final de la linea
+    /// </summary>
+    /// <returns>bool</returns>
     private bool IsAtEnd()
     {
         return current >= source.Length;
     }
 
+    /// <summary>
+    /// Consume el caracter actual y avanza al siguiente
+    /// </summary>
+    /// <returns>char</returns>
     private char Advance()
     {
         return source[current++];
     }
 
+    /// <summary>
+    /// Funcion util para tomar un substring
+    /// </summary>
+    /// <param name="s"></param>
+    /// <param name="begIdx"></param>
+    /// <param name="endIdx"></param>
+    /// <returns></returns>
     private string Substring(string s, int begIdx, int endIdx)
     {
         return s.Substring(begIdx, endIdx - begIdx);
     }
 
+    /// <summary>
+    /// Añade un Token a la lista de Tokens para luego ser 
+    /// usados por el Parser
+    /// </summary>
+    /// <param name="type"></param>
     private void AddToken(TokenType type)
     {
         AddToken(type, null!);
     }
 
+    /// <summary>
+    /// Añade un Token con un valor de literal
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="literal"></param>
     private void AddToken(TokenType type, object literal)
     {
         string text = Substring(source, start, current);

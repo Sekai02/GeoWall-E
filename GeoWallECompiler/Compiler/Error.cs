@@ -1,5 +1,8 @@
 namespace GeoWallECompiler;
 
+/// <summary>
+/// Tipos de Error.
+/// </summary>
 public enum ErrorType
 {
     LEXICAL_ERROR,
@@ -7,25 +10,45 @@ public enum ErrorType
     SEMANTIC_ERROR
 }
 
+/// <summary>
+/// Clase que representa los errores para el manejo de los mismos.
+/// </summary>
 public class Error : Exception
 {
+    /// <summary>
+    /// Constructor para la clase Error
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="message"></param>
     public Error(ErrorType type, string message)
     {
         this.type = type;
         this.message = message;
         this.token=null!;
-        hadError = true;
+        HadError = true;
     }
 
+    /// <summary>
+    /// Constructor para la clase Error
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="message"></param>
+    /// <param name="token"></param>
     public Error(ErrorType type, string message, Token token)
     {
         this.type = type;
         this.message = message;
         this.token = token;
 
-        hadError = true;
+        HadError = true;
     }
 
+    /// <summary>
+    /// Constructor para la clase error
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="message"></param>
+    /// <param name="line"></param>
     public Error(ErrorType type, string message, int line)
     {
         this.type = type;
@@ -33,9 +56,12 @@ public class Error : Exception
         this.line = line;
         this.token = null!;
 
-        hadError = true;
+        HadError = true;
     }
 
+    /// <summary>
+    /// Metodo para imprimir por consola los mensajes
+    /// </summary>
     public void Report()
     {
         switch (type)
@@ -76,7 +102,10 @@ public class Error : Exception
             Console.WriteLine("{0}: {1} at {2} [line {3}]", type, message, token.lexeme, token.line);
     }
 
-    public static bool hadError = false;
+    /// <summary>
+    /// Propiedad estatica que indica si hubo error en el programa o no
+    /// </summary>
+    public static bool HadError = false;
     readonly ErrorType type;
     readonly string message;
     readonly Token token;

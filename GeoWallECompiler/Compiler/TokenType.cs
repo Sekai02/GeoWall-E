@@ -1,5 +1,8 @@
 namespace GeoWallECompiler;
 
+/// <summary>
+/// Tipos de Tokens de GSharp
+/// </summary>
 public enum TokenType
 {
     //Tokens with one character
@@ -17,7 +20,7 @@ public enum TokenType
     POWER,
     AND,
     OR,
-
+    
     //Tokens with one or two characters
     BANG,
     BANG_EQUAL,
@@ -27,6 +30,9 @@ public enum TokenType
     GREATER_EQUAL,
     LESS,
     LESS_EQUAL,
+
+    //Tokens with 3 characters
+    ELLIPSIS,
 
     //Literal Tokens
     IDENTIFIER,
