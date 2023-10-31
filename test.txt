@@ -8,3 +8,7 @@ draw p2;
 {1,2...}
 {1,2..}
 {1,2.}
+not
+and
+or;
+let a=3; b=2; in a+b;

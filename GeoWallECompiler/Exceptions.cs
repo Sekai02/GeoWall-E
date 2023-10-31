@@ -74,7 +74,7 @@ public class DefaultError : GSharpException
     public DefaultError(string message, string errorEspecification, int? lineNumber = 0)
     {
         errorEspecification = errorEspecification.ToUpper(new CultureInfo("en-US"));
-        MessageStart = $"! {errorEspecification} ERROR :";
+        MessageStart = $"! {errorEspecification} ERROR : ";
         MessageDefinition = message;
         LineNumber = lineNumber;
 

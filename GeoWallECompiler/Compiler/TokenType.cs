@@ -14,6 +14,8 @@ public enum TokenType
     MINUS,
     PLUS,
     SEMICOLON,
+    INSTRUCTION_SEPARATOR,
+    ASSIGN_SEPARATOR,
     DIVISION,
     MOD,
     PRODUCT,
@@ -22,7 +24,7 @@ public enum TokenType
     OR,
     
     //Tokens with one or two characters
-    BANG,
+    NOT,
     BANG_EQUAL,
     EQUAL,
     EQUAL_EQUAL,

@@ -1,4 +1,5 @@
 ﻿using GeoWallECompiler;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ConsoleTester;
 
@@ -6,18 +7,10 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        if (args.Length > 1)
-        {
-            Console.WriteLine("! EXECUTION ERROR: Number of args should be less than 2");
-            Environment.Exit(64);
-        }
-        else if (args.Length == 1)
-        {
-            GSharp.RunFile(args[0]);
-        }
-        else
-        {
-            GSharp.RunPrompt();
-        }
+        string path = "..\\..\\..\\..\\test.txt";
+        GSharp gSharp = new();
+        gSharp.RunFile(path);
+        foreach (var error in gSharp.Errors)
+            Console.WriteLine(error.Message);
     }
 }
