@@ -17,13 +17,13 @@ public abstract class UnaryOperation : GSharpExpression
     {
         return arg.GetType() == AcceptedType
             ? Operation(arg)
-            : throw new SemanticError($"Operator `{OperationToken}`", EnteredType.ToString(), arg.GetType().Name);
+            : throw new SemanticError($"Operator `{OperationToken}`", EnteredType.ToString(), arg.GetType().Name, null);
     }
     public override GSharpTypes CheckType()
     {
         GSharpTypes argType = Argument.CheckType();
         return argType != GSharpTypes.Undetermined && argType != EnteredType
-            ? throw new SemanticError($"Operator `{OperationToken}`", EnteredType.ToString(), argType.ToString())
+            ? throw new SemanticError($"Operator `{OperationToken}`", EnteredType.ToString(), argType.ToString(), null)
             : ReturnedType;
     }
     /// <summary>

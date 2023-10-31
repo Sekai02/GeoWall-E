@@ -59,7 +59,7 @@ public class DefaultError : GSharpException
     /// Instancia un error generico de G# sin ninguna especificacion
     /// </summary>
     /// <param name="message">Mensaje del error</param>
-    public DefaultError(string message, int? lineNumber)
+    public DefaultError(string message, int? lineNumber = 0)
     {
         MessageStart = "! ERROR : ";
         MessageDefinition = message;
@@ -71,7 +71,7 @@ public class DefaultError : GSharpException
     /// <param name="message">Mensaje del error</param>
     /// <param name="errorEspecification">Especificacion del tipo de error</param>
     /// <param name="lineNumber">Numero de la linea en la que ocurre el error</param>
-    public DefaultError(string message, string errorEspecification, int? lineNumber)
+    public DefaultError(string message, string errorEspecification, int? lineNumber = 0)
     {
         errorEspecification = errorEspecification.ToUpper(new CultureInfo("en-US"));
         MessageStart = $"! {errorEspecification} ERROR :";
@@ -90,7 +90,7 @@ public class LexicalError : GSharpException
     /// </summary>
     /// <param name="invalidToken">Token incorrecto</param>
     /// <param name="lineNumber">Numero de la linea en la que ocurre el error</param>
-    public LexicalError(string invalidToken, int? lineNumber)
+    public LexicalError(string invalidToken, int? lineNumber = 0)
     {
         MessageStart = "! LEXICAL ERROR : ";
         InvalidToken = invalidToken;
@@ -105,7 +105,7 @@ public class LexicalError : GSharpException
     /// <param name="invalidToken">Token incorrecto</param>
     /// <param name="expectedToken">Token esperado</param>
     /// <param name="lineNumber">Numero de la linea en la que ocurre el error</param>
-    public LexicalError(string invalidToken, string expectedToken, int? lineNumber)
+    public LexicalError(string invalidToken, string expectedToken, int? lineNumber = 0)
     {
         MessageStart = "! LEXICAL ERROR : ";
         InvalidToken = invalidToken;
@@ -133,7 +133,7 @@ public class SyntaxError : GSharpException
     /// <param name="missingPart">Miembro de la expresion faltante</param>
     /// <param name="place">Nombre de la expresion incompleta</param>
     /// <param name="lineNumber">Numero de la linea en la que ocurre el error</param>
-    public SyntaxError(string missingPart, string place, int? lineNumber)
+    public SyntaxError(string missingPart, string place, int? lineNumber = 0)
     {
         MessageStart = "! SYNTAX ERROR : ";
         MissingPart = missingPart;
@@ -162,7 +162,7 @@ public class SemanticError : GSharpException
     /// <param name="expected">Tipo esperado</param>
     /// <param name="received">Tipo recivido</param>
     /// <param name="lineNumber">Numero de la linea en la que ocurre el error</param>
-    public SemanticError(string expression, string expected, string received, int? lineNumber)
+    public SemanticError(string expression, string expected, string received, int? lineNumber = 0)
     {
         MessageStart = "! SEMANTIC ERROR : ";
         Expression = expression;
@@ -194,7 +194,7 @@ public class OverFlowError : GSharpException
     /// </summary>
     /// <param name="functionName">Nombre de la funcion que excede el limite</param>
     /// <param name="lineNumber">Numero de la linea en la que ocurre el error</param>
-    public OverFlowError(string functionName, int? lineNumber)
+    public OverFlowError(string functionName, int? lineNumber = 0)  
     {
         FunctionName = functionName;
         MessageStart = "! FUNCTION ERROR : ";
