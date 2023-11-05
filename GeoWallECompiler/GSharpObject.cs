@@ -14,7 +14,6 @@ public abstract class GSharpObject
 /// <summary>
 /// Clase que representa los valores numericos en G#
 /// </summary>
-///
 public class GSharpNumber : GSharpObject
 {
     /// <summary>

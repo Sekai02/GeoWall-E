@@ -62,3 +62,34 @@ public class IfThenElseStatement: GSharpExpression
     public GSharpExpression ElseExpression { get; protected set; }
     #endregion
 }
+/// <summary>
+/// Representa las expresiones let-in.
+/// </summary>
+public class LetInStatement : GSharpExpression
+{
+    /// <summary>
+    /// Construye una expresion let-in
+    /// </summary>
+    /// <param name="declaredConstants">Variables locales de la expresion let-in</param>
+    /// <param name="body">Cuerpo de la expresion let-in</param>
+    public LetInStatement(Dictionary<string, Constant> declaredConstants, GSharpExpression body)
+    {
+        DeclaredConstants = declaredConstants;
+        Body = body;
+    }
+    public override GSharpTypes CheckType() 
+    {
+        foreach (Constant constant in DeclaredConstants.Values)
+            constant.CheckType();
+        return Body.CheckType();
+    }
+    public override GSharpObject? GetValue() => throw new NotImplementedException();
+    /// <summary>
+    /// Variables locales de la expresion let-in
+    /// </summary>
+    public Dictionary<string, Constant> DeclaredConstants { get; private set; }
+    /// <summary>
+    /// Cuerpo de la expresion let-in
+    /// </summary>
+    public GSharpExpression Body { get; private set; }
+}

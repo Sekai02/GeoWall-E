@@ -9,7 +9,7 @@ public abstract class GSharpExpression
     /// Metodo que devuelve el valor de la expresion de G#
     /// </summary>
     /// <returns> Resultado de evaluar la expresion, en forma de GSharpObject</returns>
-    public abstract GSharpObject GetValue();
+    public abstract GSharpObject? GetValue();
     /// <summary>
     /// Metodo que chequea si el tipo de la expresion es correcto y si lo es devuelve el tipo de retorno de la misma
     /// </summary>
@@ -24,6 +24,7 @@ public enum GSharpTypes
     //aqui se iran añadiendo los tipos que definamos
     GNumber,
     GString,
+    GSequence,
     GObject,
     Undetermined
 }

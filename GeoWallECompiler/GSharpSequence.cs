@@ -13,6 +13,11 @@ public class GSharpSequence : GSharpObject
         Sequence = objects;
         Count = objects.Count;
     }
+    public GSharpSequence(GSharpSequence sequence, int a)
+    {
+        Sequence = ChoppSequence(sequence.Sequence, a);
+        Count = sequence.Count - a;
+    }
     /// <summary>
     /// Construye una secuencia de un rango infinito de enteros que empiezan por un numero indicado. Por ejemplo {1...}
     /// </summary>
@@ -67,11 +72,21 @@ public class GSharpSequence : GSharpObject
             i++;
         }
     }
+    private static IEnumerable<GSharpObject> ChoppSequence(IEnumerable<GSharpObject> sequence, int a)
+    {
+        int count = 0;
+        foreach(GSharpObject obj in sequence)
+        {
+            if(count >= a)
+                yield return obj;
+            count++;
+        }
+    }
     public override double ToValueOfTruth() => Count != 0? 1 : 0;
     /// <summary>
     /// IEnumerable de objetos de G# que conforman la secuencia
     /// </summary>
-    public IEnumerable<GSharpObject> Sequence;
+    public readonly IEnumerable<GSharpObject> Sequence;
     /// <summary>
     /// Cantidad de elementos que contiene la secuencia
     /// </summary>
