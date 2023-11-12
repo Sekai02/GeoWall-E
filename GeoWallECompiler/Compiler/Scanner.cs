@@ -1,13 +1,11 @@
 namespace GeoWallECompiler;
 
-
 public class Scanner
 {
     /// <summary>
     /// Codigo a tokenizar
     /// </summary>
     private readonly string source;
-    private List<GSharpException> _errors;
     /// <summary>
     /// Lista de Tokens
     /// </summary>
@@ -60,11 +58,10 @@ public class Scanner
     /// Constructor para escanear una linea
     /// </summary>
     /// <param name="source"></param>
-    public Scanner(string source, List<GSharpException> errors)
+    public Scanner(string source)
     {
         Line++;
         this.source = source;
-        _errors = errors;
     }
 
     /// <summary>
@@ -102,7 +99,7 @@ public class Scanner
             case '^': AddToken(TokenType.POWER); break;
             case '/': AddToken(TokenType.DIVISION); break;
             case '%': AddToken(TokenType.MOD); break;
-            
+
             case ';':
                 if (isInLet) AddToken(TokenType.ASSIGN_SEPARATOR);
                 else AddToken(TokenType.INSTRUCTION_SEPARATOR);
@@ -110,12 +107,12 @@ public class Scanner
 
             case '.':
                 if (Match('.') && Match('.')) AddToken(TokenType.ELLIPSIS);
-                else _errors.Add(new DefaultError("Only `...` is allowed", "lexical" , Line)) ;
+                else ErrorHandler.AddError(new DefaultError("Only `...` is allowed", "lexical", Line));
                 break;
             case '!':
                 //AddToken(Match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
                 if (Match('=')) AddToken(TokenType.BANG_EQUAL);
-                else _errors.Add(new LexicalError("!", Line));
+                else ErrorHandler.AddError(new LexicalError("!", Line));
                 break;
             case '=':
                 if (Match('=')) AddToken(TokenType.EQUAL_EQUAL);
@@ -154,7 +151,7 @@ public class Scanner
                 {
                     //Error err = new Error(ErrorType.LEXICAL_ERROR, "Unexpected character.", Line);
                     //err.Report();
-                    _errors.Add(new LexicalError(Peek().ToString(), Line));
+                    ErrorHandler.AddError(new LexicalError(Peek().ToString(), Line));
                 }
                 break;
         }
@@ -177,7 +174,7 @@ public class Scanner
             switch (type)
             {
                 case TokenType.LET:
-                    isInLet = true; 
+                    isInLet = true;
                     break;
                 case TokenType.IN:
                     isInLet = false;
@@ -250,7 +247,7 @@ public class Scanner
         {
             //Error err = new Error(ErrorType.LEXICAL_ERROR, "Unterminated string.", Line);
             //err.Report();
-            _errors.Add(new DefaultError("Unterminated string", "lexical", Line));
+            ErrorHandler.AddError(new DefaultError("Unterminated string", "lexical", Line));
             return;
         }
 

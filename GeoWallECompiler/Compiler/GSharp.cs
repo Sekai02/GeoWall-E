@@ -7,18 +7,12 @@ namespace GeoWallECompiler;
 /// <summary>
 /// Clase que controla la logica del compilador (scanning,parsing,evaluating)
 /// </summary>
-public class GSharp
+public static class GSharp
 {
-    public List<GSharpException> Errors { get; set; }
-    public Scanner Scanner { get; private set; }
-    public GSharp()
+    public static void Scan(string source)
     {
-        Errors = new();
-    }
-    public void Scan(string source)
-    {
-        Scanner = new(source, Errors);
-        List<Token> tokens = Scanner.ScanTokens();
+        Scanner scanner=new Scanner(source);
+        List<Token> tokens = scanner.ScanTokens();
         foreach (Token token in tokens)
             Console.WriteLine(token);
     }
@@ -26,7 +20,7 @@ public class GSharp
     /// Ejecuta el codigo desde un archivo del sistema
     /// </summary>
     /// <param name="path"></param>
-    public void RunFile(string path)
+    public static void RunFile(string path)
     {
         Scanner.Line = 0;
 
@@ -40,7 +34,7 @@ public class GSharp
     /// Ejecuta una sola linea de codigo
     /// </summary>
     /// <param name="source"></param>
-    private void Run(string source)
+    private static void Run(string source)
     {
         Scan(source);
     }

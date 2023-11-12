@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/sekai02/Documents/School/1ro/2do semestre/Programacion/geowallee/GeoWall-E/GeoWallECompiler/GeoWallECompiler.csproj",
+      "projectUniqueName": "/home/sekai02/Documents/wallee/GeoWall-E/GeoWallECompiler/GeoWallECompiler.csproj",
       "projectName": "GeoWallECompiler",
-      "projectPath": "/home/sekai02/Documents/School/1ro/2do semestre/Programacion/geowallee/GeoWall-E/GeoWallECompiler/GeoWallECompiler.csproj",
+      "projectPath": "/home/sekai02/Documents/wallee/GeoWall-E/GeoWallECompiler/GeoWallECompiler.csproj",
       "packagesPath": "/home/sekai02/.nuget/packages/",
-      "outputPath": "/home/sekai02/Documents/School/1ro/2do semestre/Programacion/geowallee/GeoWall-E/GeoWallECompiler/obj/",
+      "outputPath": "/home/sekai02/Documents/wallee/GeoWall-E/GeoWallECompiler/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/sekai02/.nuget/NuGet/NuGet.Config"
