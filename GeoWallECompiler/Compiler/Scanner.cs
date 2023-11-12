@@ -48,7 +48,7 @@ public class Scanner
         {"ray",TokenType.RAY},
         {"circle",TokenType.CIRCLE},
         {"arc",TokenType.ARC},*/
-
+        
         {"undefined",TokenType.UNDEFINED},
         {"PI",TokenType.PI},
         {"E",TokenType.EULER}
