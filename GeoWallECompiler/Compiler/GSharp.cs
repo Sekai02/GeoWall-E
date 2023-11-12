@@ -1,5 +1,4 @@
-using System;
-using System.Linq.Expressions;
+
 using System.Text;
 
 namespace GeoWallECompiler;
@@ -11,7 +10,7 @@ public static class GSharp
 {
     public static void Scan(string source)
     {
-        Scanner scanner=new Scanner(source);
+        Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.ScanTokens();
         foreach (Token token in tokens)
             Console.WriteLine(token);

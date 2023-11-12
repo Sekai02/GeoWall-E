@@ -30,6 +30,9 @@ public class Literal : GSharpExpression
             _ => throw new DefaultError("Invalid literal"),
         };
     }
+
+    public override T Accept<T>(IStatementVisitor<T> visitor) => throw new NotImplementedException();
+
     /// <summary>
     /// Valor del literal
     /// </summary>
@@ -38,8 +41,6 @@ public class Literal : GSharpExpression
     /// Tipo del literal
     /// </summary>
     public GSharpTypes Type;
-    public override GSharpObject? GetValue() => Value;
-    public override GSharpTypes CheckType() => Type;
 }
 /// <summary>
 /// Representa a las constantes de G#
@@ -54,7 +55,7 @@ public class Constant : GSharpExpression
     {
         Name = name;
         ValueExpression = value;
-        Type = SetType(value.GetValue());
+        //Type = SetType(value.GetValue());
     }
     /// <summary>
     /// Funcion que retorna el tipo de la constante en funcion del valor de este
@@ -73,6 +74,11 @@ public class Constant : GSharpExpression
             _ => throw new DefaultError("Invalid literal"),
         };
     }
+    public override T Accept<T>(IStatementVisitor<T> visitor)
+    {
+        IExpresionVisitor<T> expresionVisitor = visitor as IExpresionVisitor<T>;
+        return expresionVisitor.visitConstant(this);
+    }
     /// <summary>
     /// Nombre de la constante
     /// </summary>
@@ -86,15 +92,13 @@ public class Constant : GSharpExpression
         set
         {
             ValueExpression = value;
-            Type = SetType(ValueExpression?.GetValue());
+            //Type = SetType(ValueExpression?.GetValue());
         }
     }
     /// <summary>
     /// Tipo de la constante
     /// </summary>
     public GSharpTypes Type { get; private set; }
-    public override GSharpTypes CheckType() => Type;
-    public override GSharpObject? GetValue() => ValueExpression?.GetValue();
 }
 /// <summary>
 /// Representa a los llamados a funcion de G#
@@ -112,22 +116,26 @@ public class FunctionCall : GSharpExpression
         Arguments = arguments;
         //aqui hay que igualar la declaracion de la funcion con el parametro conrrespondiente
     }
+    public override T Accept<T>(IStatementVisitor<T> visitor)
+    {
+        IExpresionVisitor<T> expresionVisitor = visitor as IExpresionVisitor<T>;
+        return expresionVisitor.visitFunctionCall(this);
+    }
     /// <summary>
     /// Chequea los tipos de los argumentos de un llamado a funcion con el objetivo de capturar posibles errores semanticos
     /// </summary>
     /// <param name="arguments">Lista de argumentos</param>
-    private static void CheckArgs(List<GSharpExpression> arguments)
-    {
-        foreach (var argument in arguments)
-            argument.CheckType();
-    }
-    public override GSharpTypes CheckType()
-    {
-        CheckArgs(Arguments);
-        //Chequear la definicion de la funcion y retornar su valor
-        return GSharpTypes.Undetermined;
-    }
-    public override GSharpObject? GetValue() => throw new NotImplementedException() /*aqui va el llamado a funcion.evaluate*/;
+    //private static void CheckArgs(List<GSharpExpression> arguments)
+    //{
+    //    foreach (var argument in arguments)
+    //        argument.CheckType();
+    //}
+    //public override GSharpTypes CheckType()
+    //{
+    //    CheckArgs(Arguments);
+    //    //Chequear la definicion de la funcion y retornar su valor
+    //    return GSharpTypes.Undetermined;
+    //}
     /// <summary>
     /// Nombre de la funcion que se llama
     /// </summary>

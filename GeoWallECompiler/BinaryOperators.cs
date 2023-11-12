@@ -6,35 +6,11 @@
 /// </summary>
 public abstract class BinaryOperation : GSharpExpression
 {
-    #region Methods
-    public override GSharpObject GetValue() => Evaluate(LeftArgument.GetValue(), RightArgument.GetValue());
-    public override GSharpTypes CheckType()
+    public override T Accept<T>(IStatementVisitor<T> visitor)
     {
-        if (EnteredType == GSharpTypes.Undetermined)
-            return ReturnedType;
-        var leftType = LeftArgument.CheckType();
-        var rightType = RightArgument.CheckType();
-        if (leftType != EnteredType && leftType != GSharpTypes.Undetermined)
-            throw new SemanticError($"Operator `{OperationToken}`", EnteredType.ToString(), leftType.ToString());
-        if (rightType != EnteredType && rightType != GSharpTypes.Undetermined)
-            throw new SemanticError($"Operator `{OperationToken}`", EnteredType.ToString(), rightType.ToString());
-        return ReturnedType;
+        IExpresionVisitor<T> expresionVisitor = visitor as IExpresionVisitor<T>;
+        return expresionVisitor.visitBinaryOperation(this);
     }
-    /// <summary>
-    /// Evalua la expresion binaria, luego de chequear que los tipos de entrada sean correctos
-    /// </summary>
-    /// <param name="left">Valor del miembro izquierdo</param>
-    /// <param name="right">Valor del miembro derecho</param>
-    /// <returns>Resultado de evaluar la operacion binaria</returns>
-    /// <exception cref="SemanticError">Se lanza cuando los tipos de entrada no son los mismos que los tipos de entrada de la operacion</exception>
-    private GSharpObject Evaluate(GSharpObject left, GSharpObject right)
-    {
-        if (left.GetType() == AcceptedType && right.GetType() == AcceptedType)
-            return Operation(left, right);
-        var conflictiveType = left.GetType() != AcceptedType ? left.GetType().Name : right.GetType().Name;
-        throw new SemanticError($"Operator `{OperationToken}`", ReturnedType.ToString(), conflictiveType);
-    }
-    #endregion
     #region Properties
     /// <summary>
     /// Expresion de G# que representa al argumeto izquierdo de la operacion binaria

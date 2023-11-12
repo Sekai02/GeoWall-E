@@ -6,25 +6,10 @@
 /// </summary>
 public abstract class UnaryOperation : GSharpExpression
 {
-    public override GSharpObject GetValue() => Evaluate(Argument.GetValue());
-    /// <summary>
-    /// Evalua la expresion unaria, luego de chequear que el tipo de entrada sea correcto
-    /// </summary>
-    /// <param name="arg">Valor argumento</param>
-    /// <returns>Resultado de evaluar la operacion unaria</returns>
-    /// <exception cref="SemanticError">Se lanza cuando el tipos de entrada no es el mismo que el tipo de entrada de la operacion</exception>
-    private GSharpObject Evaluate(GSharpObject arg)
+    public override T Accept<T>(IStatementVisitor<T> visitor)
     {
-        return arg.GetType() == AcceptedType
-            ? Operation(arg)
-            : throw new SemanticError($"Operator `{OperationToken}`", EnteredType.ToString(), arg.GetType().Name, null);
-    }
-    public override GSharpTypes CheckType()
-    {
-        GSharpTypes argType = Argument.CheckType();
-        return argType != GSharpTypes.Undetermined && argType != EnteredType
-            ? throw new SemanticError($"Operator `{OperationToken}`", EnteredType.ToString(), argType.ToString(), null)
-            : ReturnedType;
+        IExpresionVisitor<T> expresionVisitor = visitor as IExpresionVisitor<T>;
+        return expresionVisitor.visitUnaryOperation(this);
     }
     /// <summary>
     /// Argumento de la operacion unaria
