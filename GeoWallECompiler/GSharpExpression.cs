@@ -2,14 +2,14 @@
 
 public abstract class Statement
 {
-    public abstract T Accept<T>(IStatementVisitor<T> visitor);
+    public abstract void Accept(IStatementVisitor visitor);
 }
 /// <summary>
 /// Clase abstracta de la que heredaran todas las expresiones del lenguaje G#
 /// </summary>
-public abstract class GSharpExpression : Statement
+public abstract class GSharpExpression
 {
-
+    public abstract T Accept<T>(IExpressionVisitor<T> visitor);
 }
 /// <summary>
 /// Tipos del lenguaje G#

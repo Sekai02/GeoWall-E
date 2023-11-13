@@ -31,7 +31,7 @@ public class Literal : GSharpExpression
         };
     }
 
-    public override T Accept<T>(IStatementVisitor<T> visitor) => throw new NotImplementedException();
+    public override T Accept<T>(IExpressionVisitor<T> visitor) => throw new NotImplementedException();
 
     /// <summary>
     /// Valor del literal
@@ -74,11 +74,7 @@ public class Constant : GSharpExpression
             _ => throw new DefaultError("Invalid literal"),
         };
     }
-    public override T Accept<T>(IStatementVisitor<T> visitor)
-    {
-        IExpresionVisitor<T> expresionVisitor = visitor as IExpresionVisitor<T>;
-        return expresionVisitor.visitConstant(this);
-    }
+    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.visitConstant(this);
     /// <summary>
     /// Nombre de la constante
     /// </summary>
@@ -116,11 +112,7 @@ public class FunctionCall : GSharpExpression
         Arguments = arguments;
         //aqui hay que igualar la declaracion de la funcion con el parametro conrrespondiente
     }
-    public override T Accept<T>(IStatementVisitor<T> visitor)
-    {
-        IExpresionVisitor<T> expresionVisitor = visitor as IExpresionVisitor<T>;
-        return expresionVisitor.visitFunctionCall(this);
-    }
+    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.visitFunctionCall(this);
     /// <summary>
     /// Chequea los tipos de los argumentos de un llamado a funcion con el objetivo de capturar posibles errores semanticos
     /// </summary>

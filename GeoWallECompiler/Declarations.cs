@@ -1,7 +1,7 @@
 ﻿namespace GeoWallECompiler;
 public class ConstantsDeclaration : Statement
 {
-    public override T Accept<T>(IStatementVisitor<T> visitor) => visitor.visitConstantDeclaration(this);
+    public override void Accept(IStatementVisitor visitor) => visitor.visitConstantDeclaration(this);
     public ConstantsDeclaration(List<string> constantNames, GSharpExpression value)
     {
         //if (constantNames.Count == 1)

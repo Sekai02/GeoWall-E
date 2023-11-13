@@ -1,5 +1,5 @@
 ﻿namespace GeoWallECompiler;
-public class TypeChecker : IStatementVisitor<GSharpTypes>, IExpresionVisitor<GSharpTypes>
+public class TypeChecker : IExpressionVisitor<GSharpTypes>
 {
     public GSharpTypes visitBinaryOperation(BinaryOperation binary) 
     {
@@ -14,8 +14,6 @@ public class TypeChecker : IStatementVisitor<GSharpTypes>, IExpresionVisitor<GSh
         return binary.ReturnedType;
     }
     public GSharpTypes visitConstant(Constant constant) => constant.ValueExpression.Accept(this);
-    public GSharpTypes visitConstantDeclaration(ConstantsDeclaration declaration) => throw new NotImplementedException();
-    public GSharpTypes visitExpressionStatement(GSharpExpression expression) => GSharpTypes.Undetermined;
     public GSharpTypes visitFunctionCall(FunctionCall functionCall) => GSharpTypes.Undetermined;
     public GSharpTypes visitIfThenElse(IfThenElse ifThen)
     {

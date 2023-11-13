@@ -18,11 +18,7 @@ public class IfThenElse: GSharpExpression
         IfExpression = IfExp;
         ElseExpression = ElseExp;
     }
-    public override T Accept<T>(IStatementVisitor<T> visitor) 
-    {
-        IExpresionVisitor<T> expresionVisitor = visitor as IExpresionVisitor<T>;
-        return expresionVisitor.visitIfThenElse(this);
-    }
+    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.visitIfThenElse(this);
     #region Properties
     /// <summary>
     /// Condicion que se debe cumplir
@@ -53,11 +49,7 @@ public class LetIn : GSharpExpression
         DeclaredConstants = declaredConstants;
         Body = body;
     }
-    public override T Accept<T>(IStatementVisitor<T> visitor)
-    {
-        IExpresionVisitor<T> expresionVisitor = visitor as IExpresionVisitor<T>;
-        return expresionVisitor.visitLetIn(this);
-    }
+    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.visitLetIn(this);
     /// <summary>
     /// Variables locales de la expresion let-in
     /// </summary>

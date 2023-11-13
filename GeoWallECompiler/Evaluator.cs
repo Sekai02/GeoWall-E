@@ -1,7 +1,7 @@
 ﻿using System.Xml.Linq;
 
 namespace GeoWallECompiler;
-public class Evaluator : IExpresionVisitor<GSharpObject>, IStatementVisitor<GSharpObject>
+public class Evaluator : IExpressionVisitor<GSharpObject>
 {
     /// <summary>
     /// Evalua la expresion binaria, luego de chequear que los tipos de entrada sean correctos
@@ -19,8 +19,6 @@ public class Evaluator : IExpresionVisitor<GSharpObject>, IStatementVisitor<GSha
         throw new SemanticError($"Operator `{binary.OperationToken}`", binary.ReturnedType.ToString(), conflictiveType);
     }
     public GSharpObject visitConstant(Constant constant) => constant.ValueExpression?.Accept(this);
-    public GSharpObject visitConstantDeclaration(ConstantsDeclaration declaration) => null;
-    public GSharpObject visitExpressionStatement(GSharpExpression expression) => null;
     public GSharpObject visitFunctionCall(FunctionCall functionCall) => throw new NotImplementedException();
     public GSharpObject visitIfThenElse(IfThenElse ifThen)
     {
