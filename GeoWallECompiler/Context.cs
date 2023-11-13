@@ -3,11 +3,16 @@ public class Context
 {
     public Context? Enclosing { get; private set; }
     private Dictionary<string, GSharpObject> Variables;
-    public Context() => Variables = new();
+    private Dictionary<string, DeclaredFunction> Functions;
+    public Context() {
+        Variables = new();
+        Functions = new();
+    }
     public Context(Context enclosing)
     {
         Enclosing = enclosing;
         Variables = new();
+        Functions = new();
     }
     public GSharpObject GetVariableValue(string variableName)
     {
@@ -23,5 +28,20 @@ public class Context
     {
         if (!Variables.TryAdd(variableName, variableValue))
             ErrorHandler.AddError(new DefaultError($"Variable {variableName} already exist"));
+    }
+    public DeclaredFunction GetFunction(string functionName)
+    {
+        if (!Functions.TryGetValue(functionName, out DeclaredFunction? function))
+        {
+            if (Enclosing is not null)
+                return Enclosing.GetFunction(functionName);
+            ErrorHandler.AddError(new DefaultError($"Function {functionName} not found"));
+        }
+        return function;
+    }
+    public void DefineFunction(string functionName, DeclaredFunction function)
+    {
+        if (!Functions.TryAdd(functionName, function))
+            ErrorHandler.AddError(new DefaultError($"Function {function} already exist"));
     }
 }

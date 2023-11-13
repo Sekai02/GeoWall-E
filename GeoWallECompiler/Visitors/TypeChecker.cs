@@ -13,7 +13,7 @@ public class TypeChecker : IExpressionVisitor<GSharpTypes>
             ErrorHandler.AddError(new SemanticError($"Operator `{binary.OperationToken}`", binary.EnteredType.ToString(), rightType.ToString()));
         return binary.ReturnedType;
     }
-    public GSharpTypes VisitConstant(Constant constant) => constant.ValueExpression.Accept(this);
+    public GSharpTypes VisitConstant(Constant constant) => constant.Accept(this);
     public GSharpTypes VisitFunctionCall(FunctionCall functionCall) => GSharpTypes.Undetermined;
     public GSharpTypes VisitIfThenElse(IfThenElse ifThen)
     {
@@ -24,8 +24,8 @@ public class TypeChecker : IExpressionVisitor<GSharpTypes>
     }
     public GSharpTypes VisitLetIn(LetIn letIn) 
     {
-        foreach (Constant constant in letIn.DeclaredConstants.Values)
-            constant.Accept(this);
+        //foreach (Constant constant in letIn.DeclaredConstants)
+        //    constant.Accept(this);
         return letIn.Body.Accept(this);
     }
     public GSharpTypes VisitLiteral(Literal literal) => literal.Type;

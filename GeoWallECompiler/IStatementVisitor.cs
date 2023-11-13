@@ -2,7 +2,7 @@
 public interface IStatementVisitor
 {
     void VisitExpressionStatement(ExpressionStatement expression);
-    //T visitFunctionDeclaration(FunctionDeclaration declaration);
+    void VisitFunctionDeclaration(FunctionDeclaration declaration);
     void VisitConstantDeclaration(ConstantsDeclaration declaration);
 }
 public interface IExpressionVisitor<T>

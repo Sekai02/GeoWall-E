@@ -50,7 +50,7 @@ public class Constant : GSharpExpression
     /// Construye un objeto que representa una constante de G#
     /// </summary>
     /// <param name="value">Valor que toma la constante</param>
-    public Constant(string name, GSharpExpression? value)
+    public Constant(string name /*, GSharpExpression? value*/)
     {
         Name = name;
         //ValueExpression = value;
@@ -129,5 +129,6 @@ public class FunctionCall : GSharpExpression
     /// Lista de argumentos que toma la funcion
     /// </summary>
     public List<GSharpExpression> Arguments { get; private set; }
+    public ICallable Calle { get; private set; }
     //aqui va una propiedad publica que es la expresion de la definicion de la funcion
 }

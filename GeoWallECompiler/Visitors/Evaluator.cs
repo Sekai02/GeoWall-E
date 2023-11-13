@@ -2,6 +2,8 @@
 public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
 {
     private Context environment = new();
+    public Evaluator() => environment = new();
+    public Context EvaluationContext { get => environment; set => environment = value; }
     /// <summary>
     /// Evalua la expresion binaria, luego de chequear que los tipos de entrada sean correctos
     /// </summary>
@@ -18,7 +20,16 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         throw new SemanticError($"Operator `{binary.OperationToken}`", binary.ReturnedType.ToString(), conflictiveType);
     }
     public GSharpObject VisitConstant(Constant constant) => environment.GetVariableValue(constant.Name);
-    public GSharpObject VisitFunctionCall(FunctionCall functionCall) => throw new NotImplementedException();
+    public GSharpObject VisitFunctionCall(FunctionCall functionCall) 
+    {
+        DeclaredFunction callee = environment.GetFunction(functionCall.FunctionName);
+        List<GSharpObject> arguments = new();
+        foreach(GSharpExpression argument in functionCall.Arguments)
+        {
+            arguments.Add(argument.Accept(this));
+        }
+        return callee.Evaluate(this, arguments);
+    }
     public void VisitConstantDeclaration(ConstantsDeclaration declaration)
     {
         GSharpObject value = declaration.Value.Accept(new Evaluator());
@@ -52,6 +63,11 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
 
     }
     public void VisitExpressionStatement(ExpressionStatement expression) => expression.Accept(this);
+    public void VisitFunctionDeclaration(FunctionDeclaration declaration) 
+    {
+        DeclaredFunction function = new(declaration);
+        environment.DefineFunction(function.Declaration.Name, function);
+    }
     public GSharpObject VisitIfThenElse(IfThenElse ifThen)
     {
         bool condition = ifThen.Condition.Accept(this)?.ToValueOfTruth() == 1;
@@ -77,4 +93,5 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
             ? unary.Operation(arg)
             : throw new SemanticError($"Operator `{unary.OperationToken}`", unary.EnteredType.ToString(), arg.GetType().Name, null); ;
     }
+
 }
