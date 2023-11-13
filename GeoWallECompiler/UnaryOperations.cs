@@ -6,7 +6,7 @@
 /// </summary>
 public abstract class UnaryOperation : GSharpExpression
 {
-    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.visitUnaryOperation(this);
+    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitUnaryOperation(this);
     /// <summary>
     /// Argumento de la operacion unaria
     /// </summary>

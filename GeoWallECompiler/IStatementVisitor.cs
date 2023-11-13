@@ -1,17 +1,17 @@
 ﻿namespace GeoWallECompiler;
 public interface IStatementVisitor
 {
-    void visitExpressionStatement(GSharpExpression expression);
+    void VisitExpressionStatement(ExpressionStatement expression);
     //T visitFunctionDeclaration(FunctionDeclaration declaration);
-    void visitConstantDeclaration(ConstantsDeclaration declaration);
+    void VisitConstantDeclaration(ConstantsDeclaration declaration);
 }
 public interface IExpressionVisitor<T>
 {
-    T visitLetIn(LetIn letIn);
-    T visitIfThenElse(IfThenElse ifThen);
-    T visitBinaryOperation(BinaryOperation binary);
-    T visitUnaryOperation(UnaryOperation unary);
-    T visitLiteral(Literal literal);
-    T visitConstant(Constant constant);
-    T visitFunctionCall(FunctionCall functionCall);
+    T VisitLetIn(LetIn letIn);
+    T VisitIfThenElse(IfThenElse ifThen);
+    T VisitBinaryOperation(BinaryOperation binary);
+    T VisitUnaryOperation(UnaryOperation unary);
+    T VisitLiteral(Literal literal);
+    T VisitConstant(Constant constant);
+    T VisitFunctionCall(FunctionCall functionCall);
 }

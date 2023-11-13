@@ -6,7 +6,7 @@
 /// </summary>
 public abstract class BinaryOperation : GSharpExpression
 {
-    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.visitBinaryOperation(this);
+    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitBinaryOperation(this);
     #region Properties
     /// <summary>
     /// Expresion de G# que representa al argumeto izquierdo de la operacion binaria

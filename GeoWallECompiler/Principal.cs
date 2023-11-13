@@ -26,12 +26,11 @@ public class Literal : GSharpExpression
         {
             GSharpNumber => GSharpTypes.GNumber,
             GSharpString => GSharpTypes.GString,
-            GSharpSequence => GSharpTypes.GSequence,
-            _ => throw new DefaultError("Invalid literal"),
+            _ => GSharpTypes.GSequence,
         };
     }
 
-    public override T Accept<T>(IExpressionVisitor<T> visitor) => throw new NotImplementedException();
+    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitLiteral(this);
 
     /// <summary>
     /// Valor del literal
@@ -54,27 +53,21 @@ public class Constant : GSharpExpression
     public Constant(string name, GSharpExpression? value)
     {
         Name = name;
-        ValueExpression = value;
+        //ValueExpression = value;
         //Type = SetType(value.GetValue());
     }
-    /// <summary>
-    /// Funcion que retorna el tipo de la constante en funcion del valor de este
-    /// </summary>
-    /// <param name="value">Valor de la constante</param>
-    /// <returns>Tipo de la constante</returns>
-    /// <exception cref="DefaultError"></exception>
-    private static GSharpTypes SetType(GSharpObject? value)
-    {
-        return value switch
-        {
-            null => GSharpTypes.Undetermined,
-            GSharpNumber => GSharpTypes.GNumber,
-            GSharpString => GSharpTypes.GString,
-            GSharpSequence => GSharpTypes.GSequence,
-            _ => throw new DefaultError("Invalid literal"),
-        };
-    }
-    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.visitConstant(this);
+    //private static GSharpTypes SetType(GSharpObject? value)
+    //{
+    //    return value switch
+    //    {
+    //        null => GSharpTypes.Undetermined,
+    //        GSharpNumber => GSharpTypes.GNumber,
+    //        GSharpString => GSharpTypes.GString,
+    //        ArraySequence => GSharpTypes.GSequence,
+    //        _ => throw new DefaultError("Invalid literal"),
+    //    };
+    //}
+    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitConstant(this);
     /// <summary>
     /// Nombre de la constante
     /// </summary>
@@ -82,15 +75,15 @@ public class Constant : GSharpExpression
     /// <summary>
     /// Expresion del valor de la constante
     /// </summary>
-    public GSharpExpression? ValueExpression
-    {
-        get => ValueExpression;
-        set
-        {
-            ValueExpression = value;
-            //Type = SetType(ValueExpression?.GetValue());
-        }
-    }
+    //public GSharpExpression? ValueExpression
+    //{
+    //    get => ValueExpression;
+    //    set
+    //    {
+    //        ValueExpression = value;
+    //        //Type = SetType(ValueExpression?.GetValue());
+    //    }
+    //}
     /// <summary>
     /// Tipo de la constante
     /// </summary>
@@ -106,13 +99,13 @@ public class FunctionCall : GSharpExpression
     /// </summary>
     /// <param name="name">Nombre de la funcion que se está llamando</param>
     /// <param name="arguments">Lista de argumentos que toma el llamado de funcion</param>
-    public FunctionCall(string name, List<GSharpExpression> arguments /*aqui va la declaracion de la funcion*/)
+    public FunctionCall(string name, List<GSharpExpression> arguments)
     {
         FunctionName = name;
         Arguments = arguments;
         //aqui hay que igualar la declaracion de la funcion con el parametro conrrespondiente
     }
-    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.visitFunctionCall(this);
+    public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitFunctionCall(this);
     /// <summary>
     /// Chequea los tipos de los argumentos de un llamado a funcion con el objetivo de capturar posibles errores semanticos
     /// </summary>

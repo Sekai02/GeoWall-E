@@ -1,9 +1,11 @@
 ﻿namespace GeoWallECompiler;
 public class ConstantsDeclaration : Statement
 {
-    public override void Accept(IStatementVisitor visitor) => visitor.visitConstantDeclaration(this);
+    public override void Accept(IStatementVisitor visitor) => visitor.VisitConstantDeclaration(this);
     public ConstantsDeclaration(List<string> constantNames, GSharpExpression value)
     {
+        ConstantNames = constantNames;
+        Value = value;
         //if (constantNames.Count == 1)
         //{
         //    Constant constant = new(constantNames[0], value);
@@ -36,5 +38,6 @@ public class ConstantsDeclaration : Statement
         //    DeclaredConstants = declaredConstants;
         //}
     }
-    public List<Constant> DeclaredConstants { get; private set; }
+    public List<string> ConstantNames { get; }
+    public GSharpExpression Value { get; }
 }
