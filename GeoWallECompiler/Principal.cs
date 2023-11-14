@@ -50,12 +50,7 @@ public class Constant : GSharpExpression
     /// Construye un objeto que representa una constante de G#
     /// </summary>
     /// <param name="value">Valor que toma la constante</param>
-    public Constant(string name /*, GSharpExpression? value*/)
-    {
-        Name = name;
-        //ValueExpression = value;
-        //Type = SetType(value.GetValue());
-    }
+    public Constant(string name) => Name = name;
     //private static GSharpTypes SetType(GSharpObject? value)
     //{
     //    return value switch
@@ -72,22 +67,6 @@ public class Constant : GSharpExpression
     /// Nombre de la constante
     /// </summary>
     public string Name { get; private set; }
-    /// <summary>
-    /// Expresion del valor de la constante
-    /// </summary>
-    //public GSharpExpression? ValueExpression
-    //{
-    //    get => ValueExpression;
-    //    set
-    //    {
-    //        ValueExpression = value;
-    //        //Type = SetType(ValueExpression?.GetValue());
-    //    }
-    //}
-    /// <summary>
-    /// Tipo de la constante
-    /// </summary>
-    public GSharpTypes Type { get; private set; }
 }
 /// <summary>
 /// Representa a los llamados a funcion de G#
@@ -103,7 +82,6 @@ public class FunctionCall : GSharpExpression
     {
         FunctionName = name;
         Arguments = arguments;
-        //aqui hay que igualar la declaracion de la funcion con el parametro conrrespondiente
     }
     public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitFunctionCall(this);
     /// <summary>
@@ -129,6 +107,4 @@ public class FunctionCall : GSharpExpression
     /// Lista de argumentos que toma la funcion
     /// </summary>
     public List<GSharpExpression> Arguments { get; private set; }
-    public ICallable Calle { get; private set; }
-    //aqui va una propiedad publica que es la expresion de la definicion de la funcion
 }

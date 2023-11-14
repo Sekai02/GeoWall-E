@@ -1,15 +1,16 @@
-﻿namespace GeoWallECompiler;
+﻿using System.Xml.Linq;
+
+namespace GeoWallECompiler;
 public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
 {
-    private Context environment = new();
+    public Dictionary<GSharpExpression, int> References = new();
+    private Context? environment = new();
     public Evaluator() => environment = new();
-    public Context EvaluationContext { get => environment; set => environment = value; }
-    /// <summary>
-    /// Evalua la expresion binaria, luego de chequear que los tipos de entrada sean correctos
-    /// </summary>
-    /// <param name="binary">Expresion binaria</param>
-    /// <returns>Resultado de evaluar la operacion binaria</returns>
-    /// <exception cref="SemanticError"></exception>
+    public Context? EvaluationContext { get => environment; set => environment = value; }
+    public void ResolveReference(GSharpExpression expression, int depth)
+    {
+        References.Add(expression, depth);
+    }
     public GSharpObject VisitBinaryOperation(BinaryOperation binary)
     {
         GSharpObject left = binary.LeftArgument.Accept(this);
@@ -19,10 +20,15 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         var conflictiveType = left.GetType() != binary.AcceptedType ? left.GetType().Name : right.GetType().Name;
         throw new SemanticError($"Operator `{binary.OperationToken}`", binary.ReturnedType.ToString(), conflictiveType);
     }
-    public GSharpObject VisitConstant(Constant constant) => environment.GetVariableValue(constant.Name);
+    public GSharpObject VisitConstant(Constant constant) 
+    {
+        int distance = References[constant];
+        return environment.GetVariableAt(distance, constant.Name);        
+    }
     public GSharpObject VisitFunctionCall(FunctionCall functionCall) 
     {
-        DeclaredFunction callee = environment.GetFunction(functionCall.FunctionName);
+        int distance = References[functionCall];
+        DeclaredFunction callee = environment.GetFunctionAt(distance, functionCall.FunctionName);
         List<GSharpObject> arguments = new();
         foreach(GSharpExpression argument in functionCall.Arguments)
         {

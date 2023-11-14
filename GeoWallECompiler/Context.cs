@@ -8,7 +8,7 @@ public class Context
         Variables = new();
         Functions = new();
     }
-    public Context(Context enclosing)
+    public Context(Context? enclosing)
     {
         Enclosing = enclosing;
         Variables = new();
@@ -43,5 +43,29 @@ public class Context
     {
         if (!Functions.TryAdd(functionName, function))
             ErrorHandler.AddError(new DefaultError($"Function {function} already exist"));
+    }
+    public GSharpObject GetVariableAt(int distance, string name)
+    {
+        Context? ancestor = this;
+        for (int i = 0; i < distance; i--)
+            ancestor = ancestor?.Enclosing;
+        return ancestor?.GetVariableValue(name);
+    }
+    public DeclaredFunction GetFunctionAt(int distance, string name)
+    {
+        Context? ancestor = this;
+        for (int i = 0; i < distance; i--)
+            ancestor = ancestor?.Enclosing;
+        return ancestor?.GetFunction(name);
+    }
+}
+public class Scope
+{
+    public Dictionary<string, bool> Variables;
+    public Dictionary<string, bool> Functions;
+    public Scope()
+    {
+        Variables = new();
+        Functions = new();
     }
 }
