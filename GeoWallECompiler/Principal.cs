@@ -3,13 +3,13 @@
 /// <summary>
 /// Representa un valor explicitamente en el codigo. Por ejemplo 3, "hello world", {1,2,3}
 /// </summary>
-public class Literal : GSharpExpression
+public class LiteralNumber : GSharpExpression
 {
     /// <summary>
     /// Construye un objeto que representa un valor literal
     /// </summary>
     /// <param name="value">Objeto valor de la expresion</param>
-    public Literal(GSharpObject value)
+    public LiteralNumber(GSharpNumber value)
     {
         Value = value;
         Type = SetType(value);
@@ -26,7 +26,6 @@ public class Literal : GSharpExpression
         {
             GSharpNumber => GSharpTypes.GNumber,
             GSharpString => GSharpTypes.GString,
-            _ => GSharpTypes.GSequence,
         };
     }
 
@@ -35,7 +34,7 @@ public class Literal : GSharpExpression
     /// <summary>
     /// Valor del literal
     /// </summary>
-    public GSharpObject Value { get; private set; }
+    public GSharpNumber Value { get; private set; }
     /// <summary>
     /// Tipo del literal
     /// </summary>

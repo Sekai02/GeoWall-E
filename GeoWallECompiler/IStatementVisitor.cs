@@ -11,7 +11,8 @@ public interface IExpressionVisitor<T>
     T VisitIfThenElse(IfThenElse ifThen);
     T VisitBinaryOperation(BinaryOperation binary);
     T VisitUnaryOperation(UnaryOperation unary);
-    T VisitLiteral(Literal literal);
+    T VisitLiteral(LiteralNumber literal);
     T VisitConstant(Constant constant);
     T VisitFunctionCall(FunctionCall functionCall);
+    T VisitLiteralSequence(LiteralSequence sequence);
 }

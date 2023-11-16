@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace GeoWallECompiler;
+﻿namespace GeoWallECompiler;
 public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
 {
     public Dictionary<GSharpExpression, int> References = new();
@@ -20,17 +18,17 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         var conflictiveType = left.GetType() != binary.AcceptedType ? left.GetType().Name : right.GetType().Name;
         throw new SemanticError($"Operator `{binary.OperationToken}`", binary.ReturnedType.ToString(), conflictiveType);
     }
-    public GSharpObject VisitConstant(Constant constant) 
+    public GSharpObject VisitConstant(Constant constant)
     {
         int distance = References[constant];
-        return environment.GetVariableAt(distance, constant.Name);        
+        return environment.GetVariableAt(distance, constant.Name);
     }
-    public GSharpObject VisitFunctionCall(FunctionCall functionCall) 
+    public GSharpObject VisitFunctionCall(FunctionCall functionCall)
     {
         int distance = References[functionCall];
         DeclaredFunction callee = environment.GetFunctionAt(distance, functionCall.FunctionName);
         List<GSharpObject> arguments = new();
-        foreach(GSharpExpression argument in functionCall.Arguments)
+        foreach (GSharpExpression argument in functionCall.Arguments)
         {
             arguments.Add(argument.Accept(this));
         }
@@ -69,7 +67,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
 
     }
     public void VisitExpressionStatement(ExpressionStatement expression) => expression.Accept(this);
-    public void VisitFunctionDeclaration(FunctionDeclaration declaration) 
+    public void VisitFunctionDeclaration(FunctionDeclaration declaration)
     {
         DeclaredFunction function = new(declaration);
         environment.DefineFunction(function.Declaration.Name, function);
@@ -81,17 +79,17 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
             return ifThen.IfExpression.Accept(this);
         return ifThen.ElseExpression.Accept(this);
     }
-    public GSharpObject VisitLetIn(LetIn letIn) 
+    public GSharpObject VisitLetIn(LetIn letIn)
     {
         Context letInContext = new(environment);
         environment = letInContext;
-        foreach(var declaration in letIn.DeclaredConstants)
+        foreach (var declaration in letIn.DeclaredConstants)
             declaration.Accept(this);
         GSharpObject result = letIn.Body.Accept(this);
         environment = environment.Enclosing;
         return result;
     }
-    public GSharpObject VisitLiteral(Literal literal) => literal.Value;
+    public GSharpObject VisitLiteral(LiteralNumber literal) => literal.Value;
     public GSharpObject VisitUnaryOperation(UnaryOperation unary)
     {
         GSharpObject arg = unary.Argument.Accept(this);
@@ -99,5 +97,9 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
             ? unary.Operation(arg)
             : throw new SemanticError($"Operator `{unary.OperationToken}`", unary.EnteredType.ToString(), arg.GetType().Name, null); ;
     }
-
+    public GSharpObject VisitLiteralSequence(LiteralSequence sequence)
+    {
+        ArraySequence<GSharpObject> result = new(new List<GSharpObject>(sequence.GetSequenceValue(this)));
+        return result;
+    }
 }

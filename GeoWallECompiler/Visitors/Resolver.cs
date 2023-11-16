@@ -29,14 +29,14 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
         if (Scopes.Count == 0)
             return;
         Scope currentScope = Scopes.Peek();
-        currentScope.Functions.Add(variableName, false);
+        currentScope.Functions.Add(functionName, false);
     }
     private void DefineFunction(string functionName)
     {
         if (Scopes.Count == 0)
             return;
         Scope currentScope = Scopes.Peek();
-        currentScope.Functions[variableName] = true;
+        currentScope.Functions[functionName] = true;
     }
     private void BindValue(GSharpExpression expr, string variableName)
     {
@@ -49,28 +49,28 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
             }
         }
     }
-    private void BindFunctionbody(GSharpExpression expr, string variableName)
+    private void BindFunctionbody(GSharpExpression expr, string functionName)
     {
         for (int i = Scopes.Count - 1; i >= 0; i--)
         {
-            if (Scopes.ElementAt(i).Functions.ContainsKey(variableName))
+            if (Scopes.ElementAt(i).Functions.ContainsKey(functionName))
             {
                 Interpreter.ResolveReference(expr, Scopes.Count - 1 - i);
                 return;
             }
         }
     }
-    public GSharpObject VisitBinaryOperation(BinaryOperation binary) 
+    public GSharpObject VisitBinaryOperation(BinaryOperation binary)
     {
         binary.LeftArgument.Accept(this);
         binary.RightArgument.Accept(this);
         return null;
     }
-    public GSharpObject VisitConstant(Constant constant) 
+    public GSharpObject VisitConstant(Constant constant)
     {
         if (Scopes.Count == 0)
             throw new DefaultError("Local variable is not defined");
-        if(Scopes.Peek().Variables[constant.Name] == false)
+        if (Scopes.Peek().Variables[constant.Name] == false)
         {
             ErrorHandler.AddError(new DefaultError("Can't read local variable in its own initializer."));
         }
@@ -82,19 +82,51 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
         if (declaration.ConstantNames.Count == 1)
         {
             DeclareVariable(declaration.ConstantNames[0]);
-            declaration.Accept(this);
+            declaration.Value.Accept(this);
             DefineVariable(declaration.ConstantNames[0]);
+            return;
         }
-        //aqui se va a hacer para declaraciones match
+        if (declaration.Value is not LiteralSequence)
+            throw new Exception("Match declaration");
+        LiteralSequence sequence = (LiteralSequence)declaration.Value;
+        int index = 0;
+        foreach (GSharpExpression expression in sequence.Expressions)
+        {
+            if (index == declaration.ConstantNames.Count - 1)
+            {
+                DeclareVariable(declaration.ConstantNames[index]);
+                sequence.GetTail(index).Accept(this);
+                DefineVariable(declaration.ConstantNames[index]);
+                break;
+            }
+            DeclareVariable(declaration.ConstantNames[index]);
+            expression.Accept(this);
+            DefineVariable(declaration.ConstantNames[index]);
+            index++;
+        }
+        if (index < declaration.ConstantNames.Count - 2)
+        {
+            for (int i = index; index < declaration.ConstantNames.Count - 1; i++)
+            {
+                DeclareVariable(declaration.ConstantNames[i]);
+                DefineVariable(declaration.ConstantNames[i]);
+            }
+        }
+        DeclareVariable(declaration.ConstantNames[^1]);
+        sequence.GetTail(declaration.ConstantNames.Count - 1).Accept(this);
+        DefineVariable(declaration.ConstantNames[^1]);
+
+
     }
-    public void VisitExpressionStatement(ExpressionStatement expression) 
+    public void VisitExpressionStatement(ExpressionStatement expression)
     {
         expression.Expression.Accept(this);
     }
-    public GSharpObject VisitFunctionCall(FunctionCall functionCall) 
+    public GSharpObject VisitFunctionCall(FunctionCall functionCall)
     {
-        foreach(GSharpExpression argument in functionCall.Arguments)
+        foreach (GSharpExpression argument in functionCall.Arguments)
             argument.Accept(this);
+        BindFunctionbody(functionCall, functionCall.FunctionName);
         return null;
     }
     public void VisitFunctionDeclaration(FunctionDeclaration declaration)
@@ -117,7 +149,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
         ifThen.ElseExpression.Accept(this);
         return null;
     }
-    public GSharpObject VisitLetIn(LetIn letIn) 
+    public GSharpObject VisitLetIn(LetIn letIn)
     {
         BeginScope();
         foreach (ConstantsDeclaration declaration in letIn.DeclaredConstants)
@@ -126,10 +158,16 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
         EndScope();
         return null;
     }
-    public GSharpObject VisitLiteral(Literal literal) => null;
-    public GSharpObject VisitUnaryOperation(UnaryOperation unary) 
+    public GSharpObject VisitLiteral(LiteralNumber literal) => null;
+    public GSharpObject VisitUnaryOperation(UnaryOperation unary)
     {
         unary.Argument.Accept(this);
+        return null;
+    }
+    public GSharpObject VisitLiteralSequence(LiteralSequence sequence)
+    {
+        foreach (GSharpExpression expression in sequence.Expressions)
+            expression.Accept(this);
         return null;
     }
 }
