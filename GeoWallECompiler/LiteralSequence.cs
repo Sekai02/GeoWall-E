@@ -70,8 +70,9 @@ public class InfiniteRangeExpression : LiteralSequence
 {
     public InfiniteRangeExpression(GSharpExpression leftBoundExpression)
     {
-        if(leftBoundExpression is not LiteralNumber)
-            //error
+        if (leftBoundExpression is not LiteralNumber)
+            throw new DefaultError("Integer range sequences can only take number literals as limits", "semantic");
+        
         Expressions = InfiniteRange((LiteralNumber)leftBoundExpression);
         LeftBoundExpression = leftBoundExpression;
     }

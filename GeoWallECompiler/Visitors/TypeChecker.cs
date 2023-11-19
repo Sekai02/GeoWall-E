@@ -29,6 +29,8 @@ public class TypeChecker : IExpressionVisitor<GSharpTypes>
         return letIn.Body.Accept(this);
     }
     public GSharpTypes VisitLiteral(LiteralNumber literal) => literal.Type;
+    public GSharpTypes VisitLiteralSequence(LiteralSequence sequence) => throw new NotImplementedException();
+
     public GSharpTypes VisitUnaryOperation(UnaryOperation unary)
     {
         GSharpTypes argType = unary.Argument.Accept(this);

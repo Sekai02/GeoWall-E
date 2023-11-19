@@ -15,7 +15,8 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
         if (Scopes.Count == 0)
             return;
         Scope currentScope = Scopes.Peek();
-        currentScope.Variables.Add(variableName, false);
+        if (!currentScope.Variables.TryAdd(variableName, false))
+            ErrorHandler.AddError(new DefaultError($"Variable {variableName} already exist in this scope", "Semantic"));
     }
     private void DefineVariable(string variableName)
     {
@@ -29,7 +30,8 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
         if (Scopes.Count == 0)
             return;
         Scope currentScope = Scopes.Peek();
-        currentScope.Functions.Add(functionName, false);
+        if (!currentScope.Functions.TryAdd(functionName, false))
+            ErrorHandler.AddError(new DefaultError($"Function {functionName} already exist in this scope", "Semantic"));
     }
     private void DefineFunction(string functionName)
     {
@@ -69,11 +71,9 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
     public GSharpObject VisitConstant(Constant constant)
     {
         if (Scopes.Count == 0)
-            throw new DefaultError("Local variable is not defined");
+            ErrorHandler.AddError(new DefaultError("Local variable is not defined", "semantic"));
         if (Scopes.Peek().Variables[constant.Name] == false)
-        {
-            ErrorHandler.AddError(new DefaultError("Can't read local variable in its own initializer."));
-        }
+            ErrorHandler.AddError(new DefaultError("Can't read local variable in its own initializer", "semantic"));
         BindValue(constant, constant.Name);
         return null;
     }

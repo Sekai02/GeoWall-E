@@ -63,14 +63,14 @@ public class GSharpString : GSharpObject
 /// <summary>
 /// Representa un punto en el espacio bidimensional
 /// </summary>
-public class Point : GSharpObject, IDrawable
+public class GSharpPoint : GSharpObject, IDrawable
 {    
     /// <summary>
     /// Crea una instancia de un punto en el espacio bidimensional definido mediante dos coordenadas rectangulares
     /// </summary>
     /// <param name="x">Coordenada x del punto</param>
     /// <param name="y">Coordenada y del punto</param>
-    public Point(GSharpNumber? x, GSharpNumber? y)
+    public GSharpPoint(GSharpNumber? x, GSharpNumber? y)
     {        
         if (x is not null && y is not null)
             Coordinates = (x, y);
@@ -94,13 +94,13 @@ public class Line : GSharpObject, IDrawable
     /// </summary>
     /// <param name="point1"></param>
     /// <param name="point2"></param>
-    public Line(Point? point1, Point? point2)
+    public Line(GSharpPoint? point1, GSharpPoint? point2)
     {
         Point1 = point1;
         Point2 = point2;
     }
-    public Point? Point1 { get; private set; }
-    public Point? Point2 { get; private set; }
+    public GSharpPoint? Point1 { get; private set; }
+    public GSharpPoint? Point2 { get; private set; }
     public void Draw(IDrawer drawer) => drawer.DrawLine(this);
     public override double ToValueOfTruth() => Point1 is null || Point2 is null ? 0 : 1;
 }
@@ -114,7 +114,7 @@ public class Segment : GSharpObject, IDrawable
     /// </summary>
     /// <param name="point1">Extremo 1</param>
     /// <param name="point2">Extremo 2</param>
-    public Segment(Point? point1, Point? point2)
+    public Segment(GSharpPoint? point1, GSharpPoint? point2)
     {
         Point1 = point1;
         Point2 = point2;
@@ -122,11 +122,11 @@ public class Segment : GSharpObject, IDrawable
     /// <summary>
     /// Punto extremo 1
     /// </summary>
-    public Point? Point1 { get; private set; }
+    public GSharpPoint? Point1 { get; private set; }
     /// <summary>
     /// Punto extremo 2
     /// </summary>
-    public Point? Point2 { get; private set; }
+    public GSharpPoint? Point2 { get; private set; }
     public void Draw(IDrawer drawer) => drawer.DrawSegment(this);
     public override double ToValueOfTruth() => Point1 is null || Point2 is null ? 0 : 1;
 }
@@ -140,7 +140,7 @@ public class Ray : GSharpObject, IDrawable
     /// </summary>
     /// <param name="point1">Punto inicial</param>
     /// <param name="point2">Punto por donde pasa el rayo</param>
-    public Ray(Point? point1, Point? point2)
+    public Ray(GSharpPoint? point1, GSharpPoint? point2)
     {
         Point1 = point1;
         Point2 = point2;
@@ -148,11 +148,11 @@ public class Ray : GSharpObject, IDrawable
     /// <summary>
     /// Punto inicial
     /// </summary>
-    public Point? Point1 { get; private set; }
+    public GSharpPoint? Point1 { get; private set; }
     /// <summary>
     /// Punto por donde pasa el rayo
     /// </summary>
-    public Point? Point2 { get; private set; }
+    public GSharpPoint? Point2 { get; private set; }
     public void Draw(IDrawer drawer) => drawer.DrawRay(this);
     public override double ToValueOfTruth() => Point1 is null || Point2 is null ? 0 : 1;
 }
@@ -166,7 +166,7 @@ public class Circle : GSharpObject, IDrawable
     /// </summary>
     /// <param name="center">Punto centro de la circunferencia</param>
     /// <param name="radius">Radio de la circunferencia</param>
-    public Circle(Point? center, GSharpNumber? radius)
+    public Circle(GSharpPoint? center, GSharpNumber? radius)
     {
         Center = center;
         Radius = radius;
@@ -174,7 +174,7 @@ public class Circle : GSharpObject, IDrawable
     /// <summary>
     /// Punto centro de la circunferencia
     /// </summary>
-    public Point? Center { get; private set; }
+    public GSharpPoint? Center { get; private set; }
     /// <summary>
     /// Radio de la circunferencia
     /// </summary>
@@ -195,7 +195,7 @@ public class Arc : GSharpObject, IDrawable
     /// <param name="startPoint">Punto por el que pasa la recta de inicio del arco</param>
     /// <param name="endPoint">Punto por el que pasa la recta donde termina el arco</param>
     /// <param name="radius">Radio del arco</param>
-    public Arc(Point? center, Point? startPoint, Point? endPoint, GSharpNumber? radius)
+    public Arc(GSharpPoint? center, GSharpPoint? startPoint, GSharpPoint? endPoint, GSharpNumber? radius)
     {
         Center = center;
         StartPoint = startPoint;
@@ -205,15 +205,15 @@ public class Arc : GSharpObject, IDrawable
     /// <summary>
     /// Centro del arco de la circunferencia
     /// </summary>
-    public Point? Center { get; }
+    public GSharpPoint? Center { get; }
     /// <summary>
     /// Punto por el que pasa la recta de inicio del arco
     /// </summary>
-    public Point? StartPoint { get; }
+    public GSharpPoint? StartPoint { get; }
     /// <summary>
     /// Punto por el que pasa la recta donde termina el arco
     /// </summary>
-    public Point? EndPoint { get; }
+    public GSharpPoint? EndPoint { get; }
     /// <summary>
     /// Radio del arco
     /// </summary>

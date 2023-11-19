@@ -50,17 +50,6 @@ public class Constant : GSharpExpression
     /// </summary>
     /// <param name="value">Valor que toma la constante</param>
     public Constant(string name) => Name = name;
-    //private static GSharpTypes SetType(GSharpObject? value)
-    //{
-    //    return value switch
-    //    {
-    //        null => GSharpTypes.Undetermined,
-    //        GSharpNumber => GSharpTypes.GNumber,
-    //        GSharpString => GSharpTypes.GString,
-    //        ArraySequence => GSharpTypes.GSequence,
-    //        _ => throw new DefaultError("Invalid literal"),
-    //    };
-    //}
     public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitConstant(this);
     /// <summary>
     /// Nombre de la constante

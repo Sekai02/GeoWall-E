@@ -3,8 +3,13 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
 {
     public Dictionary<GSharpExpression, int> References = new();
     private Context? environment = new();
-    public Evaluator() => environment = new();
+    public Evaluator(IDrawer drawer)
+    {
+        environment = new();
+        Drawer = drawer;
+    }
     public Context? EvaluationContext { get => environment; set => environment = value; }
+    public IDrawer Drawer { get; }
     public void ResolveReference(GSharpExpression expression, int depth)
     {
         References.Add(expression, depth);
@@ -38,16 +43,22 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     {
         GSharpObject value = declaration.Value.Accept(new Evaluator());
         List<string> constantNames = declaration.ConstantNames;
-        if (value == null) // error
-            ;
+        if (value == null)
+        {
+            ErrorHandler.AddError(new SyntaxError("value", "declaration"));
+            return;
+        }
         if (constantNames.Count == 1)
         {
             environment.DefineVariable(constantNames[0], value);
             return;
         }
         if (value is not GSharpSequence<GSharpObject>)
-            throw new SemanticError("Match declaration", "squence", "otra cosa"); //arreglar
-        GSharpSequence<GSharpObject> sequence = value as GSharpSequence<GSharpObject>;
+        {
+            ErrorHandler.AddError(new DefaultError("Match statements can only take a sequence as value", "semantic"));
+            return;
+        }
+        GSharpSequence<GSharpObject> sequence = (GSharpSequence<GSharpObject>)value;
         int index = 0;
         foreach (GSharpObject obj in sequence.Sequence)
         {
@@ -64,7 +75,6 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
             for (int i = index; index < constantNames.Count; i++)
                 environment.DefineVariable(constantNames[index], null);
         }
-
     }
     public void VisitExpressionStatement(ExpressionStatement expression) => expression.Accept(this);
     public void VisitFunctionDeclaration(FunctionDeclaration declaration)
