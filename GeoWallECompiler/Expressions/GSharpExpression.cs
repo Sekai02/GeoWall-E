@@ -1,9 +1,4 @@
 ﻿namespace GeoWallECompiler;
-
-public abstract class Statement
-{
-    public abstract void Accept(IStatementVisitor visitor);
-}
 /// <summary>
 /// Clase abstracta de la que heredaran todas las expresiones del lenguaje G#
 /// </summary>

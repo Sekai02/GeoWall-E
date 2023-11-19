@@ -1,4 +1,6 @@
-﻿namespace GeoWallECompiler.Visitors;
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace GeoWallECompiler.Visitors;
 public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
 {
     Evaluator Interpreter;
@@ -118,10 +120,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
 
 
     }
-    public void VisitExpressionStatement(ExpressionStatement expression)
-    {
-        expression.Expression.Accept(this);
-    }
+    public void VisitExpressionStatement(ExpressionStatement expression) => expression.Expression.Accept(this);
     public GSharpObject VisitFunctionCall(FunctionCall functionCall)
     {
         foreach (GSharpExpression argument in functionCall.Arguments)
@@ -158,7 +157,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
         EndScope();
         return null;
     }
-    public GSharpObject VisitLiteral(LiteralNumber literal) => null;
+    public GSharpObject VisitLiteralNumber(LiteralNumber literal) => null;
     public GSharpObject VisitUnaryOperation(UnaryOperation unary)
     {
         unary.Argument.Accept(this);
@@ -170,4 +169,8 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
             expression.Accept(this);
         return null;
     }
+    public void VisitDrawStatment(DrawStatement drawStatement) => drawStatement.Expression.Accept(this);
+    public void VisitColorStatent(ColorStatement color) { return; }
+    public void VisitRestoreStatement(Restore restore) { return; }
+    public GSharpObject VisitLiteralString(LiteralString @string) => null;
 }

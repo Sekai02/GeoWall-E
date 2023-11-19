@@ -1,4 +1,6 @@
-﻿namespace GeoWallECompiler;
+﻿using System.Drawing;
+
+namespace GeoWallECompiler;
 public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
 {
     public Dictionary<GSharpExpression, int> References = new();
@@ -41,7 +43,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     }
     public void VisitConstantDeclaration(ConstantsDeclaration declaration)
     {
-        GSharpObject value = declaration.Value.Accept(new Evaluator());
+        GSharpObject value = declaration.Value.Accept(this);
         List<string> constantNames = declaration.ConstantNames;
         if (value == null)
         {
@@ -99,7 +101,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         environment = environment.Enclosing;
         return result;
     }
-    public GSharpObject VisitLiteral(LiteralNumber literal) => literal.Value;
+    public GSharpObject VisitLiteralNumber(LiteralNumber literal) => literal.Value;
     public GSharpObject VisitUnaryOperation(UnaryOperation unary)
     {
         GSharpObject arg = unary.Argument.Accept(this);
@@ -112,4 +114,13 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         ArraySequence<GSharpObject> result = new(new List<GSharpObject>(sequence.GetSequenceValue(this)));
         return result;
     }
+    public GSharpObject VisitLiteralString(LiteralString @string) => @string.String;
+    public void VisitDrawStatment(DrawStatement drawStatement)
+    {
+        var objectToDraw = drawStatement.Expression.Accept(this);
+        if (objectToDraw is not IDrawable)
+            throw new DefaultError("Draw argument must be a figure", "Semantic");
+    }
+    public void VisitColorStatent(ColorStatement color) => Drawer.SetColor(color.Color);
+    public void VisitRestoreStatement(Restore restore) => Drawer.ResetColor();
 }

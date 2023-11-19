@@ -1,6 +1,4 @@
 ﻿using GeoWallECompiler;
-using System.Security.Cryptography.X509Certificates;
-using System.Xml.Linq;
 
 namespace GWalleWFUI;
 public class PictureDrawer : IDrawer
@@ -150,4 +148,6 @@ public class PictureDrawer : IDrawer
         font.Dispose();
         brush.Dispose();
     }
+    public void SetColor(Color newColor) => DrawerPen.Color = newColor;
+    public void ResetColor() => DrawerPen.Color = Color.Black;
 }

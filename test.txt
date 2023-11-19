@@ -6,8 +6,7 @@ restore;
 draw p1;
 draw p2;
 {1,2...}
-{1,2..}
-{1,2.}
+{1,2...}
 not
 and
 or;

@@ -1,6 +1,7 @@
 using GeoWallECompiler;
 using System.Security.Cryptography.Pkcs;
 using System.Text.RegularExpressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GWalleWFUI;
 
@@ -8,17 +9,21 @@ public partial class Aplication : Form
 {
     private Pen Pencil;
     private Color InkColor;
+    private string ProgramPath;
     public Aplication()
     {
         InitializeComponent();
         InkColor = Color.Black;
-        Pencil = new Pen(new SolidBrush(InkColor));
-        Pencil.Width = 2;
-        Test();
+        Pencil = new Pen(new SolidBrush(InkColor))
+        {
+            Width = 2
+        };
+        ProgramPath = "";
     }
     private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Dispose();
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
     {
+        treeView1.Nodes.Clear();
         folderBrowserDialog1.ShowDialog();
         Cursor.Current = Cursors.WaitCursor;
         if (folderBrowserDialog1.SelectedPath == "")
@@ -61,73 +66,74 @@ public partial class Aplication : Form
             return;
         }
         var file = (FileInfo)e.Node.Tag;
-        richTextBox1.Text = File.ReadAllText(file.FullName);
+        ProgramPath = file.FullName;
+        Entry.Text = File.ReadAllText(file.FullName);
     }
-    private void richTextBox1_TextChanged(object sender, EventArgs e)
+    private void Entry_TextChanged(object sender, EventArgs e)
     {
         string keywords = @"\b(draw|color|restore|import|point|line|circle|ray|segment|and|or|not)\b";
-        MatchCollection keywordsMatch = Regex.Matches(richTextBox1.Text, keywords);
+        MatchCollection keywordsMatch = Regex.Matches(Entry.Text, keywords);
         string strings = "\".*?\"";
-        MatchCollection stringsMatch = Regex.Matches(richTextBox1.Text, strings);
+        MatchCollection stringsMatch = Regex.Matches(Entry.Text, strings);
         string tertiaryOperators = @"\b(let|in|if|then|else)\b";
-        MatchCollection tertiaryOperatorsMatch = Regex.Matches(richTextBox1.Text, tertiaryOperators);
+        MatchCollection tertiaryOperatorsMatch = Regex.Matches(Entry.Text, tertiaryOperators);
         string functions = @"\b([A-Z]|[a-z]|\d)+\(";
-        MatchCollection functionsMatch = Regex.Matches(richTextBox1.Text, functions);
+        MatchCollection functionsMatch = Regex.Matches(Entry.Text, functions);
         string numbers = @"\b\d+\b";
-        MatchCollection numbersMatch = Regex.Matches(richTextBox1.Text, numbers);
+        MatchCollection numbersMatch = Regex.Matches(Entry.Text, numbers);
         string variables = @"\b([A-Z]|[a-z]|\d)+\b";
-        MatchCollection variablesMatch = Regex.Matches(richTextBox1.Text, variables);
+        MatchCollection variablesMatch = Regex.Matches(Entry.Text, variables);
 
-        int originalIndex = richTextBox1.SelectionStart;
-        int originalLength = richTextBox1.SelectionLength;
+        int originalIndex = Entry.SelectionStart;
+        int originalLength = Entry.SelectionLength;
         Color originalColor = Color.White;
 
         label1.Focus();
 
-        richTextBox1.SelectionStart = 0;
-        richTextBox1.SelectionLength = richTextBox1.Text.Length;
-        richTextBox1.SelectionColor = originalColor;
+        Entry.SelectionStart = 0;
+        Entry.SelectionLength = Entry.Text.Length;
+        Entry.SelectionColor = originalColor;
 
         foreach (Match m in variablesMatch)
         {
-            richTextBox1.SelectionStart = m.Index;
-            richTextBox1.SelectionLength = m.Length;
-            richTextBox1.SelectionColor = Color.FromArgb(112, 205, 254);
+            Entry.SelectionStart = m.Index;
+            Entry.SelectionLength = m.Length;
+            Entry.SelectionColor = Color.FromArgb(112, 205, 254);
         }
         foreach (Match m in numbersMatch)
         {
-            richTextBox1.SelectionStart = m.Index;
-            richTextBox1.SelectionLength = m.Length;
-            richTextBox1.SelectionColor = Color.FromArgb(156, 206, 168);
+            Entry.SelectionStart = m.Index;
+            Entry.SelectionLength = m.Length;
+            Entry.SelectionColor = Color.FromArgb(156, 206, 168);
         }
         foreach (Match m in keywordsMatch)
         {
-            richTextBox1.SelectionStart = m.Index;
-            richTextBox1.SelectionLength = m.Length;
-            richTextBox1.SelectionColor = Color.FromArgb(76, 156, 214);
+            Entry.SelectionStart = m.Index;
+            Entry.SelectionLength = m.Length;
+            Entry.SelectionColor = Color.FromArgb(76, 156, 214);
         }
         foreach (Match m in stringsMatch)
         {
-            richTextBox1.SelectionStart = m.Index;
-            richTextBox1.SelectionLength = m.Length;
-            richTextBox1.SelectionColor = Color.FromArgb(212, 157, 133);
+            Entry.SelectionStart = m.Index;
+            Entry.SelectionLength = m.Length;
+            Entry.SelectionColor = Color.FromArgb(212, 157, 133);
         }
         foreach (Match m in tertiaryOperatorsMatch)
         {
-            richTextBox1.SelectionStart = m.Index;
-            richTextBox1.SelectionLength = m.Length;
-            richTextBox1.SelectionColor = Color.FromArgb(216, 160, 223);
+            Entry.SelectionStart = m.Index;
+            Entry.SelectionLength = m.Length;
+            Entry.SelectionColor = Color.FromArgb(216, 160, 223);
         }
         foreach (Match m in functionsMatch)
         {
-            richTextBox1.SelectionStart = m.Index;
-            richTextBox1.SelectionLength = m.Length - 1;
-            richTextBox1.SelectionColor = Color.FromArgb(220, 220, 167);
+            Entry.SelectionStart = m.Index;
+            Entry.SelectionLength = m.Length - 1;
+            Entry.SelectionColor = Color.FromArgb(220, 220, 167);
         }
-        richTextBox1.SelectionStart = originalIndex;
-        richTextBox1.SelectionLength = originalLength;
-        richTextBox1.SelectionColor = originalColor;
-        richTextBox1.Focus();
+        Entry.SelectionStart = originalIndex;
+        Entry.SelectionLength = originalLength;
+        Entry.SelectionColor = originalColor;
+        Entry.Focus();
     }
     private void Test()
     {
@@ -153,5 +159,61 @@ public partial class Aplication : Form
         drawer.DrawPoint(p1, p1S);
         drawer.DrawPoint(p2, p2S);
         pictureBox1.Image = image;
+    }
+    private void Input_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.KeyCode != Keys.Return)
+            return;
+        if (Input.Text == "")
+            return;
+        if (Input.Text == "clear")
+            Terminal.Text = "";
+        else if (Input.Text == "run")
+        {
+            StartButtonClick(sender, e);
+            e.Handled = true;
+        }
+        else
+        {
+            AppendLine(Terminal, $"Invalid command '{Input.Text}'", Color.Orange);
+        }
+        Input.Text = "";
+    }
+    private void StartButtonClick(object sender, EventArgs e)
+    {
+
+        if (ProgramPath == "")
+        {
+            saveFileDialog1.ShowDialog();
+            ProgramPath = saveFileDialog1.FileName;
+        }
+        if (ProgramPath == "")
+            return;
+        //File.Create(ProgramPath);
+        File.WriteAllText(ProgramPath, Entry.Text);
+        GSharp.RunFile(ProgramPath);
+
+        if (!ErrorHandler.HadError)
+        {
+            AppendLine(Terminal, "Process exited whitout errors", Color.White);
+            return;
+        }
+
+        Terminal.SelectionStart = Terminal.Text.Length;
+        foreach (var error in ErrorHandler.GetErrors())
+        {
+            AppendLine(Terminal, error.Message, Color.Red);
+        }
+        ErrorHandler.Reset();
+    }
+    private static void AppendLine(RichTextBox box, string text, Color color)
+    {
+        if (box.Text != "")
+            text = "\n" + text;
+        box.SelectionStart = box.TextLength;
+        box.SelectionLength = 0;
+        box.SelectionColor = color;
+        box.AppendText(text);
+        box.SelectionColor = box.ForeColor;
     }
 }

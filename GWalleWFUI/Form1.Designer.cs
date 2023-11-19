@@ -40,11 +40,13 @@ partial class Aplication
         exitToolStripMenuItem = new ToolStripMenuItem();
         DebugButton = new ToolStripDropDownButton();
         startWithoutDebuggingToolStripMenuItem = new ToolStripMenuItem();
-        richTextBox1 = new RichTextBox();
+        Entry = new RichTextBox();
         pictureBox1 = new PictureBox();
-        ErrorsList = new ListBox();
         folderBrowserDialog1 = new FolderBrowserDialog();
         label1 = new Label();
+        Terminal = new RichTextBox();
+        Input = new TextBox();
+        saveFileDialog1 = new SaveFileDialog();
         toolStrip1.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
         SuspendLayout();
@@ -56,7 +58,7 @@ partial class Aplication
         treeView1.ForeColor = SystemColors.Window;
         treeView1.Location = new Point(12, 30);
         treeView1.Name = "treeView1";
-        treeView1.Size = new Size(175, 685);
+        treeView1.Size = new Size(175, 741);
         treeView1.TabIndex = 0;
         treeView1.NodeMouseDoubleClick += treeView1_NodeMouseDoubleClick;
         // 
@@ -133,20 +135,21 @@ partial class Aplication
         startWithoutDebuggingToolStripMenuItem.Name = "startWithoutDebuggingToolStripMenuItem";
         startWithoutDebuggingToolStripMenuItem.Size = new Size(123, 26);
         startWithoutDebuggingToolStripMenuItem.Text = "Start";
+        startWithoutDebuggingToolStripMenuItem.Click += StartButtonClick;
         // 
-        // richTextBox1
+        // Entry
         // 
-        richTextBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        richTextBox1.BackColor = Color.FromArgb(30, 30, 30);
-        richTextBox1.Font = new Font("Cascadia Code", 11F, FontStyle.Regular, GraphicsUnit.Point);
-        richTextBox1.ForeColor = SystemColors.Window;
-        richTextBox1.Location = new Point(193, 30);
-        richTextBox1.Name = "richTextBox1";
-        richTextBox1.Size = new Size(672, 515);
-        richTextBox1.TabIndex = 3;
-        richTextBox1.Text = "";
-        richTextBox1.WordWrap = false;
-        richTextBox1.TextChanged += richTextBox1_TextChanged;
+        Entry.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        Entry.BackColor = Color.FromArgb(30, 30, 30);
+        Entry.Font = new Font("Cascadia Code", 11F, FontStyle.Regular, GraphicsUnit.Point);
+        Entry.ForeColor = SystemColors.Window;
+        Entry.Location = new Point(193, 30);
+        Entry.Name = "Entry";
+        Entry.Size = new Size(672, 535);
+        Entry.TabIndex = 3;
+        Entry.Text = "";
+        Entry.WordWrap = false;
+        Entry.TextChanged += Entry_TextChanged;
         // 
         // pictureBox1
         // 
@@ -154,21 +157,9 @@ partial class Aplication
         pictureBox1.BackColor = SystemColors.ControlLightLight;
         pictureBox1.Location = new Point(871, 30);
         pictureBox1.Name = "pictureBox1";
-        pictureBox1.Size = new Size(663, 685);
+        pictureBox1.Size = new Size(663, 741);
         pictureBox1.TabIndex = 4;
         pictureBox1.TabStop = false;
-        // 
-        // ErrorsList
-        // 
-        ErrorsList.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        ErrorsList.BackColor = Color.FromArgb(30, 30, 30);
-        ErrorsList.ForeColor = Color.Red;
-        ErrorsList.FormattingEnabled = true;
-        ErrorsList.ItemHeight = 20;
-        ErrorsList.Location = new Point(193, 551);
-        ErrorsList.Name = "ErrorsList";
-        ErrorsList.Size = new Size(672, 164);
-        ErrorsList.TabIndex = 5;
         // 
         // label1
         // 
@@ -179,16 +170,45 @@ partial class Aplication
         label1.TabIndex = 6;
         label1.Text = ".";
         // 
+        // Terminal
+        // 
+        Terminal.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        Terminal.BackColor = Color.FromArgb(30, 30, 30);
+        Terminal.Font = new Font("Cascadia Code", 10F, FontStyle.Regular, GraphicsUnit.Point);
+        Terminal.ForeColor = SystemColors.Window;
+        Terminal.Location = new Point(193, 571);
+        Terminal.Name = "Terminal";
+        Terminal.ReadOnly = true;
+        Terminal.Size = new Size(672, 164);
+        Terminal.TabIndex = 7;
+        Terminal.Text = "";
+        // 
+        // Input
+        // 
+        Input.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        Input.BackColor = Color.FromArgb(30, 30, 30);
+        Input.ForeColor = SystemColors.Window;
+        Input.Location = new Point(193, 741);
+        Input.Name = "Input";
+        Input.Size = new Size(672, 27);
+        Input.TabIndex = 8;
+        Input.KeyDown += Input_KeyDown;
+        // 
+        // saveFileDialog1
+        // 
+        saveFileDialog1.DefaultExt = "gw";
+        // 
         // Aplication
         // 
         AutoScaleDimensions = new SizeF(8F, 20F);
         AutoScaleMode = AutoScaleMode.Font;
         BackColor = Color.FromArgb(17, 17, 17);
-        ClientSize = new Size(1546, 724);
+        ClientSize = new Size(1546, 780);
+        Controls.Add(Input);
+        Controls.Add(Terminal);
         Controls.Add(label1);
-        Controls.Add(ErrorsList);
         Controls.Add(pictureBox1);
-        Controls.Add(richTextBox1);
+        Controls.Add(Entry);
         Controls.Add(toolStrip1);
         Controls.Add(treeView1);
         Name = "Aplication";
@@ -212,10 +232,12 @@ partial class Aplication
     private ToolStripMenuItem toolStripMenuItem1;
     private ToolStripDropDownButton DebugButton;
     private ToolStripMenuItem startWithoutDebuggingToolStripMenuItem;
-    private RichTextBox richTextBox1;
+    private RichTextBox Entry;
     private PictureBox pictureBox1;
-    private ListBox ErrorsList;
     private ToolStripMenuItem exitToolStripMenuItem;
     private FolderBrowserDialog folderBrowserDialog1;
     private Label label1;
+    private RichTextBox Terminal;
+    private TextBox Input;
+    private SaveFileDialog saveFileDialog1;
 }
