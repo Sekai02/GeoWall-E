@@ -192,18 +192,14 @@ public partial class Aplication : Form
         //File.Create(ProgramPath);
         File.WriteAllText(ProgramPath, Entry.Text);
         GSharp.RunFile(ProgramPath);
-
         if (!ErrorHandler.HadError)
         {
             AppendLine(Terminal, "Process exited whitout errors", Color.White);
             return;
         }
-
         Terminal.SelectionStart = Terminal.Text.Length;
         foreach (var error in ErrorHandler.GetErrors())
-        {
             AppendLine(Terminal, error.Message, Color.Red);
-        }
         ErrorHandler.Reset();
     }
     private static void AppendLine(RichTextBox box, string text, Color color)

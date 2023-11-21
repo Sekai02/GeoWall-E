@@ -8,6 +8,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
     public Resolver(Evaluator evaluator)
     {
         Scopes = new();
+        BeginScope(); // global scope
         Interpreter = evaluator;
     }
     private void BeginScope() => Scopes.Push(new Scope());
@@ -81,44 +82,49 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
     }
     public void VisitConstantDeclaration(ConstantsDeclaration declaration)
     {
-        if (declaration.ConstantNames.Count == 1)
-        {
-            DeclareVariable(declaration.ConstantNames[0]);
-            declaration.Value.Accept(this);
-            DefineVariable(declaration.ConstantNames[0]);
-            return;
-        }
-        if (declaration.Value is not LiteralSequence)
-            throw new Exception("Match declaration");
-        LiteralSequence sequence = (LiteralSequence)declaration.Value;
-        int index = 0;
-        foreach (GSharpExpression expression in sequence.Expressions)
-        {
-            if (index == declaration.ConstantNames.Count - 1)
-            {
-                DeclareVariable(declaration.ConstantNames[index]);
-                sequence.GetTail(index).Accept(this);
-                DefineVariable(declaration.ConstantNames[index]);
-                break;
-            }
-            DeclareVariable(declaration.ConstantNames[index]);
-            expression.Accept(this);
-            DefineVariable(declaration.ConstantNames[index]);
-            index++;
-        }
-        if (index < declaration.ConstantNames.Count - 2)
-        {
-            for (int i = index; index < declaration.ConstantNames.Count - 1; i++)
-            {
-                DeclareVariable(declaration.ConstantNames[i]);
-                DefineVariable(declaration.ConstantNames[i]);
-            }
-        }
-        DeclareVariable(declaration.ConstantNames[^1]);
-        sequence.GetTail(declaration.ConstantNames.Count - 1).Accept(this);
-        DefineVariable(declaration.ConstantNames[^1]);
-
-
+        #region cosascomentadas
+        //if (declaration.ConstantNames.Count == 1)
+        //{
+        //    DeclareVariable(declaration.ConstantNames[0]);
+        //    declaration.Value.Accept(this);
+        //    DefineVariable(declaration.ConstantNames[0]);
+        //    return;
+        //}
+        //if (declaration.Value is not LiteralSequence)
+        //    throw new Exception("Match declaration");
+        //LiteralSequence sequence = (LiteralSequence)declaration.Value;
+        //int index = 0;
+        //foreach (GSharpExpression expression in sequence.Expressions)
+        //{
+        //    if (index == declaration.ConstantNames.Count - 1)
+        //    {
+        //        DeclareVariable(declaration.ConstantNames[index]);
+        //        sequence.GetTail(index).Accept(this);
+        //        DefineVariable(declaration.ConstantNames[index]);
+        //        break;
+        //    }
+        //    DeclareVariable(declaration.ConstantNames[index]);
+        //    expression.Accept(this);
+        //    DefineVariable(declaration.ConstantNames[index]);
+        //    index++;
+        //}
+        //if (index < declaration.ConstantNames.Count - 2)
+        //{
+        //    for (int i = index; index < declaration.ConstantNames.Count - 1; i++)
+        //    {
+        //        DeclareVariable(declaration.ConstantNames[i]);
+        //        DefineVariable(declaration.ConstantNames[i]);
+        //    }
+        //}
+        //DeclareVariable(declaration.ConstantNames[^1]);
+        //sequence.GetTail(declaration.ConstantNames.Count - 1).Accept(this);
+        //DefineVariable(declaration.ConstantNames[^1]);
+        #endregion
+        foreach (string constant in declaration.ConstantNames)
+            DeclareVariable(constant);
+        declaration.Value.Accept(this);
+        foreach (string constant in declaration.ConstantNames)
+            DefineVariable(constant);
     }
     public void VisitExpressionStatement(ExpressionStatement expression) => expression.Expression.Accept(this);
     public GSharpObject VisitFunctionCall(FunctionCall functionCall)
@@ -165,8 +171,11 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
     }
     public GSharpObject VisitLiteralSequence(LiteralSequence sequence)
     {
-        foreach (GSharpExpression expression in sequence.Expressions)
-            expression.Accept(this);
+        if (sequence is LiteralArrayExpression)
+        {
+            foreach (var expression in sequence.Expressions)
+                expression.Accept(this);
+        }
         return null;
     }
     public void VisitDrawStatment(DrawStatement drawStatement) => drawStatement.Expression.Accept(this);

@@ -44,8 +44,8 @@ public class FiniteRangeExpression : LiteralSequence
         Expressions = FiniteRange((LiteralNumber)leftBoundExpression, (LiteralNumber)rightBoundExpression);
         LeftBound = (LiteralNumber)leftBoundExpression;
         RightBound = (LiteralNumber)rightBoundExpression;
+        Count = (int)(RightBound.Value.Value - LeftBound.Value.Value);
     }
-
     public LiteralNumber LeftBound { get; }
     public LiteralNumber RightBound { get; }
     private static IEnumerable<GSharpExpression> FiniteRange(LiteralNumber left, LiteralNumber right)

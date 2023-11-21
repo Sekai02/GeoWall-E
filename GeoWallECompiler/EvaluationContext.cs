@@ -1,62 +1,63 @@
 ﻿namespace GeoWallECompiler;
-public class Context
+
+public class EvaluationContext
 {
-    public Context? Enclosing { get; private set; }
+    public EvaluationContext? Enclosing { get; private set; }
     private Dictionary<string, GSharpObject> Variables;
     private Dictionary<string, DeclaredFunction> Functions;
-    public Context() {
+    public EvaluationContext() {
         Variables = new();
         Functions = new();
     }
-    public Context(Context? enclosing)
+    public EvaluationContext(EvaluationContext? enclosing)
     {
         Enclosing = enclosing;
         Variables = new();
         Functions = new();
     }
-    public GSharpObject GetVariableValue(string variableName)
+    public GSharpObject AccessVariable(string variableName)
     {
         if (!Variables.TryGetValue(variableName, out GSharpObject? value)) 
         {
             if(Enclosing is not null)
-                return Enclosing.GetVariableValue(variableName);
+                return Enclosing.AccessVariable(variableName);
             ErrorHandler.AddError(new DefaultError($"Variable {variableName} not found"));
         }
         return value;
     }
-    public void DefineVariable(string variableName, GSharpObject variableValue)
+    public void SetVariable(string variableName, GSharpObject variableValue)
     {
         if (!Variables.TryAdd(variableName, variableValue))
             ErrorHandler.AddError(new DefaultError($"Variable {variableName} already exist"));
     }
-    public DeclaredFunction GetFunction(string functionName)
+    public DeclaredFunction AccessFunction(string functionName)
     {
         if (!Functions.TryGetValue(functionName, out DeclaredFunction? function))
         {
             if (Enclosing is not null)
-                return Enclosing.GetFunction(functionName);
+                return Enclosing.AccessFunction(functionName);
             ErrorHandler.AddError(new DefaultError($"Function {functionName} not found"));
         }
         return function;
     }
-    public void DefineFunction(string functionName, DeclaredFunction function)
+    public void SetFunction(string functionName, DeclaredFunction function)
     {
         if (!Functions.TryAdd(functionName, function))
             ErrorHandler.AddError(new DefaultError($"Function {function} already exist"));
     }
-    public GSharpObject GetVariableAt(int distance, string name)
+    public GSharpObject AccessVariableAt(int distance, string name)
     {
-        Context? ancestor = this;
+        EvaluationContext? ancestor = this;
         for (int i = 0; i < distance; i--)
             ancestor = ancestor?.Enclosing;
-        return ancestor?.GetVariableValue(name);
+        return ancestor?.AccessVariable(name);
     }
-    public DeclaredFunction GetFunctionAt(int distance, string name)
+    public DeclaredFunction AccessFunctionAt(int distance, string name)
     {
-        Context? ancestor = this;
+        EvaluationContext? ancestor = this;
         for (int i = 0; i < distance; i--)
             ancestor = ancestor?.Enclosing;
-        return ancestor?.GetFunction(name);
+        return ancestor?.AccessFunction(name);
     }
 }
 public class Scope

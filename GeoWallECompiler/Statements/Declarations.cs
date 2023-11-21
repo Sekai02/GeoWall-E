@@ -38,12 +38,12 @@ public class DeclaredFunction : ICallable
     public FunctionDeclaration Declaration { get; }
     public GSharpObject Evaluate(Evaluator evaluator, List<GSharpObject> arguments) 
     {
-        Context functionContext = new(evaluator.EvaluationContext);
+        EvaluationContext functionContext = new(evaluator.EvaluationContext);
         for(int i = 0; i < Declaration.Parameters.Count; i++)
         {
-            functionContext.DefineVariable(Declaration.Parameters[i], arguments[i]);
+            functionContext.SetVariable(Declaration.Parameters[i], arguments[i]);
         }
-        Context previous = evaluator.EvaluationContext;
+        EvaluationContext previous = evaluator.EvaluationContext;
         evaluator.EvaluationContext = functionContext;
         GSharpObject result = Declaration.Body.Accept(evaluator);
         evaluator.EvaluationContext = previous;

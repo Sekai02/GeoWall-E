@@ -4,13 +4,13 @@ namespace GeoWallECompiler;
 public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
 {
     public Dictionary<GSharpExpression, int> References = new();
-    private Context? environment = new();
+    private EvaluationContext? environment = new();
     public Evaluator(IDrawer drawer)
     {
         environment = new();
         Drawer = drawer;
     }
-    public Context? EvaluationContext { get => environment; set => environment = value; }
+    public EvaluationContext? EvaluationContext { get => environment; set => environment = value; }
     public IDrawer Drawer { get; }
     public void ResolveReference(GSharpExpression expression, int depth)
     {
@@ -28,12 +28,12 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     public GSharpObject VisitConstant(Constant constant)
     {
         int distance = References[constant];
-        return environment.GetVariableAt(distance, constant.Name);
+        return environment.AccessVariableAt(distance, constant.Name);
     }
     public GSharpObject VisitFunctionCall(FunctionCall functionCall)
     {
         int distance = References[functionCall];
-        DeclaredFunction callee = environment.GetFunctionAt(distance, functionCall.FunctionName);
+        DeclaredFunction callee = environment.AccessFunctionAt(distance, functionCall.FunctionName);
         List<GSharpObject> arguments = new();
         foreach (GSharpExpression argument in functionCall.Arguments)
         {
@@ -52,7 +52,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         }
         if (constantNames.Count == 1)
         {
-            environment.DefineVariable(constantNames[0], value);
+            environment.SetVariable(constantNames[0], value);
             return;
         }
         if (value is not GSharpSequence<GSharpObject>)
@@ -66,23 +66,23 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         {
             if (index == constantNames.Count - 1)
             {
-                environment.DefineVariable(constantNames[index], obj);
+                environment.SetVariable(constantNames[index], sequence.GetTail(index));
                 break;
             }
-            environment.DefineVariable(constantNames[index], obj);
+            environment.SetVariable(constantNames[index], obj);
             index++;
         }
         if (index < constantNames.Count - 1)
         {
             for (int i = index; index < constantNames.Count; i++)
-                environment.DefineVariable(constantNames[index], null);
+                environment.SetVariable(constantNames[index], null);
         }
     }
     public void VisitExpressionStatement(ExpressionStatement expression) => expression.Accept(this);
     public void VisitFunctionDeclaration(FunctionDeclaration declaration)
     {
         DeclaredFunction function = new(declaration);
-        environment.DefineFunction(function.Declaration.Name, function);
+        environment.SetFunction(function.Declaration.Name, function);
     }
     public GSharpObject VisitIfThenElse(IfThenElse ifThen)
     {
@@ -93,7 +93,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     }
     public GSharpObject VisitLetIn(LetIn letIn)
     {
-        Context letInContext = new(environment);
+        EvaluationContext letInContext = new(environment);
         environment = letInContext;
         foreach (var declaration in letIn.DeclaredConstants)
             declaration.Accept(this);

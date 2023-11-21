@@ -1,6 +1,13 @@
 ﻿namespace GeoWallECompiler;
 public class TypeChecker : IExpressionVisitor<GSharpTypes>
 {
+    Evaluator Interpreter;
+    public TypeChecker(Evaluator evaluator)
+    {
+        Interpreter = evaluator;
+        Scopes = new();
+        Scopes.Push(new Dictionary<string, GSharpTypes>());
+    }
     public GSharpTypes VisitBinaryOperation(BinaryOperation binary) 
     {
         if (binary.EnteredType == GSharpTypes.Undetermined)
@@ -13,7 +20,9 @@ public class TypeChecker : IExpressionVisitor<GSharpTypes>
             ErrorHandler.AddError(new SemanticError($"Operator `{binary.OperationToken}`", binary.EnteredType.ToString(), rightType.ToString()));
         return binary.ReturnedType;
     }
-    public GSharpTypes VisitConstant(Constant constant) => constant.Accept(this);
+    public GSharpTypes VisitConstant(Constant constant) 
+    {
+    }
     public GSharpTypes VisitFunctionCall(FunctionCall functionCall) => GSharpTypes.Undetermined;
     public GSharpTypes VisitIfThenElse(IfThenElse ifThen)
     {
