@@ -14,6 +14,7 @@ public interface ICallable
 {
     public int GetArgumentsAmount();
     GSharpObject Evaluate(Evaluator evaluator, List<GSharpObject> arguments);
+    GSharpTypes GetType(TypeChecker checker, List<GSharpTypes> argumentsTypes);
 }
 public class FunctionDeclaration : Statement
 {
@@ -31,22 +32,35 @@ public class FunctionDeclaration : Statement
 }
 public class DeclaredFunction : ICallable
 {
-    public DeclaredFunction (FunctionDeclaration declaration)
+    public DeclaredFunction(FunctionDeclaration declaration)
     {
         Declaration = declaration;
     }
     public FunctionDeclaration Declaration { get; }
-    public GSharpObject Evaluate(Evaluator evaluator, List<GSharpObject> arguments) 
+    public GSharpObject Evaluate(Evaluator evaluator, List<GSharpObject> arguments)
     {
-        EvaluationContext functionContext = new(evaluator.EvaluationContext);
-        for(int i = 0; i < Declaration.Parameters.Count; i++)
+        Context<GSharpObject, DeclaredFunction> functionContext = new(evaluator.EvaluationContext);
+        for (int i = 0; i < Declaration.Parameters.Count; i++)
         {
             functionContext.SetVariable(Declaration.Parameters[i], arguments[i]);
         }
-        EvaluationContext previous = evaluator.EvaluationContext;
+        Context<GSharpObject, DeclaredFunction> previous = evaluator.EvaluationContext;
         evaluator.EvaluationContext = functionContext;
         GSharpObject result = Declaration.Body.Accept(evaluator);
         evaluator.EvaluationContext = previous;
+        return result;
+    } 
+    public GSharpTypes GetType(TypeChecker checker, List<GSharpTypes> argumentsTypes)
+    {
+        Context<GSharpTypes, DeclaredFunction> functionContext = new(checker.TypeEnvironment);
+        for (int i = 0; i < Declaration.Parameters.Count; i++)
+        {
+            functionContext.SetVariable(Declaration.Parameters[i], argumentsTypes[i]);
+        }
+        Context<GSharpTypes, DeclaredFunction> previous = checker.TypeEnvironment;
+        checker.TypeEnvironment = functionContext;
+        GSharpTypes result = Declaration.Body.Accept(checker);
+        checker.TypeEnvironment = previous;
         return result;
     }
     public int GetArgumentsAmount() => Declaration.Parameters.Count;

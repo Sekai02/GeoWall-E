@@ -1,16 +1,14 @@
-﻿using System.Drawing;
-
-namespace GeoWallECompiler;
+﻿namespace GeoWallECompiler;
 public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
 {
     public Dictionary<GSharpExpression, int> References = new();
-    private EvaluationContext? environment = new();
+    private Context<GSharpObject, DeclaredFunction>? environment = new();
     public Evaluator(IDrawer drawer)
     {
         environment = new();
         Drawer = drawer;
     }
-    public EvaluationContext? EvaluationContext { get => environment; set => environment = value; }
+    public Context<GSharpObject, DeclaredFunction>? EvaluationContext { get => environment; set => environment = value; }
     public IDrawer Drawer { get; }
     public void ResolveReference(GSharpExpression expression, int depth)
     {
@@ -93,7 +91,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     }
     public GSharpObject VisitLetIn(LetIn letIn)
     {
-        EvaluationContext letInContext = new(environment);
+        Context<GSharpObject, DeclaredFunction> letInContext = new(environment);
         environment = letInContext;
         foreach (var declaration in letIn.DeclaredConstants)
             declaration.Accept(this);
