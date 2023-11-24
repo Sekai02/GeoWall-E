@@ -16,5 +16,17 @@ public enum GSharpTypes
     GString,
     GSequence,
     GObject,
+    Point,
+    Circle,
+    Line,
+    Segment,
+    Ray,
+    Arc,
+    SegmentSequence,
+    PointSequence,
+    CircleSequence,
+    LineSequence,
+    RaySequence,
+    ArcSequence,
     Undetermined
 }

@@ -1,4 +1,7 @@
-﻿namespace GeoWallECompiler;
+﻿using GeoWallECompiler.Expressions;
+using System.Reflection.Metadata;
+
+namespace GeoWallECompiler;
 public class TypeChecker : IExpressionVisitor<GSharpTypes>, IStatementVisitor
 {
     Evaluator Interpreter;
@@ -31,12 +34,17 @@ public class TypeChecker : IExpressionVisitor<GSharpTypes>, IStatementVisitor
     public void VisitConstantDeclaration(ConstantsDeclaration declaration)
     {
         GSharpTypes type = declaration.Value.Accept(this);
-        foreach (string constant in declaration.ConstantNames)
-            TypeEnvironment.SetVariable(constant, type);
+        if (declaration.ConstantNames.Count != 1 && !IsSequence(type))
+        {
+            ReportSemanticError(new DefaultError("Match statements can only take a sequence as value", "semantic"));
+            return;
+        }
+        foreach (var constant in declaration.ConstantNames)
+            TypeEnvironment.SetVariable(constant, type);     
     }
     public void VisitDrawStatment(DrawStatement drawStatement) => drawStatement.Expression.Accept(this);
     public void VisitExpressionStatement(ExpressionStatement expression) => expression.Expression.Accept(this);
-    public GSharpTypes VisitFunctionCall(FunctionCall functionCall) 
+    public GSharpTypes VisitFunctionCall(FunctionCall functionCall)
     {
         int distance = Interpreter.References[functionCall];
         DeclaredFunction callee = TypeEnvironment.AccessFunctionAt(distance, functionCall.FunctionName);
@@ -47,11 +55,11 @@ public class TypeChecker : IExpressionVisitor<GSharpTypes>, IStatementVisitor
         }
         return callee.GetType(this, arguments);
     }
-    public void VisitFunctionDeclaration(FunctionDeclaration declaration) 
+    public void VisitFunctionDeclaration(FunctionDeclaration declaration)
     {
         DeclaredFunction function = new(declaration);
         TypeEnvironment.SetFunction(function.Declaration.Name, function);
-    }    
+    }
     public GSharpTypes VisitIfThenElse(IfThenElse ifThen)
     {
         ifThen.Condition.Accept(this);
@@ -65,7 +73,7 @@ public class TypeChecker : IExpressionVisitor<GSharpTypes>, IStatementVisitor
             return GSharpTypes.Undetermined;
         }
     }
-    public GSharpTypes VisitLetIn(LetIn letIn) 
+    public GSharpTypes VisitLetIn(LetIn letIn)
     {
         Context<GSharpTypes, DeclaredFunction> letInContext = new(TypeEnvironment);
         TypeEnvironment = letInContext;
@@ -76,9 +84,25 @@ public class TypeChecker : IExpressionVisitor<GSharpTypes>, IStatementVisitor
         return result;
     }
     public GSharpTypes VisitLiteralNumber(LiteralNumber literal) => GSharpTypes.GNumber;
-    public GSharpTypes VisitLiteralSequence(LiteralSequence sequence) => GSharpTypes.GSequence;
+    public GSharpTypes VisitLiteralSequence(LiteralSequence sequence)
+    {
+        GSharpTypes type = GSharpTypes.Undetermined;
+        foreach (GSharpExpression expression in sequence.Expressions)
+        {
+            GSharpTypes expressionType = expression.Accept(this);
+            if (type == GSharpTypes.Undetermined)
+                type = expressionType;
+            else if (type != expressionType)
+            {
+                ReportSemanticError(new DefaultError("SemanticError", "All elements of a sequence must be of the same type"));
+                return type;
+            }
+        }
+        return type;
+    }
     public GSharpTypes VisitLiteralString(LiteralString @string) => GSharpTypes.GString;
     public void VisitRestoreStatement(Restore restore) { }
+    public void VisitRecieverStatement(Reciever reciever) { }
     public GSharpTypes VisitUnaryOperation(UnaryOperation unary)
     {
         GSharpTypes argType = unary.Argument.Accept(this);
@@ -91,5 +115,15 @@ public class TypeChecker : IExpressionVisitor<GSharpTypes>, IStatementVisitor
         if (IsCheckingFunctionCall)
             throw error;
         ErrorHandler.AddError(error);
+    }
+    private bool IsSequence(GSharpTypes type)
+    {
+        return type is GSharpTypes.ArcSequence
+            or GSharpTypes.RaySequence
+            or GSharpTypes.LineSequence
+            or GSharpTypes.CircleSequence
+            or GSharpTypes.PointSequence
+            or GSharpTypes.SegmentSequence
+            or GSharpTypes.GSequence;       
     }
 }

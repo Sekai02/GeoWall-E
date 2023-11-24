@@ -1,4 +1,7 @@
-﻿namespace GeoWallECompiler;
+﻿using GeoWallECompiler.Expressions;
+using System.Security.Cryptography.X509Certificates;
+
+namespace GeoWallECompiler;
 public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
 {
     public Dictionary<GSharpExpression, int> References = new();
@@ -109,7 +112,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     }
     public GSharpObject VisitLiteralSequence(LiteralSequence sequence)
     {
-        ArraySequence<GSharpObject> result = new(new List<GSharpObject>(sequence.GetSequenceValue(this)));
+        GSharpSequence<GSharpObject> result = sequence.GetSequenceValue(this);
         return result;
     }
     public GSharpObject VisitLiteralString(LiteralString @string) => @string.String;
@@ -121,4 +124,58 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     }
     public void VisitColorStatent(ColorStatement color) => Drawer.SetColor(color.Color);
     public void VisitRestoreStatement(Restore restore) => Drawer.ResetColor();
+    public void VisitRecieverStatement(Reciever reciever)
+    {
+        if (reciever.IsSequence)
+        {
+            switch (reciever.ParameterType)
+            {
+                case GSharpTypes.GNumber:
+                    environment.SetVariable(reciever.Identifier, ArraySequence<GSharpNumber>.GetRandomInstance());
+                    break;
+                case GSharpTypes.Point:
+                    environment.SetVariable(reciever.Identifier, ArraySequence<GSharpPoint>.GetRandomInstance());
+                    break;
+                case GSharpTypes.Circle:
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Circle>.GetRandomInstance());    
+                    break;
+                case GSharpTypes.Line:
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Line>.GetRandomInstance());
+                    break;
+                case GSharpTypes.Ray:
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Ray>.GetRandomInstance());
+                    break;
+                case GSharpTypes.Arc:
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Arc>.GetRandomInstance());
+                    break;
+                default:
+                    throw new DefaultError("Invalid type", "semantic");
+
+            }
+            return;
+        }
+        switch (reciever.ParameterType)
+        {
+            case GSharpTypes.GNumber:
+                environment.SetVariable(reciever.Identifier, GSharpNumber.GetRandomInstance());
+                break;
+            case GSharpTypes.Point:
+                environment.SetVariable(reciever.Identifier, GSharpPoint.GetRandomInstance());
+                break;
+            case GSharpTypes.Circle:
+                environment.SetVariable(reciever.Identifier, Circle.GetRandomInstance());
+                break;
+            case GSharpTypes.Line:
+                environment.SetVariable(reciever.Identifier, Line.GetRandomInstance());
+                break;
+            case GSharpTypes.Ray:
+                environment.SetVariable(reciever.Identifier, Ray.GetRandomInstance());
+                break;
+            case GSharpTypes.Arc:
+                environment.SetVariable(reciever.Identifier, Arc.GetRandomInstance());
+                break;
+            default:
+                throw new DefaultError("Invalid type", "semantic");
+        }
+    }
 }

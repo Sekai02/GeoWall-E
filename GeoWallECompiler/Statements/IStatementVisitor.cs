@@ -1,4 +1,6 @@
-﻿namespace GeoWallECompiler;
+﻿using GeoWallECompiler.Expressions;
+
+namespace GeoWallECompiler;
 public interface IStatementVisitor
 {
     void VisitExpressionStatement(ExpressionStatement expression);
@@ -7,4 +9,5 @@ public interface IStatementVisitor
     void VisitDrawStatment(DrawStatement drawStatement);
     void VisitColorStatent(ColorStatement color);
     void VisitRestoreStatement(Restore restore);
+    void VisitRecieverStatement(Reciever reciever);
 }

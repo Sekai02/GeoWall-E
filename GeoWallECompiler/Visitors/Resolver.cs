@@ -1,4 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
+﻿using GeoWallECompiler.Expressions;
 
 namespace GeoWallECompiler.Visitors;
 public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
@@ -182,4 +182,9 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
     public void VisitColorStatent(ColorStatement color) { return; }
     public void VisitRestoreStatement(Restore restore) { return; }
     public GSharpObject VisitLiteralString(LiteralString @string) => null;
+    public void VisitRecieverStatement(Reciever reciever)
+    {
+        DeclareVariable(reciever.Identifier);
+        DefineVariable(reciever.Identifier);
+    }
 }

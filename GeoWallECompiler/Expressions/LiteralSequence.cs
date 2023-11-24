@@ -2,14 +2,33 @@
 
 public abstract class LiteralSequence : GSharpExpression
 {
+    private bool TypeSetted = false;
+    private GSharpTypes types;
     public IEnumerable<GSharpExpression> Expressions { get; protected set; }
     public int Count { get; protected set; }
+    public GSharpTypes ElementsType 
+    {
+        get => types;
+        set
+        {
+            if (!TypeSetted)
+            {
+                types = value;
+                TypeSetted = true;
+            }
+        } 
+    }
     public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitLiteralSequence(this);
     public abstract LiteralSequence GetTail(int tailBeggining);
-    public IEnumerable<GSharpObject> GetSequenceValue(Evaluator evaluator)
+    public GSharpSequence<GSharpObject> GetSequenceValue(Evaluator evaluator)
+    {
+        List<GSharpObject> values = new(ToGSharpObjectSequence(evaluator));
+        return new ArraySequence<GSharpObject>(values);
+    }
+    private IEnumerable<T> ToGSharpObjectSequence<T>(IExpressionVisitor<T> visitor)
     {
         foreach (GSharpExpression expression in Expressions)
-            yield return expression.Accept(evaluator);
+            yield return expression.Accept(visitor);
     }
 }
 public class LiteralArrayExpression : LiteralSequence
@@ -18,6 +37,7 @@ public class LiteralArrayExpression : LiteralSequence
     {
         Expressions = expressions;
         Count = expressions.Count;
+        ElementsType = GSharpTypes.Undetermined;
     }
     public override LiteralSequence? GetTail(int tailbeggining)
     {
@@ -34,6 +54,7 @@ public class LiteralArrayExpression : LiteralSequence
             count++;
         }
     }
+    
 }
 public class FiniteRangeExpression : LiteralSequence
 {
@@ -45,6 +66,7 @@ public class FiniteRangeExpression : LiteralSequence
         LeftBound = (LiteralNumber)leftBoundExpression;
         RightBound = (LiteralNumber)rightBoundExpression;
         Count = (int)(RightBound.Value.Value - LeftBound.Value.Value);
+        ElementsType = GSharpTypes.GNumber;
     }
     public LiteralNumber LeftBound { get; }
     public LiteralNumber RightBound { get; }
@@ -58,6 +80,7 @@ public class FiniteRangeExpression : LiteralSequence
             for (int i = (int)start; i <= end; i++)
                 yield return new LiteralNumber(new GSharpNumber(i));
     }
+
     public override LiteralSequence GetTail(int tailBeggining) 
     {
         if (tailBeggining > RightBound.Value.Value)
@@ -75,6 +98,7 @@ public class InfiniteRangeExpression : LiteralSequence
         
         Expressions = InfiniteRange((LiteralNumber)leftBoundExpression);
         LeftBoundExpression = leftBoundExpression;
+        ElementsType = GSharpTypes.GNumber;
     }
     private static IEnumerable<GSharpExpression> InfiniteRange(LiteralNumber start)
     {
