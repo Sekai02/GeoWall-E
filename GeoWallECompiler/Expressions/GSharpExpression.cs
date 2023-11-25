@@ -22,6 +22,7 @@ public enum GSharpTypes
     Segment,
     Ray,
     Arc,
+    NumberSequence,
     SegmentSequence,
     PointSequence,
     CircleSequence,

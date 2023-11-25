@@ -1,4 +1,6 @@
-﻿namespace GeoWallECompiler;
+﻿using GeoWallECompiler.Objects;
+
+namespace GeoWallECompiler;
 /// <summary>
 /// Representa las secuencias en G#
 /// </summary>
@@ -15,7 +17,7 @@ public abstract class GSharpSequence<T> : GSharpObject where T: GSharpObject
     /// </summary>
     public int? Count { get; protected set; }
 }
-public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>> where T : GSharpObject, IRandomable<T>
+public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>>, IUserParameter<ArraySequence<T>> where T : GSharpObject, IRandomable<T>, IUserParameter<T>
 {    
     /// <summary>
     /// Construye una secuencia de objetos de G#. Por ejemplo {p1,p2,p3,p4}
@@ -32,6 +34,14 @@ public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>>
         List<T> values = new();
         for (int i = 0; i < random.Next(20); i++)
             values.Add(T.GetRandomInstance());
+        return new ArraySequence<T>(values);
+    }
+
+    public static new ArraySequence<T> GetInstanceFromParameters(Queue<double> parameters)
+    {
+        List<T> values = new();
+        while(parameters.Count > 0)
+            values.Add(T.GetInstanceFromParameters(parameters));
         return new ArraySequence<T>(values);
     }
     public override GSharpSequence<T> GetTail(int a) 

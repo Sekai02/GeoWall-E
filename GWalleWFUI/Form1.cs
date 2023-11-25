@@ -1,15 +1,19 @@
 using GeoWallECompiler;
+using GeoWallECompiler.Expressions;
 using System.Security.Cryptography.Pkcs;
 using System.Text.RegularExpressions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GWalleWFUI;
 
-public partial class Aplication : Form
+public partial class Aplication : Form, IWalleUI
 {
     private Pen Pencil;
     private Color InkColor;
     private string ProgramPath;
+    private bool requiringEntry;
+    private string parameterEntry;
+    private SemaphoreSlim _waitForText = new(0, maxCount: 1);
     public Aplication()
     {
         InitializeComponent();
@@ -19,6 +23,8 @@ public partial class Aplication : Form
             Width = 2
         };
         ProgramPath = "";
+        requiringEntry = false;
+        Test();
     }
     private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Dispose();
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -138,45 +144,58 @@ public partial class Aplication : Form
     private void Test()
     {
         Bitmap image = new(pictureBox1.Width, pictureBox1.Height);
-        var center = new GSharpPoint(new GSharpNumber(60), new GSharpNumber(60));
-        var p1 = new GSharpPoint(new GSharpNumber(155), new GSharpNumber(112));
-        var p2 = new GSharpPoint(new GSharpNumber(140), new GSharpNumber(500));
-        var r = new GSharpNumber(50);
+        //var center = new GSharpPoint(new GSharpNumber(60), new GSharpNumber(60));
+        //var p1 = new GSharpPoint(new GSharpNumber(155), new GSharpNumber(112));
+        //var p2 = new GSharpPoint(new GSharpNumber(140), new GSharpNumber(500));
+        //var r = new GSharpNumber(50);
 
-        var p1S = new GSharpString("punto 1");
-        var p2S = new GSharpString("punto 2");
-        var centroS = new GSharpString("center");
-        var arcS = new GSharpString("arco");
-        var segmento = new GSharpString("segmento");
+        //var p1S = new GSharpString("punto 1");
+        //var p2S = new GSharpString("punto 2");
+        //var centroS = new GSharpString("center");
+        //var arcS = new GSharpString("arco");
+        //var segmento = new GSharpString("segmento");
 
-        Arc arc = new(center, p1, p2, r);
+        //Arc arc = new(center, p1, p2, r);
         PictureDrawer drawer = new(Graphics.FromImage(image), Pencil);
-        Segment segment1 = new(center, p1);
-        Segment segment2 = new(center, p2);
-        drawer.DrawArc(arc, arcS);
-        drawer.DrawSegment(segment1);
-        drawer.DrawSegment(segment2);
-        drawer.DrawPoint(p1, p1S);
-        drawer.DrawPoint(p2, p2S);
-        pictureBox1.Image = image;
+        //Segment segment1 = new(center, p1);
+        //Segment segment2 = new(center, p2);
+        //drawer.DrawArc(arc, arcS);
+        //drawer.DrawSegment(segment1);
+        //drawer.DrawSegment(segment2);
+        //drawer.DrawPoint(p1, p1S);
+        //drawer.DrawPoint(p2, p2S);
+        //pictureBox1.Image = image;
+
+        Reciever reciever = new(GSharpTypes.Point, "p1");
+        Evaluator evaluator = new(drawer, this);
+        reciever.Accept(evaluator);
     }
     private void Input_KeyDown(object sender, KeyEventArgs e)
     {
         if (e.KeyCode != Keys.Return)
             return;
+
+        e.Handled = true;
+        e.SuppressKeyPress = true; //evita el sonido cuando se presiona enter
+        
+        if (requiringEntry) 
+        { 
+            parameterEntry = Input.Text;
+            Input.Text = "";
+
+            requiringEntry = false;
+            _waitForText.Release();
+            return;
+        }
+
         if (Input.Text == "")
             return;
         if (Input.Text == "clear")
             Terminal.Text = "";
         else if (Input.Text == "run")
-        {
             StartButtonClick(sender, e);
-            e.Handled = true;
-        }
         else
-        {
             AppendLine(Terminal, $"Invalid command '{Input.Text}'", Color.Orange);
-        }
         Input.Text = "";
     }
     private void StartButtonClick(object sender, EventArgs e)
@@ -211,5 +230,22 @@ public partial class Aplication : Form
         box.SelectionColor = color;
         box.AppendText(text);
         box.SelectionColor = box.ForeColor;
+    }
+    public async Task<Queue<double>> GetUserParameters()
+    {
+        requiringEntry = true;
+        Terminal.AppendText("Introduce parameter");
+        await _waitForText.WaitAsync();
+
+        char[] separators = { ' ' };
+        string[] parameters = parameterEntry.Split(separators);
+        parameterEntry = "";
+        Queue<double> result = new();
+        foreach(string param in parameters)
+        {
+            if (double.TryParse(param, out double x))
+                result.Enqueue(x);
+        }
+        return result;
     }
 }

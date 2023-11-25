@@ -1,11 +1,15 @@
-﻿namespace GeoWallECompiler;
+﻿using GeoWallECompiler.Objects;
+using System.Collections;
+
+namespace GeoWallECompiler;
 
 /// <summary>
 /// Clase abstracta de la que heredan todos los objetos de G#
 /// </summary>
-public abstract class GSharpObject : IRandomable<GSharpObject>
+public abstract class GSharpObject : IRandomable<GSharpObject>, IUserParameter<GSharpObject>
 {
     public static GSharpObject GetRandomInstance() => GSharpNumber.GetRandomInstance();
+    public static GSharpObject GetInstanceFromParameters(Queue<double> parameters) => GSharpNumber.GetInstanceFromParameters(parameters);
 
     /// <summary>
     /// Metodo que devuelve el valor de verdad de un objeto en forma de 0 o 1
@@ -16,7 +20,7 @@ public abstract class GSharpObject : IRandomable<GSharpObject>
 /// <summary>
 /// Clase que representa los valores numericos en G#
 /// </summary>
-public class GSharpNumber : GSharpObject, IRandomable<GSharpNumber>
+public class GSharpNumber : GSharpObject, IRandomable<GSharpNumber>, IUserParameter<GSharpNumber>
 {
     /// <summary>
     /// Crea una instancia que representa un valor numerico en G#
@@ -24,10 +28,19 @@ public class GSharpNumber : GSharpObject, IRandomable<GSharpNumber>
     /// <param name="val"></param>
     public GSharpNumber(double val) => Value = val;
     public override double ToValueOfTruth() => Value == 0 ? 0 : 1;
-    public static GSharpNumber GetRandomInstance()
+    public static new GSharpNumber GetRandomInstance()
     {
         Random random = new();
         return new GSharpNumber(random.Next(500));
+    }
+    public static new GSharpNumber GetInstanceFromParameters(Queue<double> parameters)
+    {
+        if (!parameters.TryDequeue(out double number))
+        {
+            Random random = new();
+            return new GSharpNumber(random.Next(500));
+        }
+        return new GSharpNumber(number);
     }
     /// <summary>
     /// Valor numerico del numero
@@ -66,11 +79,10 @@ public class GSharpString : GSharpObject
     /// </summary>
     public string Value { get; private set; }
 }
-
 /// <summary>
 /// Representa un punto en el espacio bidimensional
 /// </summary>
-public class GSharpPoint : GSharpObject, IDrawable, IRandomable<GSharpPoint>
+public class GSharpPoint : GSharpObject, IDrawable, IRandomable<GSharpPoint>, IUserParameter<GSharpPoint>
 {    
     /// <summary>
     /// Crea una instancia de un punto en el espacio bidimensional definido mediante dos coordenadas rectangulares
@@ -86,11 +98,17 @@ public class GSharpPoint : GSharpObject, IDrawable, IRandomable<GSharpPoint>
     }
     public override double ToValueOfTruth() => Coordinates is null? 0 : 1;
     public void Draw(IDrawer drawer) => drawer.DrawPoint(this);
-    public static GSharpPoint GetRandomInstance()
+    public static new GSharpPoint GetRandomInstance()
     {
         Random random = new();
         var x = new GSharpNumber(random.Next(1000));
         var y = new GSharpNumber(random.Next(1000));
+        return new GSharpPoint(x, y);
+    }
+    public static new GSharpPoint GetInstanceFromParameters(Queue<double> parameters)
+    {
+        var x = GSharpNumber.GetInstanceFromParameters(parameters);
+        var y = GSharpNumber.GetInstanceFromParameters(parameters);
         return new GSharpPoint(x, y);
     }
 
@@ -102,7 +120,7 @@ public class GSharpPoint : GSharpObject, IDrawable, IRandomable<GSharpPoint>
 /// <summary>
 /// Representa una linea recta en el espacio bidimensional
 /// </summary>
-public class Line : GSharpObject, IDrawable, IRandomable<Line>
+public class Line : GSharpObject, IDrawable, IRandomable<Line>, IUserParameter<Line>
 {
     /// <summary>
     /// Crea una instancia de una linea en el espacio bidimensional mediante dos puntos
@@ -116,8 +134,13 @@ public class Line : GSharpObject, IDrawable, IRandomable<Line>
     }
     public GSharpPoint? Point1 { get; private set; }
     public GSharpPoint? Point2 { get; private set; }
-
-    public static Line GetRandomInstance()
+    public static new Line GetInstanceFromParameters(Queue<double> parameters)
+    {
+        var p1 = GSharpPoint.GetInstanceFromParameters(parameters);
+        var p2 = GSharpPoint.GetInstanceFromParameters(parameters);
+        return new Line(p1, p2);
+    }
+    public static new Line GetRandomInstance()
     {
         var point1 = GSharpPoint.GetRandomInstance();
         var point2 = GSharpPoint.GetRandomInstance();
@@ -129,7 +152,7 @@ public class Line : GSharpObject, IDrawable, IRandomable<Line>
 /// <summary>
 /// Representa un segmento en el espacio bidimensional
 /// </summary>
-public class Segment : GSharpObject, IDrawable, IRandomable<Segment>
+public class Segment : GSharpObject, IDrawable, IRandomable<Segment>, IUserParameter<Segment>
 {
     /// <summary>
     /// Crea una instancia de un segmento en el espacio bidimensional a partir de dos puntos (sus extremos)
@@ -149,18 +172,25 @@ public class Segment : GSharpObject, IDrawable, IRandomable<Segment>
     /// Punto extremo 2
     /// </summary>
     public GSharpPoint? Point2 { get; private set; }
-    public static Segment GetRandomInstance()
+    public static new Segment GetRandomInstance()
     {
         var point1 = GSharpPoint.GetRandomInstance();
         var point2 = GSharpPoint.GetRandomInstance();
         return new Segment(point1, point2);
-    }    public void Draw(IDrawer drawer) => drawer.DrawSegment(this);
+    }
+    public static new Segment GetInstanceFromParameters(Queue<double> parameters)
+    {
+        var p1 = GSharpPoint.GetInstanceFromParameters(parameters);
+        var p2 = GSharpPoint.GetInstanceFromParameters(parameters);
+        return new Segment(p1, p2);
+    }
+    public void Draw(IDrawer drawer) => drawer.DrawSegment(this);
     public override double ToValueOfTruth() => Point1 is null || Point2 is null ? 0 : 1;
 }
 /// <summary>
 /// Representa una linea que se extiende infnitamente por solo un extremo
 /// </summary>
-public class Ray : GSharpObject, IDrawable, IRandomable<Ray>
+public class Ray : GSharpObject, IDrawable, IRandomable<Ray>, IUserParameter<Ray>
 {
     /// <summary>
     /// Instancia una linea que se extiende infinitamente por un extremo a partir de un punto inicial y un segundo punto
@@ -180,12 +210,17 @@ public class Ray : GSharpObject, IDrawable, IRandomable<Ray>
     /// Punto por donde pasa el rayo
     /// </summary>
     public GSharpPoint? Point2 { get; private set; }
-
-    public static Ray GetRandomInstance() 
+    public static new Ray GetRandomInstance() 
     {
         var point1 = GSharpPoint.GetRandomInstance();
         var point2 = GSharpPoint.GetRandomInstance();
         return new Ray(point1, point2);
+    }
+    public static new Ray GetInstanceFromParameters(Queue<double> parameters)
+    {
+        var p1 = GSharpPoint.GetInstanceFromParameters(parameters);
+        var p2 = GSharpPoint.GetInstanceFromParameters(parameters);
+        return new Ray(p1, p2);
     }
     public void Draw(IDrawer drawer) => drawer.DrawRay(this);
     public override double ToValueOfTruth() => Point1 is null || Point2 is null ? 0 : 1;
@@ -193,7 +228,7 @@ public class Ray : GSharpObject, IDrawable, IRandomable<Ray>
 /// <summary>
 /// Representa una circunferencia en el espacio bidimensional
 /// </summary>
-public class Circle : GSharpObject, IDrawable, IRandomable<Circle>
+public class Circle : GSharpObject, IDrawable, IRandomable<Circle>, IUserParameter<Circle>
 {
     /// <summary>
     /// Instancia una cicunferencia en el plano definida mediante un radio y un centro
@@ -213,12 +248,17 @@ public class Circle : GSharpObject, IDrawable, IRandomable<Circle>
     /// Radio de la circunferencia
     /// </summary>
     public GSharpNumber? Radius { get; private set; }
-
-    public static Circle GetRandomInstance()
+    public static new Circle GetRandomInstance()
     {
         var center = GSharpPoint.GetRandomInstance();
         var radius = GSharpNumber.GetRandomInstance();
         return new Circle(center, radius);        
+    }
+    public static new Circle GetInstanceFromParameters(Queue<double> parameters) 
+    {
+        var center = GSharpPoint.GetInstanceFromParameters(parameters);
+        var radius = GSharpNumber.GetInstanceFromParameters(parameters);
+        return new Circle(center, radius);
     }
     public void Draw(IDrawer drawer) => drawer.DrawCircle(this);
     public override double ToValueOfTruth() => Center is null || Radius is null ? 0 : 1;
@@ -226,7 +266,7 @@ public class Circle : GSharpObject, IDrawable, IRandomable<Circle>
 /// <summary>
 /// Representa un arco de circunferencia en el plano
 /// </summary>
-public class Arc : GSharpObject, IDrawable, IRandomable<Arc>
+public class Arc : GSharpObject, IDrawable, IRandomable<Arc>, IUserParameter<Arc>
 {
     /// <summary>
     /// Instancia un arco definido por un centro, que se extiende desde una semirecta que pasa
@@ -259,12 +299,20 @@ public class Arc : GSharpObject, IDrawable, IRandomable<Arc>
     /// Radio del arco
     /// </summary>
     public GSharpNumber? Radius { get; private set; }
-    public static Arc GetRandomInstance() 
+    public static new Arc GetRandomInstance() 
     {
         var center = GSharpPoint.GetRandomInstance();
         var startPoint = GSharpPoint.GetRandomInstance();
         var endPoint = GSharpPoint.GetRandomInstance();
         var radius = GSharpNumber.GetRandomInstance();
+        return new Arc(center, startPoint, endPoint, radius);
+    }
+    public static new Arc GetInstanceFromParameters(Queue<double> parameters) 
+    {
+        var center = GSharpPoint.GetInstanceFromParameters(parameters);
+        var startPoint = GSharpPoint.GetInstanceFromParameters(parameters);
+        var endPoint = GSharpPoint.GetInstanceFromParameters(parameters);
+        var radius = GSharpNumber.GetInstanceFromParameters(parameters);
         return new Arc(center, startPoint, endPoint, radius);
     }
     public void Draw(IDrawer drawer) => drawer.DrawArc(this);
