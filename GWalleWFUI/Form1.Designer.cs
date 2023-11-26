@@ -187,10 +187,11 @@ partial class Aplication
         // 
         Input.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         Input.BackColor = Color.FromArgb(30, 30, 30);
+        Input.Font = new Font("Cascadia Code", 11F, FontStyle.Regular, GraphicsUnit.Point);
         Input.ForeColor = SystemColors.Window;
         Input.Location = new Point(193, 741);
         Input.Name = "Input";
-        Input.Size = new Size(672, 27);
+        Input.Size = new Size(672, 29);
         Input.TabIndex = 8;
         Input.KeyDown += Input_KeyDown;
         // 

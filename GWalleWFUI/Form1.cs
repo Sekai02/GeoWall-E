@@ -166,7 +166,7 @@ public partial class Aplication : Form, IWalleUI
         //drawer.DrawPoint(p2, p2S);
         //pictureBox1.Image = image;
 
-        Reciever reciever = new(GSharpTypes.Point, "p1");
+        Reciever reciever = new(GSharpTypes.Circle, "circulo");
         Evaluator evaluator = new(drawer, this);
         reciever.Accept(evaluator);
     }
@@ -177,9 +177,9 @@ public partial class Aplication : Form, IWalleUI
 
         e.Handled = true;
         e.SuppressKeyPress = true; //evita el sonido cuando se presiona enter
-        
-        if (requiringEntry) 
-        { 
+
+        if (requiringEntry)
+        {
             parameterEntry = Input.Text;
             Input.Text = "";
 
@@ -195,7 +195,7 @@ public partial class Aplication : Form, IWalleUI
         else if (Input.Text == "run")
             StartButtonClick(sender, e);
         else
-            AppendLine(Terminal, $"Invalid command '{Input.Text}'", Color.Orange);
+            AppendLineWithColor(Terminal, $"Invalid command '{Input.Text}'", Color.Orange);
         Input.Text = "";
     }
     private void StartButtonClick(object sender, EventArgs e)
@@ -213,15 +213,15 @@ public partial class Aplication : Form, IWalleUI
         GSharp.RunFile(ProgramPath);
         if (!ErrorHandler.HadError)
         {
-            AppendLine(Terminal, "Process exited whitout errors", Color.White);
+            AppendLineWithColor(Terminal, "Process exited whitout errors", Color.White);
             return;
         }
         Terminal.SelectionStart = Terminal.Text.Length;
         foreach (var error in ErrorHandler.GetErrors())
-            AppendLine(Terminal, error.Message, Color.Red);
+            AppendLineWithColor(Terminal, error.Message, Color.Red);
         ErrorHandler.Reset();
     }
-    private static void AppendLine(RichTextBox box, string text, Color color)
+    private static void AppendLineWithColor(RichTextBox box, string text, Color color)
     {
         if (box.Text != "")
             text = "\n" + text;
@@ -231,17 +231,18 @@ public partial class Aplication : Form, IWalleUI
         box.AppendText(text);
         box.SelectionColor = box.ForeColor;
     }
-    public async Task<Queue<double>> GetUserParameters()
+    public async Task<Queue<double>> GetUserParameters(string message)
     {
         requiringEntry = true;
-        Terminal.AppendText("Introduce parameter");
+        AppendLineWithColor(Terminal, message, Color.White);
         await _waitForText.WaitAsync();
 
         char[] separators = { ' ' };
         string[] parameters = parameterEntry.Split(separators);
+        AppendLineWithColor(Terminal, parameterEntry, Color.White);
         parameterEntry = "";
         Queue<double> result = new();
-        foreach(string param in parameters)
+        foreach (string param in parameters)
         {
             if (double.TryParse(param, out double x))
                 result.Enqueue(x);

@@ -4,14 +4,14 @@ namespace GWalleWFUI;
 public class PictureDrawer : IDrawer
 {
     private readonly Graphics drawer;
-
+    private Stack<Color> usedColors;
     public PictureDrawer(Graphics graphics, Pen pen)
     {
         drawer = graphics;
         DrawerPen = pen;
+        usedColors = new();
     }
     public Pen DrawerPen { get; }
-
     private void WriteMessage(GSharpString message, double x, double y)
     {
         string s = message?.Value ?? "";
@@ -20,8 +20,8 @@ public class PictureDrawer : IDrawer
     }
     private double GetLineAngleDeg(double x1, double y1, double x2, double y2)
     {
-        double y = (y2 - y1); 
-        double x =  (x2 - x1);
+        double y = (y2 - y1);
+        double x = (x2 - x1);
         double angle = Math.Atan2(y, x);
         return angle;
     }
@@ -35,7 +35,7 @@ public class PictureDrawer : IDrawer
         double y2 = arc.EndPoint.Coordinates.Value.Y.Value;
         double radius = arc.Radius.Value;
 
-        double startAngle = GetLineAngleDeg(xc,yc,x1,y1);
+        double startAngle = GetLineAngleDeg(xc, yc, x1, y1);
         double endAngle = GetLineAngleDeg(xc, yc, x2, y2);
 
         if (startAngle > endAngle)
@@ -84,7 +84,7 @@ public class PictureDrawer : IDrawer
         double yMessage = (finalY1 + finalY2) / 2;
         WriteMessage(name, xMessage, yMessage);
     }
-    public void DrawPoint(GSharpPoint point, GSharpString name = null) 
+    public void DrawPoint(GSharpPoint point, GSharpString name = null)
     {
         float x = (float)point.Coordinates.Value.X.Value;
         float y = (float)point.Coordinates.Value.Y.Value;
@@ -122,8 +122,8 @@ public class PictureDrawer : IDrawer
         drawer.DrawLine(DrawerPen, (float)x1, (float)y1, (float)finalX, (float)finalY);
 
         WriteMessage(name, x1, y1);
-    }    
-    public void DrawSegment(Segment segment, GSharpString name = null) 
+    }
+    public void DrawSegment(Segment segment, GSharpString name = null)
     {
         float x1 = (float)segment.Point1.Coordinates.Value.X.Value;
         float y1 = (float)segment.Point1.Coordinates.Value.Y.Value;
@@ -135,12 +135,12 @@ public class PictureDrawer : IDrawer
         double yMessage = (x2 + y2) / 2;
         WriteMessage(name, xMessage, yMessage);
     }
-    public void DrawSequence<T>(GSharpSequence<T> sequence) where T: GSharpObject, IDrawable 
+    public void DrawSequence<T>(GSharpSequence<T> sequence) where T : GSharpObject, IDrawable
     {
-        foreach(var obj in sequence.Sequence)
+        foreach (var obj in sequence.Sequence)
             obj.Draw(this);
     }
-    public void DrawString(GSharpString gString) 
+    public void DrawString(GSharpString gString)
     {
         Font font = new("Arial", 16);
         Brush brush = new SolidBrush(Color.Black);
@@ -148,6 +148,14 @@ public class PictureDrawer : IDrawer
         font.Dispose();
         brush.Dispose();
     }
-    public void SetColor(Color newColor) => DrawerPen.Color = newColor;
-    public void ResetColor() => DrawerPen.Color = Color.Black;
+    public void SetColor(Color newColor)
+    {
+        usedColors.Push(DrawerPen.Color);
+        DrawerPen.Color = newColor;        
+    }
+    public void ResetColor()
+    {
+        if (usedColors.TryPop(out Color oldColor))
+             DrawerPen.Color = oldColor;
+    }
 }
