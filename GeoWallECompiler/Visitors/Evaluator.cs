@@ -97,8 +97,8 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     {
         Context<GSharpObject, DeclaredFunction> letInContext = new(environment);
         environment = letInContext;
-        foreach (var declaration in letIn.DeclaredConstants)
-            declaration.Accept(this);
+        foreach (var statement in letIn.Instructions)
+            statement.Accept(this);
         GSharpObject result = letIn.Body.Accept(this);
         environment = environment.Enclosing;
         return result;

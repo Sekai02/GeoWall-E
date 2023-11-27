@@ -157,8 +157,8 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
     public GSharpObject VisitLetIn(LetIn letIn)
     {
         BeginScope();
-        foreach (ConstantsDeclaration declaration in letIn.DeclaredConstants)
-            declaration.Accept(this);
+        foreach (Statement instruction in letIn.Instructions)
+            instruction.Accept(this);
         letIn.Body.Accept(this);
         EndScope();
         return null;

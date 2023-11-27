@@ -77,8 +77,8 @@ public class TypeChecker : IExpressionVisitor<GSharpTypes>, IStatementVisitor
     {
         Context<GSharpTypes, DeclaredFunction> letInContext = new(TypeEnvironment);
         TypeEnvironment = letInContext;
-        foreach (ConstantsDeclaration constant in letIn.DeclaredConstants)
-            constant.Accept(this);
+        foreach (Statement instruction in letIn.Instructions)
+            instruction.Accept(this);
         var result = letIn.Body.Accept(this);
         TypeEnvironment = TypeEnvironment.Enclosing;
         return result;

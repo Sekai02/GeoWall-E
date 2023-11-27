@@ -44,16 +44,16 @@ public class LetIn : GSharpExpression
     /// </summary>
     /// <param name="declaredConstants">Variables locales de la expresion let-in</param>
     /// <param name="body">Cuerpo de la expresion let-in</param>
-    public LetIn(List<ConstantsDeclaration> declarations, GSharpExpression body)
+    public LetIn(List<Statement> declarations, GSharpExpression body)
     {
-        DeclaredConstants = declarations;
+        Instructions = declarations;
         Body = body;
     }
     public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitLetIn(this);
     /// <summary>
     /// Variables locales de la expresion let-in
     /// </summary>
-    public List<ConstantsDeclaration> DeclaredConstants { get; private set; }
+    public List<Statement> Instructions { get; private set; }
     /// <summary>
     /// Cuerpo de la expresion let-in
     /// </summary>
