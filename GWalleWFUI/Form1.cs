@@ -25,7 +25,6 @@ public partial class Aplication : Form, IWalleUI
         };
         ProgramPath = "";
         requiringEntry = false;
-        Test();
     }
     private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Dispose();
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -165,7 +164,7 @@ public partial class Aplication : Form, IWalleUI
         //drawer.DrawSegment(segment2);
         //drawer.DrawPoint(p1, p1S);
         //drawer.DrawPoint(p2, p2S);
-        //pictureBox1.Image = image;
+        pictureBox1.Image = image;
 
         Reciever reciever = new(GSharpTypes.Circle, "circulo");
         var draw = new DrawStatement(new Constant("circulo"), new LiteralString(new GSharpString("esto  es un circulo repingaa")));
@@ -206,6 +205,7 @@ public partial class Aplication : Form, IWalleUI
     }
     private void StartButtonClick(object sender, EventArgs e)
     {
+        Test();
 
         if (ProgramPath == "")
         {

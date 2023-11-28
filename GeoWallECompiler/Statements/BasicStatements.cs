@@ -9,13 +9,13 @@ public class ExpressionStatement : Statement
 }
 public class DrawStatement : Statement
 {
-    public DrawStatement(GSharpExpression expression, LiteralString stringExpression)
+    public DrawStatement(GSharpExpression expression, LiteralString? stringExpression)
     {
         Expression = expression;
         StringExpression = stringExpression;
     }
     public GSharpExpression Expression { get; }
-    public LiteralString StringExpression { get; }
+    public LiteralString? StringExpression { get; }
 
     public override void Accept(IStatementVisitor visitor) => visitor.VisitDrawStatment(this);
 }

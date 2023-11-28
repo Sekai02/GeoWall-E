@@ -148,10 +148,10 @@ public class PictureDrawer : IDrawer
         font.Dispose();
         brush.Dispose();
     }
-    public void SetColor(Color newColor)
+    public void SetColor(string newColor)
     {
         usedColors.Push(DrawerPen.Color);
-        DrawerPen.Color = newColor;        
+        DrawerPen.Color = Color.FromName(newColor);        
     }
     public void ResetColor()
     {

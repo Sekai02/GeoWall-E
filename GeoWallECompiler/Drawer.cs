@@ -6,7 +6,7 @@ namespace GeoWallECompiler;
 /// </summary>
 public interface IDrawer
 {
-    public void SetColor(Color newColor);
+    public void SetColor(string newColor);
     public void ResetColor();
     public void DrawPoint(GSharpPoint point, GSharpString name = null);
     public void DrawLine(Line line, GSharpString name = null);
