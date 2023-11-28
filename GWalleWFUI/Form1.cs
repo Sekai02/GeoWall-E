@@ -1,5 +1,6 @@
 using GeoWallECompiler;
 using GeoWallECompiler.Expressions;
+using GeoWallECompiler.Visitors;
 using System.Security.Cryptography.Pkcs;
 using System.Text.RegularExpressions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -167,8 +168,13 @@ public partial class Aplication : Form, IWalleUI
         //pictureBox1.Image = image;
 
         Reciever reciever = new(GSharpTypes.Circle, "circulo");
+        var draw = new DrawStatement(new Constant("circulo"), new LiteralString(new GSharpString("esto  es un circulo repingaa")));
         Evaluator evaluator = new(drawer, this);
+        Resolver resolver = new(evaluator);
+        reciever.Accept(resolver);
+        draw.Accept(resolver);
         reciever.Accept(evaluator);
+        draw.Accept(evaluator);
     }
     private void Input_KeyDown(object sender, KeyEventArgs e)
     {

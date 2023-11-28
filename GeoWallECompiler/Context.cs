@@ -48,6 +48,8 @@ public class Context<Var, Fun>
     public Var AccessVariableAt(int distance, string name)
     {
         Context<Var,Fun>? ancestor = this;
+        if(distance == 0)
+            return ancestor.AccessVariable(name);
         for (int i = 0; i < distance; i--)
             ancestor = ancestor?.Enclosing;
         return ancestor.AccessVariable(name);

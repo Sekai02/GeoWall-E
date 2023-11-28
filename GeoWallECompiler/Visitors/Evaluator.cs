@@ -43,7 +43,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         }
         return callee.Evaluate(this, arguments);
     }
-    public async void VisitConstantDeclaration(ConstantsDeclaration declaration)
+    public void VisitConstantDeclaration(ConstantsDeclaration declaration)
     {
         GSharpObject value = declaration.Value.Accept(this);
         List<string> constantNames = declaration.ConstantNames;
@@ -80,7 +80,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
                 environment.SetVariable(constantNames[index], null);
         }
     }
-    public async void VisitExpressionStatement(ExpressionStatement expression) => expression.Accept(this);
+    public void VisitExpressionStatement(ExpressionStatement expression) => expression.Accept(this);
     public void VisitFunctionDeclaration(FunctionDeclaration declaration)
     {
         DeclaredFunction function = new(declaration);
@@ -117,20 +117,22 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         return result;
     }
     public GSharpObject VisitLiteralString(LiteralString @string) => @string.String;
-    public async void VisitDrawStatment(DrawStatement drawStatement)
+    public void VisitDrawStatment(DrawStatement drawStatement)
     {
         var objectToDraw = drawStatement.Expression.Accept(this);
         if (objectToDraw is not IDrawable)
             throw new DefaultError("Draw argument must be a figure", "Semantic");
+        ((IDrawable)objectToDraw).Draw(Drawer);
     }
-    public async void VisitColorStatent(ColorStatement color) => Drawer.SetColor(color.Color);
-    public async void VisitRestoreStatement(Restore restore) => Drawer.ResetColor();
-    public async void VisitRecieverStatement(Reciever reciever)
+    public void VisitColorStatent(ColorStatement color) => Drawer.SetColor(color.Color);
+    public void VisitRestoreStatement(Restore restore) => Drawer.ResetColor();
+    public void VisitRecieverStatement(Reciever reciever)
     {
         string message = $"Introduce parameter for {reciever.ParameterType} ";
         message += reciever.IsSequence ? "sequence " : "";
         message += reciever.Identifier;
-        var parameters = await UserInterface.GetUserParameters(message);
+        Queue<double> parameters = new();
+        //parameters = await UserInterface.GetUserParameters(message);
         if (reciever.IsSequence)
         {
             switch (reciever.ParameterType)

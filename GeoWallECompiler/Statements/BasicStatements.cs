@@ -17,15 +17,15 @@ public class DrawStatement : Statement
     public GSharpExpression Expression { get; }
     public LiteralString StringExpression { get; }
 
-    public override void Accept(IStatementVisitor visitor) => throw new NotImplementedException();
+    public override void Accept(IStatementVisitor visitor) => visitor.VisitDrawStatment(this);
 }
 public class ColorStatement : Statement
 {
-    public ColorStatement(Color color) => Color = color;
-    public Color Color { get; }
-    public override void Accept(IStatementVisitor visitor) => throw new NotImplementedException();
+    public ColorStatement(string color) => Color = color;
+    public string Color { get; }
+    public override void Accept(IStatementVisitor visitor) => visitor.VisitColorStatent(this);
 }
 public class Restore : Statement
 {
-    public override void Accept(IStatementVisitor visitor) => throw new NotImplementedException();
+    public override void Accept(IStatementVisitor visitor) => visitor.VisitRestoreStatement(this);
 }
