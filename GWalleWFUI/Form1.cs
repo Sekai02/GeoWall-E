@@ -166,13 +166,19 @@ public partial class Aplication : Form, IWalleUI
         //drawer.DrawPoint(p2, p2S);
         pictureBox1.Image = image;
 
+        Reciever puntos = new Reciever(GSharpTypes.Line, "puntos", true);
         Reciever reciever = new(GSharpTypes.Circle, "circulo");
+        var draw2 = new DrawStatement(new Constant("puntos"), null);
         var draw = new DrawStatement(new Constant("circulo"), new LiteralString(new GSharpString("esto  es un circulo repingaa")));
         Evaluator evaluator = new(drawer, this);
         Resolver resolver = new(evaluator);
         reciever.Accept(resolver);
+        puntos.Accept(resolver);
+        draw2.Accept(resolver);
         draw.Accept(resolver);
         reciever.Accept(evaluator);
+        puntos.Accept(evaluator);
+        draw2.Accept(evaluator);
         draw.Accept(evaluator);
     }
     private void Input_KeyDown(object sender, KeyEventArgs e)
