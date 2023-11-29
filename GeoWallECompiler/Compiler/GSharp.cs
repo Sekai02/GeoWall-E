@@ -8,6 +8,10 @@ namespace GeoWallECompiler;
 /// </summary>
 public static class GSharp
 {
+    /// <summary>
+    /// Tokeniza el código provisto en source
+    /// </summary>
+    /// <param name="source">Código fuente a tokenizar</param>
     public static void Scan(string source)
     {
         Scanner scanner = new Scanner(source);
