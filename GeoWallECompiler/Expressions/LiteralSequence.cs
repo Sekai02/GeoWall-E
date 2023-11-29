@@ -2,11 +2,11 @@
 
 public abstract class LiteralSequence : GSharpExpression
 {
-    private bool TypeSetted = false;
-    private GSharpTypes types;
+    public bool TypeSetted = false;
+    private GSharpType types;
     public IEnumerable<GSharpExpression> Expressions { get; protected set; }
     public int Count { get; protected set; }
-    public GSharpTypes ElementsType 
+    public GSharpType ElementsType 
     {
         get => types;
         set
@@ -37,7 +37,6 @@ public class LiteralArrayExpression : LiteralSequence
     {
         Expressions = expressions;
         Count = expressions.Count;
-        ElementsType = GSharpTypes.Undetermined;
     }
     public override LiteralSequence? GetTail(int tailbeggining)
     {
@@ -66,7 +65,7 @@ public class FiniteRangeExpression : LiteralSequence
         LeftBound = (LiteralNumber)leftBoundExpression;
         RightBound = (LiteralNumber)rightBoundExpression;
         Count = (int)(RightBound.Value.Value - LeftBound.Value.Value);
-        ElementsType = GSharpTypes.GNumber;
+        ElementsType = new(GTypeNames.GNumber);
     }
     public LiteralNumber LeftBound { get; }
     public LiteralNumber RightBound { get; }
@@ -98,7 +97,7 @@ public class InfiniteRangeExpression : LiteralSequence
         
         Expressions = InfiniteRange((LiteralNumber)leftBoundExpression);
         LeftBoundExpression = leftBoundExpression;
-        ElementsType = GSharpTypes.GNumber;
+        ElementsType = new(GTypeNames.GNumber);
     }
     private static IEnumerable<GSharpExpression> InfiniteRange(LiteralNumber start)
     {

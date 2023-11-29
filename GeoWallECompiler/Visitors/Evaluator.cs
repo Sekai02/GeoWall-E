@@ -137,19 +137,19 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         {
             switch (reciever.ParameterType)
             {
-                case GSharpTypes.Point:
+                case GTypeNames.Point:
                     environment.SetVariable(reciever.Identifier, ArraySequence<GSharpPoint>.GetInstanceFromParameters(parameters));
                     break;
-                case GSharpTypes.Circle:
+                case GTypeNames.Circle:
                     environment.SetVariable(reciever.Identifier, ArraySequence<Circle>.GetInstanceFromParameters(parameters));
                     break;
-                case GSharpTypes.Line:
+                case GTypeNames.Line:
                     environment.SetVariable(reciever.Identifier, ArraySequence<Line>.GetInstanceFromParameters(parameters));
                     break;
-                case GSharpTypes.Ray:
+                case GTypeNames.Ray:
                     environment.SetVariable(reciever.Identifier, ArraySequence<Ray>.GetInstanceFromParameters(parameters));
                     break;
-                case GSharpTypes.Arc:
+                case GTypeNames.Arc:
                     environment.SetVariable(reciever.Identifier, ArraySequence<Arc>.GetInstanceFromParameters(parameters));
                     break;
                 default:
@@ -159,19 +159,19 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         }
         switch (reciever.ParameterType)
         {
-            case GSharpTypes.Point:
+            case GTypeNames.Point:
                 environment.SetVariable(reciever.Identifier, GSharpPoint.GetInstanceFromParameters(parameters));
                 break;
-            case GSharpTypes.Circle:
+            case GTypeNames.Circle:
                 environment.SetVariable(reciever.Identifier, Circle.GetInstanceFromParameters(parameters));
                 break;
-            case GSharpTypes.Line:
+            case GTypeNames.Line:
                 environment.SetVariable(reciever.Identifier, Line.GetInstanceFromParameters(parameters));
                 break;
-            case GSharpTypes.Ray:
+            case GTypeNames.Ray:
                 environment.SetVariable(reciever.Identifier, Ray.GetInstanceFromParameters(parameters));
                 break;
-            case GSharpTypes.Arc:
+            case GTypeNames.Arc:
                 environment.SetVariable(reciever.Identifier, Arc.GetInstanceFromParameters(parameters));
                 break;
             default:

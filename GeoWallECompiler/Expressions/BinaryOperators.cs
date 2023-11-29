@@ -19,11 +19,11 @@ public abstract class BinaryOperation : GSharpExpression
     /// <summary>
     /// Tipo de retorno de la operacion binaria en forma de enum
     /// </summary>
-    public GSharpTypes ReturnedType { get; protected set; }
+    public GSharpType ReturnedType { get; protected set; }
     /// <summary>
     /// Tipo de entrada de la operacion binaria en forma de enum
     /// </summary>
-    public GSharpTypes EnteredType { get; protected set; }
+    public GSharpType EnteredType { get; protected set; }
     /// <summary>
     /// Tipo aceptado de la operacion binaria en forma de Type
     /// </summary>
@@ -57,8 +57,8 @@ public class Conjunction : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType = GSharpTypes.GObject;
-        EnteredType = GSharpTypes.GObject;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GObject);
         AcceptedType = typeof(GSharpObject);
         OperationToken = "and";
         GSharpObject func(GSharpObject a, GSharpObject b)
@@ -83,8 +83,8 @@ public class Disjunction : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType = GSharpTypes.GObject;
-        EnteredType = GSharpTypes.GObject;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GObject);
         AcceptedType = typeof(GSharpObject);
         OperationToken = "or";
         GSharpObject func(GSharpObject a, GSharpObject b)
@@ -111,8 +111,8 @@ public class LowerThan : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType =GSharpTypes.GNumber;
-        EnteredType =GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = "<";
         GSharpObject func(GSharpObject a, GSharpObject b)
@@ -137,8 +137,8 @@ public class GreaterThan : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = ">";
         GSharpObject func(GSharpObject a, GSharpObject b)
@@ -163,8 +163,8 @@ public class LowerEqualThan : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = "<=";
         GSharpObject func(GSharpObject a, GSharpObject b)
@@ -189,8 +189,8 @@ public class GreaterEqualThan : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = ">=";
         GSharpObject func(GSharpObject a, GSharpObject b)
@@ -215,8 +215,8 @@ public class Equal : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GObject);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = "==";
         GSharpObject func(GSharpObject a, GSharpObject b)
@@ -241,8 +241,8 @@ public class UnEqual : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GObject);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = "!=";
         GSharpObject func(GSharpObject a, GSharpObject b)
@@ -266,8 +266,8 @@ public class Addition : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = "+";
         GSharpObject func(GSharpObject a, GSharpObject b) => (GSharpNumber)a + (GSharpNumber)b;
@@ -288,8 +288,8 @@ public class Subtraction : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = "-";
         GSharpObject func(GSharpObject a, GSharpObject b) => (GSharpNumber)a - (GSharpNumber)b;
@@ -310,8 +310,8 @@ public class Multiplication : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = "*";
         GSharpObject func(GSharpObject a, GSharpObject b) => (GSharpNumber)a * (GSharpNumber)b; 
@@ -332,8 +332,8 @@ public class Division : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType =GSharpTypes.GNumber;
-        EnteredType =GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = "/";
         GSharpObject func(GSharpObject a, GSharpObject b) => 
@@ -355,8 +355,8 @@ public class Module : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = "%";
         GSharpObject func(GSharpObject a, GSharpObject b) =>
@@ -378,8 +378,8 @@ public class Power : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = "^";
         GSharpObject func(GSharpObject a, GSharpObject b)

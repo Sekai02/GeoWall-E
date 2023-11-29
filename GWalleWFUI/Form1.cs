@@ -166,8 +166,8 @@ public partial class Aplication : Form, IWalleUI
         //drawer.DrawPoint(p2, p2S);
         pictureBox1.Image = image;
 
-        Reciever puntos = new Reciever(GSharpTypes.Line, "puntos", true);
-        Reciever reciever = new(GSharpTypes.Circle, "circulo");
+        Reciever puntos = new Reciever(GTypeNames.Line, "puntos", true);
+        Reciever reciever = new(GTypeNames.Circle, "circulo");
         var draw2 = new DrawStatement(new Constant("puntos"), null);
         var draw = new DrawStatement(new Constant("circulo"), new LiteralString(new GSharpString("esto  es un circulo repingaa")));
         Evaluator evaluator = new(drawer, this);

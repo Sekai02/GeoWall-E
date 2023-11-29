@@ -14,7 +14,7 @@ public interface ICallable
 {
     public int GetArgumentsAmount();
     GSharpObject Evaluate(Evaluator evaluator, List<GSharpObject> arguments);
-    GSharpTypes GetType(TypeChecker checker, List<GSharpTypes> argumentsTypes);
+    GSharpType GetType(TypeChecker checker, List<GSharpType> argumentsTypes);
 }
 public class FunctionDeclaration : Statement
 {
@@ -50,16 +50,16 @@ public class DeclaredFunction : ICallable
         evaluator.EvaluationContext = previous;
         return result;
     } 
-    public GSharpTypes GetType(TypeChecker checker, List<GSharpTypes> argumentsTypes)
+    public GSharpType GetType(TypeChecker checker, List<GSharpType> argumentsTypes)
     {
-        Context<GSharpTypes, DeclaredFunction> functionContext = new(checker.TypeEnvironment);
+        Context<GSharpType, DeclaredFunction> functionContext = new(checker.TypeEnvironment);
         for (int i = 0; i < Declaration.Parameters.Count; i++)
         {
             functionContext.SetVariable(Declaration.Parameters[i], argumentsTypes[i]);
         }
-        Context<GSharpTypes, DeclaredFunction> previous = checker.TypeEnvironment;
+        Context<GSharpType, DeclaredFunction> previous = checker.TypeEnvironment;
         checker.TypeEnvironment = functionContext;
-        GSharpTypes result = Declaration.Body.Accept(checker);
+        GSharpType result = Declaration.Body.Accept(checker);
         checker.TypeEnvironment = previous;
         return result;
     }

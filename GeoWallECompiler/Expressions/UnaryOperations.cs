@@ -14,11 +14,11 @@ public abstract class UnaryOperation : GSharpExpression
     /// <summary>
     /// Tipo de retorno de la operacion unaria en forma de enum
     /// </summary>
-    public GSharpTypes ReturnedType { get; protected set; }
+    public GSharpType ReturnedType { get; protected set; }
     /// <summary>
     /// Tipo de entrada de la operacion unaria en forma de enum
     /// </summary>
-    public GSharpTypes EnteredType { get; protected set; }
+    public GSharpType EnteredType { get; protected set; }
     /// <summary>
     /// Tipo de entrada de la operacion unaria en forma de Type
     /// </summary>
@@ -52,8 +52,8 @@ public class Negation : UnaryOperation
     public Negation(GSharpExpression Arg) 
     {
         Argument = Arg;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GObject;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GObject);
         AcceptedType = typeof(GSharpObject);
         OperationToken = "not";
         GSharpNumber func(GSharpObject a) => a.ToValueOfTruth() == 0 ? new GSharpNumber(1) : new GSharpNumber(0);
@@ -75,8 +75,8 @@ public class Positive : UnaryOperation
     public Positive(GSharpExpression Arg) 
     {
         Argument = Arg;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = "+";
         GSharpNumber func(GSharpObject a) => (GSharpNumber)a;
@@ -96,8 +96,8 @@ public class Negative : UnaryOperation
     public Negative(GSharpExpression Arg) 
     {
         Argument = Arg;
-        ReturnedType = GSharpTypes.GNumber;
-        EnteredType = GSharpTypes.GNumber;
+        ReturnedType = new(GTypeNames.GNumber);
+        EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSharpNumber);
         OperationToken = "-";
         GSharpNumber func(GSharpObject a)
