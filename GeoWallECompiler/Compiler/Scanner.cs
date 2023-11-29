@@ -42,12 +42,12 @@ public class Scanner
 
         //Temporally removed
 
-        /*{"point",TokenType.POINT},
+        {"point",TokenType.POINT},
         {"Line",TokenType.LINE},
         {"segment",TokenType.SEGMENT},
         {"ray",TokenType.RAY},
         {"circle",TokenType.CIRCLE},
-        {"arc",TokenType.ARC},*/
+        {"arc",TokenType.ARC},
         
         {"undefined",TokenType.UNDEFINED},
         {"PI",TokenType.PI},

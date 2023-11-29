@@ -45,7 +45,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     }
     public void VisitConstantDeclaration(ConstantsDeclaration declaration)
     {
-        GSharpObject value = declaration.Value.Accept(this);
+        GSharpObject value = declaration.ValueExpression.Accept(this);
         List<string> constantNames = declaration.ConstantNames;
         if (value == null)
         {

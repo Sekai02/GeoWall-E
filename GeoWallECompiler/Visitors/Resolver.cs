@@ -122,7 +122,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
         #endregion
         foreach (string constant in declaration.ConstantNames)
             DeclareVariable(constant);
-        declaration.Value.Accept(this);
+        declaration.ValueExpression.Accept(this);
         foreach (string constant in declaration.ConstantNames)
             DefineVariable(constant);
     }

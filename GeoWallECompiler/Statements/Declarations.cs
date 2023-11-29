@@ -5,10 +5,10 @@ public class ConstantsDeclaration : Statement
     public ConstantsDeclaration(List<string> constantNames, GSharpExpression value)
     {
         ConstantNames = constantNames;
-        Value = value;
+        ValueExpression = value;
     }
     public List<string> ConstantNames { get; }
-    public GSharpExpression Value { get; }
+    public GSharpExpression ValueExpression { get; }
 }
 public interface ICallable
 {

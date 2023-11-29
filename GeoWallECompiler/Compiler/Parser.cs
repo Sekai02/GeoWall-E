@@ -377,14 +377,14 @@ public class Parser
             GSharpExpression expr = ParseExpression();
             string name = Consume(TokenType.IDENTIFIER, "Expect sequence name.").lexeme;
             Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after name.");
-            return new Reciever(InferSequenceType(type), name, true);
+            return new Reciever(InferType(type), name, true);
         }
         else
         {
             GSharpExpression expr = ParseExpression();
             string name = Consume(TokenType.IDENTIFIER, "Expect name.").lexeme;
             Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after name.");
-            return new Reciever(InferType(type), name, true);
+            return new Reciever(InferType(type), name, false);
         }
     }
 
@@ -490,47 +490,47 @@ public class Parser
         }
     }
 
-    private GSharpTypes InferType(TokenType type)
+    private GTypeNames InferType(TokenType type)
     {
         switch (type)
         {
             case TokenType.LINE:
-                return GSharpTypes.Line;
+                return GTypeNames.Line;
             case TokenType.ARC:
-                return GSharpTypes.Arc;
+                return GTypeNames.Arc;
             case TokenType.CIRCLE:
-                return GSharpTypes.Circle;
+                return GTypeNames.Circle;
             case TokenType.RAY:
-                return GSharpTypes.Ray;
+                return GTypeNames.Ray;
             case TokenType.POINT:
-                return GSharpTypes.Point;
+                return GTypeNames.Point;
             case TokenType.SEGMENT:
-                return GSharpTypes.Segment;
+                return GTypeNames.Segment;
             default:
-                return GSharpTypes.Undetermined;
+                return GTypeNames.Undetermined;
         }
     }
 
-    private GSharpTypes InferSequenceType(TokenType type)
-    {
-        switch (type)
-        {
-            case TokenType.LINE:
-                return GSharpTypes.LineSequence;
-            case TokenType.ARC:
-                return GSharpTypes.ArcSequence;
-            case TokenType.CIRCLE:
-                return GSharpTypes.CircleSequence;
-            case TokenType.RAY:
-                return GSharpTypes.RaySequence;
-            case TokenType.POINT:
-                return GSharpTypes.PointSequence;
-            case TokenType.SEGMENT:
-                return GSharpTypes.SegmentSequence;
-            default:
-                return GSharpTypes.Undetermined;
-        }
-    }
+    //private GTypeNames InferSequenceType(TokenType type)
+    //{
+    //    switch (type)
+    //    {
+    //        case TokenType.LINE:
+    //            return GTypeNames.LineSequence;
+    //        case TokenType.ARC:
+    //            return GTypeNames.ArcSequence;
+    //        case TokenType.CIRCLE:
+    //            return GTypeNames.CircleSequence;
+    //        case TokenType.RAY:
+    //            return GTypeNames.RaySequence;
+    //        case TokenType.POINT:
+    //            return GTypeNames.PointSequence;
+    //        case TokenType.SEGMENT:
+    //            return GTypeNames.SegmentSequence;
+    //        default:
+    //            return GTypeNames.Undetermined;
+    //    }
+    //}
 
     private const int NotPresent = -1;
 }

@@ -19,21 +19,30 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
             return binary.ReturnedType;
         var leftType = binary.LeftArgument.Accept(this);
         var rightType = binary.RightArgument.Accept(this);
+
+        binary.LeftArgument.ExpressionType = leftType;
+        binary.RightArgument.ExpressionType = rightType;
+        
         if (leftType != binary.EnteredType && leftType.Name != GTypeNames.Undetermined)
             ReportSemanticError(new SemanticError($"Operator `{binary.OperationToken}`", binary.EnteredType.ToString(), leftType.ToString()));
         if (rightType != binary.EnteredType && rightType.Name != GTypeNames.Undetermined)
             ReportSemanticError(new SemanticError($"Operator `{binary.OperationToken}`", binary.EnteredType.ToString(), rightType.ToString()));
+        
+        binary.ExpressionType = binary.ReturnedType;
         return binary.ReturnedType;
     }
     public void VisitColorStatent(ColorStatement color) { return; }
     public GSharpType VisitConstant(Constant constant)
     {
         int distance = Interpreter.References[constant];
-        return TypeEnvironment.AccessVariableAt(distance, constant.Name);
+        GSharpType result = TypeEnvironment.AccessVariableAt(distance, constant.Name);
+        constant.ExpressionType = result;
+        return result;
     }
     public void VisitConstantDeclaration(ConstantsDeclaration declaration)
     {
-        GSharpType type = declaration.Value.Accept(this);
+        GSharpType type = declaration.ValueExpression.Accept(this);
+        declaration.ValueExpression.ExpressionType = type;
         if(declaration.ConstantNames.Count == 1)
         {
             TypeEnvironment.SetVariable(declaration.ConstantNames[0], type);
@@ -56,7 +65,9 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
         List<GSharpType> arguments = new();
         foreach (GSharpExpression argument in functionCall.Arguments)
         {
-            arguments.Add(argument.Accept(this));
+            GSharpType argumentType = argument.Accept(this);
+            argument.ExpressionType = argument.ExpressionType;
+            arguments.Add(argumentType);
         }
         return callee.GetType(this, arguments);
     }
@@ -67,11 +78,16 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     }
     public GSharpType VisitIfThenElse(IfThenElse ifThen)
     {
-        ifThen.Condition.Accept(this);
+        ifThen.Condition.ExpressionType = ifThen.Condition.Accept(this);
         GSharpType ifType = ifThen.IfExpression.Accept(this);
         GSharpType elseType = ifThen.ElseExpression.Accept(this);
+        ifThen.IfExpression.ExpressionType = ifType;
+        ifThen.ElseExpression.ExpressionType = elseType;
         if (ifType == elseType)
+        {
+            ifThen.ExpressionType = ifType;
             return ifType;
+        }
         else
         {
             ReportSemanticError(new DefaultError("SemanticError", "if-then-else statements must have the same return type"));
@@ -91,18 +107,19 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     public GSharpType VisitLiteralNumber(LiteralNumber literal) => new(GTypeNames.GNumber);
     public GSharpType VisitLiteralSequence(LiteralSequence sequence)
     {
+        //Arreglar
         foreach (GSharpExpression expression in sequence.Expressions)
         {
             GSharpType expressionType = expression.Accept(this);
             if (!sequence.TypeSetted)
-                sequence.ElementsType = expressionType;
-            else if (sequence.ElementsType != expressionType)
+                sequence.ExpressionType = expressionType;
+            else if (sequence.ExpressionType != expressionType)
             {
                 ReportSemanticError(new DefaultError("SemanticError", "All elements of a sequence must be of the same type"));
-                return new GSharpType(GTypeNames.GSequence, sequence.ElementsType.Name);
+                return new GSharpType(GTypeNames.GSequence, sequence.ExpressionType.Name);
             }
         }
-        return new GSharpType(GTypeNames.GSequence, sequence.ElementsType.Name);
+        return new GSharpType(GTypeNames.GSequence, sequence.ExpressionType.Name);
     }
     public GSharpType VisitLiteralString(LiteralString @string) => new(GTypeNames.GString);
     public void VisitRestoreStatement(Restore restore) { }

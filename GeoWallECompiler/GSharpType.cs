@@ -25,9 +25,20 @@ public class GSharpType
             this.genericType = genericType;
         }
     }
-
     public GTypeNames Name { get; }
     public GTypeNames GenericType => HasGenericType ? genericType : throw new Exception("Type does not contain generic type");
+    public static bool operator ==(GSharpType a, GSharpType b)
+    {
+        if(a.Name == b.Name)
+            return a.genericType == b.genericType;
+        return false;
+    }
+    public static bool operator !=(GSharpType a, GSharpType b)
+    {
+        if (a.Name != b.Name)
+            return false;
+        return a.genericType != b.genericType;
+    }
 }
 /// <summary>
 /// Tipos del lenguaje G#

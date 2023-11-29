@@ -141,46 +141,6 @@ public partial class Aplication : Form, IWalleUI
         Entry.SelectionColor = originalColor;
         Entry.Focus();
     }
-    private void Test()
-    {
-        Bitmap image = new(pictureBox1.Width, pictureBox1.Height);
-        //var center = new GSharpPoint(new GSharpNumber(60), new GSharpNumber(60));
-        //var p1 = new GSharpPoint(new GSharpNumber(155), new GSharpNumber(112));
-        //var p2 = new GSharpPoint(new GSharpNumber(140), new GSharpNumber(500));
-        //var r = new GSharpNumber(50);
-
-        //var p1S = new GSharpString("punto 1");
-        //var p2S = new GSharpString("punto 2");
-        //var centroS = new GSharpString("center");
-        //var arcS = new GSharpString("arco");
-        //var segmento = new GSharpString("segmento");
-
-        //Arc arc = new(center, p1, p2, r);
-        PictureDrawer drawer = new(Graphics.FromImage(image), Pencil);
-        //Segment segment1 = new(center, p1);
-        //Segment segment2 = new(center, p2);
-        //drawer.DrawArc(arc, arcS);
-        //drawer.DrawSegment(segment1);
-        //drawer.DrawSegment(segment2);
-        //drawer.DrawPoint(p1, p1S);
-        //drawer.DrawPoint(p2, p2S);
-        pictureBox1.Image = image;
-
-        Reciever puntos = new Reciever(GTypeNames.Line, "puntos", true);
-        Reciever reciever = new(GTypeNames.Circle, "circulo");
-        var draw2 = new DrawStatement(new Constant("puntos"), null);
-        var draw = new DrawStatement(new Constant("circulo"), new LiteralString(new GSharpString("esto  es un circulo repingaa")));
-        Evaluator evaluator = new(drawer, this);
-        Resolver resolver = new(evaluator);
-        reciever.Accept(resolver);
-        puntos.Accept(resolver);
-        draw2.Accept(resolver);
-        draw.Accept(resolver);
-        reciever.Accept(evaluator);
-        puntos.Accept(evaluator);
-        draw2.Accept(evaluator);
-        draw.Accept(evaluator);
-    }
     private void Input_KeyDown(object sender, KeyEventArgs e)
     {
         if (e.KeyCode != Keys.Return)
@@ -211,8 +171,6 @@ public partial class Aplication : Form, IWalleUI
     }
     private void StartButtonClick(object sender, EventArgs e)
     {
-        Test();
-
         if (ProgramPath == "")
         {
             saveFileDialog1.ShowDialog();
@@ -220,9 +178,17 @@ public partial class Aplication : Form, IWalleUI
         }
         if (ProgramPath == "")
             return;
+        Run();
+    }
+    private void Run()
+    {
+        Bitmap image = new(pictureBox1.Width, pictureBox1.Height);
+        PictureDrawer drawer = new(Graphics.FromImage(image), Pencil);
+        pictureBox1.Image = image;
+
         //File.Create(ProgramPath);
         File.WriteAllText(ProgramPath, Entry.Text);
-        GSharp.RunFile(ProgramPath);
+        GSharp.RunFile(ProgramPath, drawer, this);
         if (!ErrorHandler.HadError)
         {
             AppendLineWithColor(Terminal, "Process exited whitout errors", Color.White);
