@@ -40,6 +40,7 @@ public static class GSharp
     /// <param name="source"></param>
     private static void Run(string source, IDrawer drawer, IWalleUI userInterface)
     {
+        drawer.Reset();
         List<Token> tokens = Scan(source);
         Parser parser = new(tokens);
         List<Statement> statements = parser.Parse();

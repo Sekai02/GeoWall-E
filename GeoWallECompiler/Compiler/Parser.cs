@@ -28,6 +28,7 @@ public class Parser
             catch (GSharpException error)
             {
                 ErrorHandler.AddError(error);
+                Synchronize();
             }
         }
 
@@ -36,7 +37,13 @@ public class Parser
 
     private Statement ParseDeclaration()
     {
-        Consume(TokenType.IDENTIFIER, "Expect identifier");
+        Statement declaration;
+        if (!Check(TokenType.IDENTIFIER))
+        {
+            declaration = ParseStatement();
+            //Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after declaration");
+            return declaration;
+        }
         checkPoint = current - 1;
         if (!TryFind(TokenType.EQUAL))
         {
@@ -44,8 +51,11 @@ public class Parser
             return ParseStatement();
         }
         Regression();
-        if (Check(TokenType.LEFT_PAREN)) return ParseFunctionDeclaration();
-        return ParseConstantDeclaration();
+        //aqui hay que añadir para que consuma el identificador
+        if (Check(TokenType.LEFT_PAREN)) declaration = ParseFunctionDeclaration();
+        else declaration= ParseConstantDeclaration();
+        Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after declaration");
+        return declaration;
     }
 
     private Statement ParseConstantDeclaration()
@@ -132,10 +142,14 @@ public class Parser
 
     private GSharpExpression ParseLogicalAnd()
     {
-        GSharpExpression leftOperand = ParseEquality();
-        Consume(TokenType.AND, "Expect 'and' after left operand");
-        GSharpExpression rightOperand = ParseEquality();
-        return new Conjunction(leftOperand, rightOperand);
+        GSharpExpression expr = ParseEquality();
+        while (Match(TokenType.AND))
+        {
+            GSharpExpression right = ParseEquality();
+            expr = new Conjunction(expr, right);
+        }
+
+        return expr;
     }
     /*
         {l...r}
@@ -333,10 +347,14 @@ public class Parser
 
     private GSharpExpression ParseLogicalOr()
     {
-        GSharpExpression leftOperand = ParseLogicalAnd();
-        Consume(TokenType.OR, "Expect 'or' after left operand");
-        GSharpExpression rightOperand = ParseLogicalAnd();
-        return new Disjunction(leftOperand, rightOperand);
+        GSharpExpression expr = ParseLogicalAnd();
+        while (Match(TokenType.OR))
+        {
+            GSharpExpression right = ParseEquality();
+            expr = new Disjunction(expr, right);
+        }
+
+        return expr;
     }
 
     private Statement ParseColorStatement()
@@ -345,7 +363,7 @@ public class Parser
         {
             string colorName = Previous().lexeme;
             Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after color name.");
-            return new ColorStatement(Previous().lexeme);
+            return new ColorStatement(colorName);
         }
         throw new Error(ErrorType.SYNTAX_ERROR, "Expect color name.");
     }
@@ -374,14 +392,12 @@ public class Parser
     {
         if (Check(TokenType.IDENTIFIER) && tokens[current].lexeme == "sequence")
         {
-            GSharpExpression expr = ParseExpression();
             string name = Consume(TokenType.IDENTIFIER, "Expect sequence name.").lexeme;
             Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after name.");
             return new Reciever(InferType(type), name, true);
         }
         else
         {
-            GSharpExpression expr = ParseExpression();
             string name = Consume(TokenType.IDENTIFIER, "Expect name.").lexeme;
             Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after name.");
             return new Reciever(InferType(type), name, false);

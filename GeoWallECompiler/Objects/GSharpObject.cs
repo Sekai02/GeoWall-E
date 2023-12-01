@@ -97,7 +97,7 @@ public class GSharpPoint : GSharpObject, IDrawable, IRandomable<GSharpPoint>, IU
             Coordinates = null;
     }
     public override double ToValueOfTruth() => Coordinates is null? 0 : 1;
-    public void Draw(IDrawer drawer) => drawer.DrawPoint(this);
+    public void Draw(IDrawer drawer, GSharpString label) => drawer.DrawPoint(this, label);
     public static new GSharpPoint GetRandomInstance()
     {
         Random random = new();
@@ -146,7 +146,7 @@ public class Line : GSharpObject, IDrawable, IRandomable<Line>, IUserParameter<L
         var point2 = GSharpPoint.GetRandomInstance();
         return new Line(point1, point2);
     }
-    public void Draw(IDrawer drawer) => drawer.DrawLine(this);
+    public void Draw(IDrawer drawer, GSharpString label) => drawer.DrawLine(this, label);
     public override double ToValueOfTruth() => Point1 is null || Point2 is null ? 0 : 1;
 }
 /// <summary>
@@ -184,7 +184,7 @@ public class Segment : GSharpObject, IDrawable, IRandomable<Segment>, IUserParam
         var p2 = GSharpPoint.GetInstanceFromParameters(parameters);
         return new Segment(p1, p2);
     }
-    public void Draw(IDrawer drawer) => drawer.DrawSegment(this);
+    public void Draw(IDrawer drawer, GSharpString label) => drawer.DrawSegment(this, label);
     public override double ToValueOfTruth() => Point1 is null || Point2 is null ? 0 : 1;
 }
 /// <summary>
@@ -222,7 +222,7 @@ public class Ray : GSharpObject, IDrawable, IRandomable<Ray>, IUserParameter<Ray
         var p2 = GSharpPoint.GetInstanceFromParameters(parameters);
         return new Ray(p1, p2);
     }
-    public void Draw(IDrawer drawer) => drawer.DrawRay(this);
+    public void Draw(IDrawer drawer, GSharpString label) => drawer.DrawRay(this, label);
     public override double ToValueOfTruth() => Point1 is null || Point2 is null ? 0 : 1;
 }
 /// <summary>
@@ -260,7 +260,7 @@ public class Circle : GSharpObject, IDrawable, IRandomable<Circle>, IUserParamet
         var radius = GSharpNumber.GetInstanceFromParameters(parameters);
         return new Circle(center, radius);
     }
-    public void Draw(IDrawer drawer) => drawer.DrawCircle(this);
+    public void Draw(IDrawer drawer, GSharpString label) => drawer.DrawCircle(this, label);
     public override double ToValueOfTruth() => Center is null || Radius is null ? 0 : 1;
 }
 /// <summary>
@@ -315,7 +315,7 @@ public class Arc : GSharpObject, IDrawable, IRandomable<Arc>, IUserParameter<Arc
         var radius = GSharpNumber.GetInstanceFromParameters(parameters);
         return new Arc(center, startPoint, endPoint, radius);
     }
-    public void Draw(IDrawer drawer) => drawer.DrawArc(this);
+    public void Draw(IDrawer drawer, GSharpString label) => drawer.DrawArc(this, label);
     public override double ToValueOfTruth() => Center is null || StartPoint is null|| EndPoint is null || Radius is null ? 0 : 1;
 }
 

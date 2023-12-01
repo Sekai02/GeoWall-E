@@ -120,9 +120,10 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     public void VisitDrawStatment(DrawStatement drawStatement)
     {
         var objectToDraw = drawStatement.Expression.Accept(this);
+        var label = drawStatement.StringExpression?.String;
         if (objectToDraw is not IDrawable)
             throw new DefaultError("Draw argument must be a figure", "Semantic");
-        ((IDrawable)objectToDraw).Draw(Drawer);
+        ((IDrawable)objectToDraw).Draw(Drawer, label);
     }
     public void VisitColorStatent(ColorStatement color) => Drawer.SetColor(color.Color);
     public void VisitRestoreStatement(Restore restore) => Drawer.ResetColor();
@@ -146,6 +147,9 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
                 case GTypeNames.Line:
                     environment.SetVariable(reciever.Identifier, ArraySequence<Line>.GetInstanceFromParameters(parameters));
                     break;
+                case GTypeNames.Segment:
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Segment>.GetInstanceFromParameters(parameters));
+                    break;
                 case GTypeNames.Ray:
                     environment.SetVariable(reciever.Identifier, ArraySequence<Ray>.GetInstanceFromParameters(parameters));
                     break;
@@ -167,6 +171,9 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
                 break;
             case GTypeNames.Line:
                 environment.SetVariable(reciever.Identifier, Line.GetInstanceFromParameters(parameters));
+                break;
+            case GTypeNames.Segment:
+                environment.SetVariable(reciever.Identifier, Segment.GetInstanceFromParameters(parameters));
                 break;
             case GTypeNames.Ray:
                 environment.SetVariable(reciever.Identifier, Ray.GetInstanceFromParameters(parameters));

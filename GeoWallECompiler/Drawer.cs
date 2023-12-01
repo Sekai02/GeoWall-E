@@ -6,6 +6,7 @@ namespace GeoWallECompiler;
 /// </summary>
 public interface IDrawer
 {
+    public void Reset();
     public void SetColor(string newColor);
     public void ResetColor();
     public void DrawPoint(GSharpPoint point, GSharpString name = null);
@@ -22,5 +23,5 @@ public interface IDrawer
 /// </summary>
 public interface IDrawable
 {
-    public void Draw(IDrawer drawer);
+    public void Draw(IDrawer drawer, GSharpString? label);
 }

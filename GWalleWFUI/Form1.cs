@@ -77,7 +77,7 @@ public partial class Aplication : Form, IWalleUI
     }
     private void Entry_TextChanged(object sender, EventArgs e)
     {
-        string keywords = @"\b(draw|color|restore|import|point|line|circle|ray|segment|and|or|not)\b";
+        string keywords = @"\b(draw|color|restore|import|point|line|circle|ray|segment|arc|and|or|not)\b";
         MatchCollection keywordsMatch = Regex.Matches(Entry.Text, keywords);
         string strings = "\".*?\"";
         MatchCollection stringsMatch = Regex.Matches(Entry.Text, strings);

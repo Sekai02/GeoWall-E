@@ -138,7 +138,7 @@ public class PictureDrawer : IDrawer
     public void DrawSequence<T>(GSharpSequence<T> sequence) where T : GSharpObject, IDrawable
     {
         foreach (var obj in sequence.Sequence)
-            obj.Draw(this);
+            obj.Draw(this, null);
     }
     public void DrawString(GSharpString gString)
     {
@@ -157,5 +157,11 @@ public class PictureDrawer : IDrawer
     {
         if (usedColors.TryPop(out Color oldColor))
              DrawerPen.Color = oldColor;
+    }
+
+    public void Reset()
+    {
+        usedColors.Clear();
+        DrawerPen.Color = Color.Black;
     }
 }

@@ -123,7 +123,13 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     }
     public GSharpType VisitLiteralString(LiteralString @string) => new(GTypeNames.GString);
     public void VisitRestoreStatement(Restore restore) { }
-    public void VisitRecieverStatement(Reciever reciever) { }
+    public void VisitRecieverStatement(Reciever reciever) 
+    {
+        GSharpType recievedVarType = reciever.IsSequence ? 
+            new(GTypeNames.GSequence, reciever.ParameterType) 
+            : new(reciever.ParameterType);
+        TypeEnvironment.SetVariable(reciever.Identifier, recievedVarType);
+    }
     public GSharpType VisitUnaryOperation(UnaryOperation unary)
     {
         GSharpType argType = unary.Argument.Accept(this);

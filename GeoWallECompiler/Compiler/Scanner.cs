@@ -43,7 +43,7 @@ public class Scanner
         //Temporally removed
 
         {"point",TokenType.POINT},
-        {"Line",TokenType.LINE},
+        {"line",TokenType.LINE},
         {"segment",TokenType.SEGMENT},
         {"ray",TokenType.RAY},
         {"circle",TokenType.CIRCLE},
