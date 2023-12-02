@@ -12,9 +12,6 @@ public partial class Aplication : Form, IWalleUI
     private Pen Pencil;
     private Color InkColor;
     private string ProgramPath;
-    private bool requiringEntry;
-    private string parameterEntry;
-    private SemaphoreSlim _waitForText = new(0, maxCount: 1);
     public Aplication()
     {
         InitializeComponent();
@@ -149,16 +146,6 @@ public partial class Aplication : Form, IWalleUI
         e.Handled = true;
         e.SuppressKeyPress = true; //evita el sonido cuando se presiona enter
 
-        if (requiringEntry)
-        {
-            parameterEntry = Input.Text;
-            Input.Text = "";
-
-            requiringEntry = false;
-            _waitForText.Release();
-            return;
-        }
-
         if (Input.Text == "")
             return;
         if (Input.Text == "clear")
@@ -188,7 +175,7 @@ public partial class Aplication : Form, IWalleUI
 
         //File.Create(ProgramPath);
         File.WriteAllText(ProgramPath, Entry.Text);
-        GSharp.RunFile(ProgramPath, drawer, this);
+        GSharp.RunFile(ProgramPath, drawer);
         if (!ErrorHandler.HadError)
         {
             AppendLineWithColor(Terminal, "Process exited whitout errors", Color.White);
@@ -208,23 +195,5 @@ public partial class Aplication : Form, IWalleUI
         box.SelectionColor = color;
         box.AppendText(text);
         box.SelectionColor = box.ForeColor;
-    }
-    public async Task<Queue<double>> GetUserParameters(string message)
-    {
-        requiringEntry = true;
-        AppendLineWithColor(Terminal, message, Color.White);
-        await _waitForText.WaitAsync();
-
-        char[] separators = { ' ' };
-        string[] parameters = parameterEntry.Split(separators);
-        AppendLineWithColor(Terminal, parameterEntry, Color.White);
-        parameterEntry = "";
-        Queue<double> result = new();
-        foreach (string param in parameters)
-        {
-            if (double.TryParse(param, out double x))
-                result.Enqueue(x);
-        }
-        return result;
     }
 }

@@ -6,11 +6,10 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     public Dictionary<GSharpExpression, int> References = new();
     private Context<GSharpObject, DeclaredFunction>? environment = new();
     private IWalleUI UserInterface;
-    public Evaluator(IDrawer drawer, IWalleUI userInterface)
+    public Evaluator(IDrawer drawer)
     {
         environment = new();
         Drawer = drawer;
-        UserInterface = userInterface;
     }
     public Context<GSharpObject, DeclaredFunction>? EvaluationContext { get => environment; set => environment = value; }
     public IDrawer Drawer { get; }
@@ -129,32 +128,27 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     public void VisitRestoreStatement(Restore restore) => Drawer.ResetColor();
     public void VisitRecieverStatement(Reciever reciever)
     {
-        string message = $"Introduce parameter for {reciever.ParameterType} ";
-        message += reciever.IsSequence ? "sequence " : "";
-        message += reciever.Identifier;
-        Queue<double> parameters = new();
-        //parameters = await UserInterface.GetUserParameters(message);
         if (reciever.IsSequence)
         {
             switch (reciever.ParameterType)
             {
                 case GTypeNames.Point:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<GSharpPoint>.GetInstanceFromParameters(parameters));
+                    environment.SetVariable(reciever.Identifier, ArraySequence<GSharpPoint>.GetRandomInstance());
                     break;
                 case GTypeNames.Circle:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Circle>.GetInstanceFromParameters(parameters));
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Circle>.GetRandomInstance());
                     break;
                 case GTypeNames.Line:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Line>.GetInstanceFromParameters(parameters));
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Line>.GetRandomInstance());
                     break;
                 case GTypeNames.Segment:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Segment>.GetInstanceFromParameters(parameters));
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Segment>.GetRandomInstance());
                     break;
                 case GTypeNames.Ray:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Ray>.GetInstanceFromParameters(parameters));
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Ray>.GetRandomInstance());
                     break;
                 case GTypeNames.Arc:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Arc>.GetInstanceFromParameters(parameters));
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Arc>.GetRandomInstance());
                     break;
                 default:
                     throw new DefaultError("Invalid type", "semantic");
@@ -164,22 +158,22 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         switch (reciever.ParameterType)
         {
             case GTypeNames.Point:
-                environment.SetVariable(reciever.Identifier, GSharpPoint.GetInstanceFromParameters(parameters));
+                environment.SetVariable(reciever.Identifier, GSharpPoint.GetRandomInstance());
                 break;
             case GTypeNames.Circle:
-                environment.SetVariable(reciever.Identifier, Circle.GetInstanceFromParameters(parameters));
+                environment.SetVariable(reciever.Identifier, Circle.GetRandomInstance());
                 break;
             case GTypeNames.Line:
-                environment.SetVariable(reciever.Identifier, Line.GetInstanceFromParameters(parameters));
+                environment.SetVariable(reciever.Identifier, Line.GetRandomInstance());
                 break;
             case GTypeNames.Segment:
-                environment.SetVariable(reciever.Identifier, Segment.GetInstanceFromParameters(parameters));
+                environment.SetVariable(reciever.Identifier, Segment.GetRandomInstance());
                 break;
             case GTypeNames.Ray:
-                environment.SetVariable(reciever.Identifier, Ray.GetInstanceFromParameters(parameters));
+                environment.SetVariable(reciever.Identifier, Ray.GetRandomInstance());
                 break;
             case GTypeNames.Arc:
-                environment.SetVariable(reciever.Identifier, Arc.GetInstanceFromParameters(parameters));
+                environment.SetVariable(reciever.Identifier, Arc.GetRandomInstance());
                 break;
             default:
                 throw new DefaultError("Invalid type", "semantic");

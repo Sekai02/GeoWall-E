@@ -230,7 +230,7 @@ public class Parser
             return new Grouping(expr);
         }
 
-        throw new Error(ErrorType.SYNTAX_ERROR, "Expect expression.");
+        throw new DefaultError("Expect expression");
     }
 
     private GSharpExpression ParseUnary()
