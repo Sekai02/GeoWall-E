@@ -1,108 +1,24 @@
 ﻿using GeoWallECompiler.Objects;
-
 namespace GeoWallECompiler;
 
 /// <summary>
-/// Clase abstracta de la que heredan todos los objetos de G#
-/// </summary>
-public abstract class GSharpObject : IRandomable<GSharpObject>, IUserParameter<GSharpObject>
-{
-    public static GSharpObject GetRandomInstance(int limit = 500) => GSNumber.GetRandomInstance(limit);
-    public static GSharpObject GetInstanceFromParameters(Queue<double> parameters) => GSNumber.GetInstanceFromParameters(parameters);
-
-    /// <summary>
-    /// Metodo que devuelve el valor de verdad de un objeto en forma de 0 o 1
-    /// </summary>
-    /// <returns>0 si el objeto evalua como falso y 1 en caso contrario</returns>
-    public abstract double ToValueOfTruth();
-}
-/// <summary>
-/// Clase que representa los valores numericos en G#
-/// </summary>
-public class GSNumber : GSharpObject, IRandomable<GSNumber>, IUserParameter<GSNumber>
-{
-    /// <summary>
-    /// Crea una instancia que representa un valor numerico en G#
-    /// </summary>
-    /// <param name="val"></param>
-    public GSNumber(double val) => Value = val;
-    public override double ToValueOfTruth() => Value == 0 ? 0 : 1;
-    public static new GSNumber GetRandomInstance(int limit = 500)
-    {
-        Random random = new();
-        return (GSNumber)random.Next(limit);
-    }
-    public static new GSNumber GetInstanceFromParameters(Queue<double> parameters)
-    {
-        if (!parameters.TryDequeue(out double number))
-        {
-            Random random = new();
-            return (GSNumber)random.Next(500);
-        }
-        return (GSNumber)number;
-    }
-    /// <summary>
-    /// Valor numerico del numero
-    /// </summary>
-    public double Value { get; private set; }
-
-    #region Operators Overloads
-    public static GSNumber operator +(GSNumber a) => a;
-    public static GSNumber operator -(GSNumber a) => -a;
-    public static GSNumber operator +(GSNumber a, GSNumber b) => a + b;
-    public static GSNumber operator -(GSNumber a, GSNumber b) => a - b;
-    public static GSNumber operator *(GSNumber a, GSNumber b) => a * b;
-    public static GSNumber operator /(GSNumber a, GSNumber b) => a / b;
-    public static GSNumber operator %(GSNumber a, GSNumber b) => a % b;
-    public static bool operator <(GSNumber a, GSNumber b) => a < b;
-    public static bool operator >(GSNumber a, GSNumber b) => a > b;
-    public static bool operator <=(GSNumber a, GSNumber b) => a <= b;
-    public static bool operator >=(GSNumber a, GSNumber b) => a >= b;
-    public static bool operator ==(GSNumber a, GSNumber b) => a == b;
-    public static bool operator !=(GSNumber a, GSNumber b) => a != b;
-    public static implicit operator double(GSNumber n) => n.Value;
-    public static implicit operator int(GSNumber n) => (int)n.Value;
-    public static implicit operator float(GSNumber n) => (float)n.Value;
-    public static explicit operator GSNumber(double d) => new(d);
-    public static explicit operator GSNumber(int n) => new(n);
-    #endregion
-}
-/// <summary>
-/// Clase que representa las cadenas de caracteres en G#
-/// </summary>
-public class GSString : GSharpObject
-{
-    /// <summary>
-    /// Crea una instancia de una cadena de texto en G#
-    /// </summary>
-    /// <param name="val"></param>
-    public GSString(string val) => Value = val;
-    public override double ToValueOfTruth() => Value == "" ? 0 : 1;
-    /// <summary>
-    /// Valor de la cadena de texto
-    /// </summary>
-    public string Value { get; private set; }
-    public static implicit operator string(GSString s) => s.Value;
-    public static explicit operator GSString(string s) => new(s);
-}
-/// <summary>
 /// Representa un punto en el espacio bidimensional
 /// </summary>
-public class GSPoint : GSharpObject, IDrawable, IRandomable<GSPoint>, IUserParameter<GSPoint>
-{    
+public class GSPoint : GSObject, IDrawable, IRandomable<GSPoint>, IUserParameter<GSPoint>
+{
     /// <summary>
     /// Crea una instancia de un punto en el espacio bidimensional definido mediante dos coordenadas rectangulares
     /// </summary>
     /// <param name="x">Coordenada x del punto</param>
     /// <param name="y">Coordenada y del punto</param>
     public GSPoint(GSNumber? x, GSNumber? y)
-    {        
+    {
         if (x is not null && y is not null)
             Coordinates = (x, y);
         else
             Coordinates = null;
     }
-    public override double ToValueOfTruth() => Coordinates is null? 0 : 1;
+    public override double ToValueOfTruth() => Coordinates is null ? 0 : 1;
     public void Draw(IDrawer drawer, GSString label) => drawer.DrawPoint(this, label);
     public static new GSPoint GetRandomInstance(int limit = 500)
     {
@@ -126,7 +42,7 @@ public class GSPoint : GSharpObject, IDrawable, IRandomable<GSPoint>, IUserParam
 /// <summary>
 /// Representa una linea recta en el espacio bidimensional
 /// </summary>
-public class Line : GSharpObject, IDrawable, IRandomable<Line>, IUserParameter<Line>
+public class Line : GSObject, IDrawable, IRandomable<Line>, IUserParameter<Line>
 {
     /// <summary>
     /// Crea una instancia de una linea en el espacio bidimensional mediante dos puntos
@@ -158,7 +74,7 @@ public class Line : GSharpObject, IDrawable, IRandomable<Line>, IUserParameter<L
 /// <summary>
 /// Representa un segmento en el espacio bidimensional
 /// </summary>
-public class Segment : GSharpObject, IDrawable, IRandomable<Segment>, IUserParameter<Segment>
+public class Segment : GSObject, IDrawable, IRandomable<Segment>, IUserParameter<Segment>
 {
     /// <summary>
     /// Crea una instancia de un segmento en el espacio bidimensional a partir de dos puntos (sus extremos)
@@ -196,7 +112,7 @@ public class Segment : GSharpObject, IDrawable, IRandomable<Segment>, IUserParam
 /// <summary>
 /// Representa una linea que se extiende infnitamente por solo un extremo
 /// </summary>
-public class Ray : GSharpObject, IDrawable, IRandomable<Ray>, IUserParameter<Ray>
+public class Ray : GSObject, IDrawable, IRandomable<Ray>, IUserParameter<Ray>
 {
     /// <summary>
     /// Instancia una linea que se extiende infinitamente por un extremo a partir de un punto inicial y un segundo punto
@@ -234,14 +150,14 @@ public class Ray : GSharpObject, IDrawable, IRandomable<Ray>, IUserParameter<Ray
 /// <summary>
 /// Representa una circunferencia en el espacio bidimensional
 /// </summary>
-public class Circle : GSharpObject, IDrawable, IRandomable<Circle>, IUserParameter<Circle>
+public class Circle : GSObject, IDrawable, IRandomable<Circle>, IUserParameter<Circle>
 {
     /// <summary>
     /// Instancia una cicunferencia en el plano definida mediante un radio y un centro
     /// </summary>
     /// <param name="center">Punto centro de la circunferencia</param>
     /// <param name="radius">Radio de la circunferencia</param>
-    public Circle(GSPoint? center, GSNumber? radius)
+    public Circle(GSPoint? center, Measure? radius)
     {
         Center = center;
         Radius = radius;
@@ -253,17 +169,17 @@ public class Circle : GSharpObject, IDrawable, IRandomable<Circle>, IUserParamet
     /// <summary>
     /// Radio de la circunferencia
     /// </summary>
-    public GSNumber? Radius { get; private set; }
+    public Measure? Radius { get; private set; }
     public static new Circle GetRandomInstance(int limit = 500)
     {
         var center = GSPoint.GetRandomInstance(limit);
-        var radius = GSNumber.GetRandomInstance(limit);
-        return new Circle(center, radius);        
+        var radius = Measure.GetRandomInstance(limit);
+        return new Circle(center, radius);
     }
-    public static new Circle GetInstanceFromParameters(Queue<double> parameters) 
+    public static new Circle GetInstanceFromParameters(Queue<double> parameters)
     {
         var center = GSPoint.GetInstanceFromParameters(parameters);
-        var radius = GSNumber.GetInstanceFromParameters(parameters);
+        var radius = Measure.GetInstanceFromParameters(parameters);
         return new Circle(center, radius);
     }
     public void Draw(IDrawer drawer, GSString label) => drawer.DrawCircle(this, label);
@@ -272,7 +188,7 @@ public class Circle : GSharpObject, IDrawable, IRandomable<Circle>, IUserParamet
 /// <summary>
 /// Representa un arco de circunferencia en el plano
 /// </summary>
-public class Arc : GSharpObject, IDrawable, IRandomable<Arc>, IUserParameter<Arc>
+public class Arc : GSObject, IDrawable, IRandomable<Arc>, IUserParameter<Arc>
 {
     /// <summary>
     /// Instancia un arco definido por un centro, que se extiende desde una semirecta que pasa
@@ -282,7 +198,7 @@ public class Arc : GSharpObject, IDrawable, IRandomable<Arc>, IUserParameter<Arc
     /// <param name="startPoint">Punto por el que pasa la recta de inicio del arco</param>
     /// <param name="endPoint">Punto por el que pasa la recta donde termina el arco</param>
     /// <param name="radius">Radio del arco</param>
-    public Arc(GSPoint? center, GSPoint? startPoint, GSPoint? endPoint, GSNumber? radius)
+    public Arc(GSPoint? center, GSPoint? startPoint, GSPoint? endPoint, Measure? radius)
     {
         Center = center;
         StartPoint = startPoint;
@@ -304,24 +220,23 @@ public class Arc : GSharpObject, IDrawable, IRandomable<Arc>, IUserParameter<Arc
     /// <summary>
     /// Radio del arco
     /// </summary>
-    public GSNumber? Radius { get; private set; }
+    public Measure? Radius { get; private set; }
     public static new Arc GetRandomInstance(int limit = 500)
     {
         var center = GSPoint.GetRandomInstance(limit);
         var startPoint = GSPoint.GetRandomInstance(limit);
         var endPoint = GSPoint.GetRandomInstance(limit);
-        var radius = GSNumber.GetRandomInstance(limit);
+        var radius = Measure.GetRandomInstance(limit);
         return new Arc(center, startPoint, endPoint, radius);
     }
-    public static new Arc GetInstanceFromParameters(Queue<double> parameters) 
+    public static new Arc GetInstanceFromParameters(Queue<double> parameters)
     {
         var center = GSPoint.GetInstanceFromParameters(parameters);
         var startPoint = GSPoint.GetInstanceFromParameters(parameters);
         var endPoint = GSPoint.GetInstanceFromParameters(parameters);
-        var radius = GSNumber.GetInstanceFromParameters(parameters);
+        var radius = Measure.GetInstanceFromParameters(parameters);
         return new Arc(center, startPoint, endPoint, radius);
     }
     public void Draw(IDrawer drawer, GSString label) => drawer.DrawArc(this, label);
-    public override double ToValueOfTruth() => Center is null || StartPoint is null|| EndPoint is null || Radius is null ? 0 : 1;
+    public override double ToValueOfTruth() => Center is null || StartPoint is null || EndPoint is null || Radius is null ? 0 : 1;
 }
-

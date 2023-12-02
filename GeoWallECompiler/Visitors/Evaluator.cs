@@ -1,41 +1,41 @@
 ﻿using GeoWallECompiler.Expressions;
 
 namespace GeoWallECompiler;
-public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
+public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
 {
     public Dictionary<GSharpExpression, int> References = new();
-    private Context<GSharpObject, DeclaredFunction>? environment = new();
+    private Context<GSObject, DeclaredFunction>? environment = new();
     private IWalleUI UserInterface;
     public Evaluator(IDrawer drawer)
     {
         environment = new();
         Drawer = drawer;
     }
-    public Context<GSharpObject, DeclaredFunction>? EvaluationContext { get => environment; set => environment = value; }
+    public Context<GSObject, DeclaredFunction>? EvaluationContext { get => environment; set => environment = value; }
     public IDrawer Drawer { get; }
     public void ResolveReference(GSharpExpression expression, int depth)
     {
         References.Add(expression, depth);
     }
-    public GSharpObject VisitBinaryOperation(BinaryOperation binary)
+    public GSObject VisitBinaryOperation(BinaryOperation binary)
     {
-        GSharpObject left = binary.LeftArgument.Accept(this);
-        GSharpObject right = binary.RightArgument.Accept(this);
+        GSObject left = binary.LeftArgument.Accept(this);
+        GSObject right = binary.RightArgument.Accept(this);
         if (left.GetType() == binary.AcceptedType && right.GetType() == binary.AcceptedType)
             return binary.Operation(left, right);
         var conflictiveType = left.GetType() != binary.AcceptedType ? left.GetType().Name : right.GetType().Name;
         throw new SemanticError($"Operator `{binary.OperationToken}`", binary.ReturnedType.ToString(), conflictiveType);
     }
-    public GSharpObject VisitConstant(Constant constant)
+    public GSObject VisitConstant(Constant constant)
     {
         int distance = References[constant];
         return environment.AccessVariableAt(distance, constant.Name);
     }
-    public GSharpObject VisitFunctionCall(FunctionCall functionCall)
+    public GSObject VisitFunctionCall(FunctionCall functionCall)
     {
         int distance = References[functionCall];
         DeclaredFunction callee = environment.AccessFunctionAt(distance, functionCall.FunctionName);
-        List<GSharpObject> arguments = new();
+        List<GSObject> arguments = new();
         foreach (GSharpExpression argument in functionCall.Arguments)
         {
             arguments.Add(argument.Accept(this));
@@ -44,7 +44,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     }
     public void VisitConstantDeclaration(ConstantsDeclaration declaration)
     {
-        GSharpObject value = declaration.ValueExpression.Accept(this);
+        GSObject value = declaration.ValueExpression.Accept(this);
         List<string> constantNames = declaration.ConstantNames;
         if (value == null)
         {
@@ -56,14 +56,14 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
             environment.SetVariable(constantNames[0], value);
             return;
         }
-        if (value is not GSharpSequence<GSharpObject>)
+        if (value is not GSharpSequence<GSObject>)
         {
             ErrorHandler.AddError(new DefaultError("Match statements can only take a sequence as value", "semantic"));
             return;
         }
-        GSharpSequence<GSharpObject> sequence = (GSharpSequence<GSharpObject>)value;
+        GSharpSequence<GSObject> sequence = (GSharpSequence<GSObject>)value;
         int index = 0;
-        foreach (GSharpObject obj in sequence.Sequence)
+        foreach (GSObject obj in sequence.Sequence)
         {
             if (index == constantNames.Count - 1)
             {
@@ -85,37 +85,37 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         DeclaredFunction function = new(declaration);
         environment.SetFunction(function.Declaration.Name, function);
     }
-    public GSharpObject VisitIfThenElse(IfThenElse ifThen)
+    public GSObject VisitIfThenElse(IfThenElse ifThen)
     {
         bool condition = ifThen.Condition.Accept(this)?.ToValueOfTruth() == 1;
         if (condition)
             return ifThen.IfExpression.Accept(this);
         return ifThen.ElseExpression.Accept(this);
     }
-    public GSharpObject VisitLetIn(LetIn letIn)
+    public GSObject VisitLetIn(LetIn letIn)
     {
-        Context<GSharpObject, DeclaredFunction> letInContext = new(environment);
+        Context<GSObject, DeclaredFunction> letInContext = new(environment);
         environment = letInContext;
         foreach (var statement in letIn.Instructions)
             statement.Accept(this);
-        GSharpObject result = letIn.Body.Accept(this);
+        GSObject result = letIn.Body.Accept(this);
         environment = environment.Enclosing;
         return result;
     }
-    public GSharpObject VisitLiteralNumber(LiteralNumber literal) => literal.Value;
-    public GSharpObject VisitUnaryOperation(UnaryOperation unary)
+    public GSObject VisitLiteralNumber(LiteralNumber literal) => literal.Value;
+    public GSObject VisitUnaryOperation(UnaryOperation unary)
     {
-        GSharpObject arg = unary.Argument.Accept(this);
+        GSObject arg = unary.Argument.Accept(this);
         return arg.GetType() == unary.AcceptedType
             ? unary.Operation(arg)
             : throw new SemanticError($"Operator `{unary.OperationToken}`", unary.EnteredType.ToString(), arg.GetType().Name, null); ;
     }
-    public GSharpObject VisitLiteralSequence(LiteralSequence sequence)
+    public GSObject VisitLiteralSequence(LiteralSequence sequence)
     {
-        GSharpSequence<GSharpObject> result = sequence.GetSequenceValue(this);
+        GSharpSequence<GSObject> result = sequence.GetSequenceValue(this);
         return result;
     }
-    public GSharpObject VisitLiteralString(LiteralString @string) => @string.String;
+    public GSObject VisitLiteralString(LiteralString @string) => @string.String;
     public void VisitDrawStatment(DrawStatement drawStatement)
     {
         var objectToDraw = drawStatement.Expression.Accept(this);

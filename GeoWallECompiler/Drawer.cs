@@ -1,4 +1,6 @@
-﻿namespace GeoWallECompiler;
+﻿using System.Collections;
+
+namespace GeoWallECompiler;
 /// <summary>
 /// Interfaz que implementa metodos para dibujar figuras en el plano
 /// </summary>
@@ -16,7 +18,8 @@ public interface IDrawer
     public void DrawArc(Arc arc, GSString name = null);
     public void DrawRay(Ray ray, GSString name = null);
     public void DrawString(GSString gString);
-    public void DrawSequence<T>(GSharpSequence<T> sequence) where T: GSharpObject, IDrawable;
+    public void DrawSequence<T>(GSharpSequence<T> sequence) where T: GSObject, IDrawable;
+    public void DrawEnumerable(IEnumerable values);
 }
 /// <summary>
 /// Interfaz que implementa un metodo para dibujar una figura en el plano 

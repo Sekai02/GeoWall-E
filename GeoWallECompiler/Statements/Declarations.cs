@@ -13,7 +13,7 @@ public class ConstantsDeclaration : Statement
 public interface ICallable
 {
     public int GetArgumentsAmount();
-    GSharpObject Evaluate(Evaluator evaluator, List<GSharpObject> arguments);
+    GSObject? Evaluate(Evaluator evaluator, List<GSObject> arguments);
     GSharpType GetType(TypeChecker checker, List<GSharpType> argumentsTypes);
 }
 public class FunctionDeclaration : Statement
@@ -34,16 +34,16 @@ public class DeclaredFunction : ICallable
 {
     public DeclaredFunction(FunctionDeclaration declaration) => Declaration = declaration;
     public FunctionDeclaration Declaration { get; }
-    public GSharpObject Evaluate(Evaluator evaluator, List<GSharpObject> arguments)
+    public GSObject Evaluate(Evaluator evaluator, List<GSObject> arguments)
     {
-        Context<GSharpObject, DeclaredFunction> functionContext = new(evaluator.EvaluationContext);
+        Context<GSObject, DeclaredFunction> functionContext = new(evaluator.EvaluationContext);
         for (int i = 0; i < Declaration.Parameters.Count; i++)
         {
             functionContext.SetVariable(Declaration.Parameters[i], arguments[i]);
         }
-        Context<GSharpObject, DeclaredFunction> previous = evaluator.EvaluationContext;
+        Context<GSObject, DeclaredFunction> previous = evaluator.EvaluationContext;
         evaluator.EvaluationContext = functionContext;
-        GSharpObject result = Declaration.Body.Accept(evaluator);
+        GSObject result = Declaration.Body.Accept(evaluator);
         evaluator.EvaluationContext = previous;
         return result;
     } 

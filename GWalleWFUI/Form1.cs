@@ -1,5 +1,6 @@
 using GeoWallECompiler;
 using GeoWallECompiler.Expressions;
+using GeoWallECompiler.StandardLibrary;
 using GeoWallECompiler.Visitors;
 using System.Security.Cryptography.Pkcs;
 using System.Text.RegularExpressions;
@@ -21,6 +22,17 @@ public partial class Aplication : Form, IWalleUI
             Width = 2
         };
         ProgramPath = "";
+        Test();
+    }
+    private void Test()
+    {
+        Bitmap image = new(pictureBox1.Width, pictureBox1.Height);
+        PictureDrawer drawer = new(Graphics.FromImage(image), Pencil, pictureBox1.Height, pictureBox1.Width);
+        var sequence = new ArraySequence<GSNumber>(new List<GSNumber>() {(GSNumber)1, (GSNumber)2, (GSNumber)3 });
+        Evaluator evaluator = new(drawer);
+        CountFunction count = new();
+        var result = count.Evaluate(evaluator, new List<GSObject>() { sequence });
+        Terminal.AppendText(((GSNumber)result).Value.ToString());
     }
     private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Dispose();
     private void openToolStripMenuItem_Click(object sender, EventArgs e)

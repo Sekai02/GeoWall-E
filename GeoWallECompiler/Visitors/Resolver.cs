@@ -1,7 +1,7 @@
 ﻿using GeoWallECompiler.Expressions;
 
 namespace GeoWallECompiler.Visitors;
-public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
+public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
 {
     Evaluator Interpreter;
     private Stack<Scope> Scopes { get; set; }
@@ -65,13 +65,13 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
             }
         }
     }
-    public GSharpObject VisitBinaryOperation(BinaryOperation binary)
+    public GSObject VisitBinaryOperation(BinaryOperation binary)
     {
         binary.LeftArgument.Accept(this);
         binary.RightArgument.Accept(this);
         return null;
     }
-    public GSharpObject VisitConstant(Constant constant)
+    public GSObject VisitConstant(Constant constant)
     {
         if (Scopes.Count == 0)
             ErrorHandler.AddError(new DefaultError("Local variable is not defined", "semantic"));
@@ -133,7 +133,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
             DefineVariable(constant);
     }
     public void VisitExpressionStatement(ExpressionStatement expression) => expression.Expression.Accept(this);
-    public GSharpObject VisitFunctionCall(FunctionCall functionCall)
+    public GSObject VisitFunctionCall(FunctionCall functionCall)
     {
         foreach (GSharpExpression argument in functionCall.Arguments)
             argument.Accept(this);
@@ -153,14 +153,14 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
         declaration.Body.Accept(this);
         EndScope();
     }
-    public GSharpObject VisitIfThenElse(IfThenElse ifThen)
+    public GSObject VisitIfThenElse(IfThenElse ifThen)
     {
         ifThen.Condition.Accept(this);
         ifThen.IfExpression.Accept(this);
         ifThen.ElseExpression.Accept(this);
         return null;
     }
-    public GSharpObject VisitLetIn(LetIn letIn)
+    public GSObject VisitLetIn(LetIn letIn)
     {
         BeginScope();
         foreach (Statement instruction in letIn.Instructions)
@@ -169,13 +169,13 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
         EndScope();
         return null;
     }
-    public GSharpObject VisitLiteralNumber(LiteralNumber literal) => null;
-    public GSharpObject VisitUnaryOperation(UnaryOperation unary)
+    public GSObject VisitLiteralNumber(LiteralNumber literal) => null;
+    public GSObject VisitUnaryOperation(UnaryOperation unary)
     {
         unary.Argument.Accept(this);
         return null;
     }
-    public GSharpObject VisitLiteralSequence(LiteralSequence sequence)
+    public GSObject VisitLiteralSequence(LiteralSequence sequence)
     {
         if (sequence is LiteralArrayExpression)
         {
@@ -187,7 +187,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSharpObject>
     public void VisitDrawStatment(DrawStatement drawStatement) => drawStatement.Expression.Accept(this);
     public void VisitColorStatent(ColorStatement color) { return; }
     public void VisitRestoreStatement(Restore restore) { return; }
-    public GSharpObject VisitLiteralString(LiteralString @string) => null;
+    public GSObject VisitLiteralString(LiteralString @string) => null;
     public void VisitStatements(List<Statement> statements)
     {
         foreach (Statement st in statements)

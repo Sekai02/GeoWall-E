@@ -6,10 +6,10 @@ public abstract class LiteralSequence : GSharpExpression
     public int Count { get; protected set; }
     public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitLiteralSequence(this);
     public abstract LiteralSequence GetTail(int tailBeggining);
-    public GSharpSequence<GSharpObject> GetSequenceValue(Evaluator evaluator)
+    public GSharpSequence<GSObject> GetSequenceValue(Evaluator evaluator)
     {
-        List<GSharpObject> values = new(ToGSharpObjectSequence(evaluator));
-        return new ArraySequence<GSharpObject>(values);
+        List<GSObject> values = new(ToGSharpObjectSequence(evaluator));
+        return new ArraySequence<GSObject>(values);
     }
     private IEnumerable<T> ToGSharpObjectSequence<T>(IExpressionVisitor<T> visitor)
     {

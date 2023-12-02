@@ -1,10 +1,16 @@
 ﻿using GeoWallECompiler.Objects;
+using System.Collections;
 
 namespace GeoWallECompiler;
+public interface ISequenciable
+{
+    public int? GetCount();
+    public IEnumerable GetSequence();
+}
 /// <summary>
 /// Representa las secuencias en G#
 /// </summary>
-public abstract class GSharpSequence<T> : GSharpObject where T: GSharpObject
+public abstract class GSharpSequence<T> : GSObject, ISequenciable where T: GSObject
 {
     public abstract GSharpSequence<T> GetTail(int tailBeggining);
     public override double ToValueOfTruth() => Count != 0 ? 1 : 0;
@@ -16,8 +22,10 @@ public abstract class GSharpSequence<T> : GSharpObject where T: GSharpObject
     /// Cantidad de elementos que contiene la secuencia
     /// </summary>
     public int? Count { get; protected set; }
+    public int? GetCount() => Count;
+    public IEnumerable GetSequence() => Sequence;
 }
-public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>>, IUserParameter<ArraySequence<T>> where T : GSharpObject, IRandomable<T>, IUserParameter<T>
+public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>>, IUserParameter<ArraySequence<T>> where T : GSObject, IRandomable<T>, IUserParameter<T>
 {    
     /// <summary>
     /// Construye una secuencia de objetos de G#. Por ejemplo {p1,p2,p3,p4}
@@ -27,6 +35,7 @@ public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>>
     {
         Sequence = objects;
         Count = objects.Count;
+        IsSequence = true;
     }
     public static ArraySequence<T> GetRandomInstance(int limit = 500)
     {
@@ -77,6 +86,7 @@ public class FiniteIntegerSequence : GSharpSequence<GSNumber>
             throw new DefaultError("Sequences declaration with '...' can only take integers as limits", "Semantic");
         Sequence = FiniteRange(start, end);
         Count = Math.Abs(end - start);
+        IsSequence = true;
     }
     private static IEnumerable<GSNumber> FiniteRange(int a, int b)
     {
@@ -106,6 +116,7 @@ public class InfiniteIntegerSequence : GSharpSequence<GSNumber>
         startNumber = start;
         Sequence = InfiniteRange(start);
         Count = null;
+        IsSequence = true;
     }
     private static IEnumerable<GSNumber> InfiniteRange(int a)
     {
@@ -120,5 +131,29 @@ public class InfiniteIntegerSequence : GSharpSequence<GSNumber>
     {
         GSNumber start = (GSNumber)(startNumber + tailBeggining);
         return new InfiniteIntegerSequence(start);
+    }
+}
+public class RandomNumberSequence: GSharpSequence<GSNumber>
+{
+    public RandomNumberSequence() => Sequence = RandomValues();
+    private RandomNumberSequence(IEnumerable<GSNumber> values) => Sequence = values;
+    public override GSharpSequence<GSNumber> GetTail(int tailBeggining) => new RandomNumberSequence(ChoppSequence(tailBeggining));
+    private static IEnumerable<GSNumber> RandomValues()
+    {
+        Random random = new();
+        while (true)
+        {
+            yield return (GSNumber)random.NextDouble();
+        }
+    }
+    private IEnumerable<GSNumber> ChoppSequence(int a)
+    {
+        int count = 0;
+        foreach (GSNumber obj in Sequence)
+        {
+            if (count >= a)
+                yield return obj;
+            count++;
+        }
     }
 }

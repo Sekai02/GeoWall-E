@@ -25,7 +25,7 @@ public class DrawerDummie : IDrawer
     public void DrawPoint(GSPoint point, GSString name = null) => Console.WriteLine("draw succeded");
     public void DrawRay(Ray ray, GSString name = null) => Console.WriteLine("draw succeded");  
     public void DrawSegment(Segment segment, GSString name = null) => Console.WriteLine("draw succeded");
-    public void DrawSequence<T>(GSharpSequence<T> sequence) where T : GSharpObject, IDrawable => Console.WriteLine("draw succeded");
+    public void DrawSequence<T>(GSharpSequence<T> sequence) where T : GSObject, IDrawable => Console.WriteLine("draw succeded");
     public void DrawString(GSString gString) => Console.WriteLine("draw succeded");
     public void Reset() => Console.WriteLine("reset succeded");
     public void ResetColor() => Console.WriteLine("reset color succeded");

@@ -36,7 +36,7 @@ public abstract class UnaryOperation : GSharpExpression
     /// </summary>
     /// <param name="arg">Valor del argumento de la operacion</param>
     /// <returns></returns>
-    public delegate GSharpObject UnaryFunc(GSharpObject arg);
+    public delegate GSObject UnaryFunc(GSObject arg);
 }
 #region Boolean
 
@@ -54,9 +54,9 @@ public class Negation : UnaryOperation
         Argument = Arg;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GObject);
-        AcceptedType = typeof(GSharpObject);
+        AcceptedType = typeof(GSObject);
         OperationToken = "not";
-        GSNumber func(GSharpObject a) => a.ToValueOfTruth() == 0 ? (GSNumber)1 : (GSNumber)0;
+        GSNumber func(GSObject a) => a.ToValueOfTruth() == 0 ? (GSNumber)1 : (GSNumber)0;
         Operation = func;
     }
 }
@@ -79,7 +79,7 @@ public class Positive : UnaryOperation
         EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSNumber);
         OperationToken = "+";
-        GSNumber func(GSharpObject a) => (GSNumber)a;
+        GSNumber func(GSObject a) => (GSNumber)a;
         Operation = func;
     }
 }
@@ -100,7 +100,7 @@ public class Negative : UnaryOperation
         EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSNumber);
         OperationToken = "-";
-        GSNumber func(GSharpObject a) => -(GSNumber)a;
+        GSNumber func(GSObject a) => -(GSNumber)a;
         Operation = func;
     }
 }

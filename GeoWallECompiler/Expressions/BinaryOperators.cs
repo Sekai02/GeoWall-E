@@ -39,7 +39,7 @@ public abstract class BinaryOperation : GSharpExpression
     /// <summary>
     /// Funcion que efectuará la operacion binaria
     /// </summary>
-    public delegate GSharpObject BinaryFunc(GSharpObject left, GSharpObject right);
+    public delegate GSObject BinaryFunc(GSObject left, GSObject right);
     #endregion
 }
 #region Conditionals
@@ -59,9 +59,9 @@ public class Conjunction : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GObject);
-        AcceptedType = typeof(GSharpObject);
+        AcceptedType = typeof(GSObject);
         OperationToken = "and";
-        GSharpObject func(GSharpObject a, GSharpObject b)
+        GSObject func(GSObject a, GSObject b)
         {
             bool result = a.ToValueOfTruth() == 1 && b.ToValueOfTruth() == 1;
             return result ? (GSNumber)1 : (GSNumber)0;
@@ -85,9 +85,9 @@ public class Disjunction : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GObject);
-        AcceptedType = typeof(GSharpObject);
+        AcceptedType = typeof(GSObject);
         OperationToken = "or";
-        GSharpObject func(GSharpObject a, GSharpObject b)
+        GSObject func(GSObject a, GSObject b)
         {
             bool result = a.ToValueOfTruth() == 1 || b.ToValueOfTruth() == 1;
             return result ? (GSNumber)1 : (GSNumber)0;
@@ -115,7 +115,7 @@ public class LowerThan : BinaryOperation
         EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSNumber);
         OperationToken = "<";
-        GSharpObject func(GSharpObject a, GSharpObject b)
+        GSObject func(GSObject a, GSObject b)
         {
             var result = (GSNumber)a < (GSNumber)b;
             return result? (GSNumber)1 : (GSNumber)0;
@@ -141,7 +141,7 @@ public class GreaterThan : BinaryOperation
         EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSNumber);
         OperationToken = ">";
-        GSharpObject func(GSharpObject a, GSharpObject b)
+        GSObject func(GSObject a, GSObject b)
         {
             var result = (GSNumber)a > (GSNumber)b;
             return result? (GSNumber)1 : (GSNumber)0;
@@ -167,7 +167,7 @@ public class LowerEqualThan : BinaryOperation
         EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSNumber);
         OperationToken = "<=";
-        GSharpObject func(GSharpObject a, GSharpObject b)
+        GSObject func(GSObject a, GSObject b)
         {
             var result = (GSNumber)a <= (GSNumber)b;
             return result ? (GSNumber)1 : (GSNumber)0;
@@ -193,7 +193,7 @@ public class GreaterEqualThan : BinaryOperation
         EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSNumber);
         OperationToken = ">=";
-        GSharpObject func(GSharpObject a, GSharpObject b)
+        GSObject func(GSObject a, GSObject b)
         {
             var result = (GSNumber)a >= (GSNumber)b;
             return result ? (GSNumber)1 : (GSNumber)0;
@@ -219,7 +219,7 @@ public class Equal : BinaryOperation
         EnteredType = new(GTypeNames.GObject);
         AcceptedType = typeof(GSNumber);
         OperationToken = "==";
-        GSharpObject func(GSharpObject a, GSharpObject b)
+        GSObject func(GSObject a, GSObject b)
         {
             var result = (GSNumber)a == (GSNumber)b;
             return result ? (GSNumber)1 : (GSNumber)0;
@@ -245,7 +245,7 @@ public class UnEqual : BinaryOperation
         EnteredType = new(GTypeNames.GObject);
         AcceptedType = typeof(GSNumber);
         OperationToken = "!=";
-        GSharpObject func(GSharpObject a, GSharpObject b)
+        GSObject func(GSObject a, GSObject b)
         {
             var result = (GSNumber)a != (GSNumber)b;
             return result ? (GSNumber)1 : (GSNumber)0;
@@ -273,7 +273,7 @@ public class Addition : BinaryOperation
         EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSNumber);
         OperationToken = "+";
-        GSharpObject func(GSharpObject a, GSharpObject b) => (GSNumber)a + (GSNumber)b;
+        GSObject func(GSObject a, GSObject b) => (GSNumber)a + (GSNumber)b;
         Operation = func;
     }
 }
@@ -295,7 +295,7 @@ public class Subtraction : BinaryOperation
         EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSNumber);
         OperationToken = "-";
-        GSharpObject func(GSharpObject a, GSharpObject b) => (GSNumber)a - (GSNumber)b;
+        GSObject func(GSObject a, GSObject b) => (GSNumber)a - (GSNumber)b;
         Operation = func;
     }
 }
@@ -317,7 +317,7 @@ public class Multiplication : BinaryOperation
         EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSNumber);
         OperationToken = "*";
-        GSharpObject func(GSharpObject a, GSharpObject b) => (GSNumber)a * (GSNumber)b; 
+        GSObject func(GSObject a, GSObject b) => (GSNumber)a * (GSNumber)b; 
         Operation = func;
     }
 }
@@ -339,7 +339,7 @@ public class Division : BinaryOperation
         EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSNumber);
         OperationToken = "/";
-        GSharpObject func(GSharpObject a, GSharpObject b) => 
+        GSObject func(GSObject a, GSObject b) => 
             b.ToValueOfTruth() == 0 ? throw new DefaultError("Atempted to divide by 0", "arithmetic") : (GSNumber)a / (GSNumber)b;
         Operation = func;
     }
@@ -362,7 +362,7 @@ public class Module : BinaryOperation
         EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSNumber);
         OperationToken = "%";
-        GSharpObject func(GSharpObject a, GSharpObject b) =>
+        GSObject func(GSObject a, GSObject b) =>
             b.ToValueOfTruth() == 0 ? throw new DefaultError("Atempted to divide by 0", "arithmetic") : (GSNumber)a % (GSNumber)b;
         Operation = func;
     }
@@ -385,7 +385,7 @@ public class Power : BinaryOperation
         EnteredType = new(GTypeNames.GNumber);
         AcceptedType = typeof(GSNumber);
         OperationToken = "^";
-        GSharpObject func(GSharpObject a, GSharpObject b)
+        GSObject func(GSObject a, GSObject b)
         {
             GSNumber left = (GSNumber)a;
             GSNumber right = (GSNumber)b;

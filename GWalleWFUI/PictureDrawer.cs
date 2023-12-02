@@ -1,4 +1,5 @@
 ﻿using GeoWallECompiler;
+using System.Collections;
 
 namespace GWalleWFUI;
 public class PictureDrawer : IDrawer
@@ -16,11 +17,8 @@ public class PictureDrawer : IDrawer
         _width = width;
     }
     public Pen DrawerPen { get; }
-
     public int CanvasHeight => _height;
-
     public int CanvasWidth => _width;
-
     private void WriteMessage(GSString message, double x, double y)
     {
         string s = message?.Value ?? "";
@@ -42,7 +40,7 @@ public class PictureDrawer : IDrawer
         double y1 = arc.StartPoint.Coordinates.Value.Y;
         double x2 = arc.EndPoint.Coordinates.Value.X;
         double y2 = arc.EndPoint.Coordinates.Value.Y;
-        double radius = arc.Radius;
+        double radius = arc.Radius.Value;
 
         double startAngle = GetLineAngleDeg(xc, yc, x1, y1);
         double endAngle = GetLineAngleDeg(xc, yc, x2, y2);
@@ -61,7 +59,7 @@ public class PictureDrawer : IDrawer
     {
         float x = circle.Center.Coordinates.Value.X;
         float y = circle.Center.Coordinates.Value.Y;
-        float radius = circle.Radius;
+        float radius = circle.Radius.Value;
         drawer.DrawEllipse(DrawerPen, x - radius, y - radius, 2 * radius, 2 * radius);
 
         WriteMessage(name, x, y);
@@ -144,10 +142,22 @@ public class PictureDrawer : IDrawer
         double yMessage = (y1 + y2) / 2;
         WriteMessage(name, xMessage, yMessage);
     }
-    public void DrawSequence<T>(GSharpSequence<T> sequence) where T : GSharpObject, IDrawable
+    public void DrawSequence<T>(GSharpSequence<T> sequence) where T : GSObject, IDrawable
     {
         foreach (var obj in sequence.Sequence)
             obj.Draw(this, null);
+    }
+    public void DrawEnumerable(IEnumerable values)
+    {
+        try 
+        {
+            foreach (var obj in values)
+                ((IDrawable)obj).Draw(this, null);
+        }
+        catch
+        {
+            throw new DefaultError("Object cannot be drawed");
+        }
     }
     public void DrawString(GSString gString)
     {
