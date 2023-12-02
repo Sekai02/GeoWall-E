@@ -1,11 +1,11 @@
-﻿using System.Drawing;
-
-namespace GeoWallECompiler;
+﻿namespace GeoWallECompiler;
 /// <summary>
 /// Interfaz que implementa metodos para dibujar figuras en el plano
 /// </summary>
 public interface IDrawer
 {
+    public int CanvasHeight { get; }
+    public int CanvasWidth { get; }
     public void Reset();
     public void SetColor(string newColor);
     public void ResetColor();

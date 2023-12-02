@@ -13,18 +13,33 @@ public class GSharpType
     {
         Name = typeName;
         HasGenericType = false;
+        SetIsFigureProperty(typeName);
     }
     public GSharpType(GTypeNames typeName, GTypeNames genericType)
     {
         Name = typeName;
-        if (Name != GTypeNames.GSequence)
+        if (Name != GTypeNames.GSequence) { 
             HasGenericType = false;
+            SetIsFigureProperty(typeName);
+        }
         else
         {
             HasGenericType = true;
             this.genericType = genericType;
+            SetIsFigureProperty(genericType);
         }
     }
+    private void SetIsFigureProperty(GTypeNames typeNames)
+    {
+        bool isFigure = typeNames is GTypeNames.Arc
+            or GTypeNames.Ray
+            or GTypeNames.Point
+            or GTypeNames.Segment
+            or GTypeNames.Circle
+            or GTypeNames.Line;
+        IsFigure = isFigure;
+    }
+    public bool IsFigure { get; private set; }
     public GTypeNames Name { get; }
     public GTypeNames GenericType => HasGenericType ? genericType : throw new Exception("Type does not contain generic type");
     public static bool operator ==(GSharpType a, GSharpType b)

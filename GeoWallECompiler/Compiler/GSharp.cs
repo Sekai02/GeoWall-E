@@ -42,16 +42,23 @@ public static class GSharp
     {
         drawer.Reset();
         List<Token> tokens = Scan(source);
-        Parser parser = new(tokens);
+        if (ErrorHandler.HadError)
+            return;
+        Parser parser = new(tokens);        
         List<Statement> statements = parser.Parse();
+        if (ErrorHandler.HadError)
+            return;
         Evaluator evaluator = new(drawer);
         Resolver resolver = new(evaluator);
         TypeChecker typeChecker = new(evaluator);
-        foreach (var st in statements)
-            st.Accept(resolver);
-        foreach(var st in statements)
-            st.Accept(typeChecker);
-        foreach (var st in statements)
-            st.Accept(evaluator);
+        resolver.VisitStatements(statements);
+        if (ErrorHandler.HadError)
+            return;
+        typeChecker.VisitStatements(statements);
+        if (ErrorHandler.HadError)
+            return;
+        evaluator.VisitStatements(statements);
+        if (ErrorHandler.HadError)
+            return;
     }
 }

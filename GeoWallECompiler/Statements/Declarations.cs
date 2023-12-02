@@ -32,10 +32,7 @@ public class FunctionDeclaration : Statement
 }
 public class DeclaredFunction : ICallable
 {
-    public DeclaredFunction(FunctionDeclaration declaration)
-    {
-        Declaration = declaration;
-    }
+    public DeclaredFunction(FunctionDeclaration declaration) => Declaration = declaration;
     public FunctionDeclaration Declaration { get; }
     public GSharpObject Evaluate(Evaluator evaluator, List<GSharpObject> arguments)
     {

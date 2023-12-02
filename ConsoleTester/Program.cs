@@ -1,5 +1,4 @@
 ﻿using GeoWallECompiler;
-using System.Reflection.Metadata.Ecma335;
 
 namespace ConsoleTester;
 
@@ -17,6 +16,9 @@ internal class Program : IWalleUI
 public class DrawerDummie : IDrawer
 {
     public DrawerDummie() { }
+
+    public int CanvasHeight => 1000;
+    public int CanvasWidth => 1000;
     public void DrawArc(Arc arc, GSharpString name = null) => Console.WriteLine("draw succeded");
     public void DrawCircle(Circle circle, GSharpString name = null) => Console.WriteLine("draw succeded");
     public void DrawLine(Line line, GSharpString name = null) => Console.WriteLine("draw succeded");

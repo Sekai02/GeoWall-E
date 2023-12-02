@@ -28,12 +28,13 @@ public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>>
         Sequence = objects;
         Count = objects.Count;
     }
-    public static ArraySequence<T> GetRandomInstance()
+    public static ArraySequence<T> GetRandomInstance(int limit = 500)
     {
         Random random = new();
         List<T> values = new();
-        for (int i = 0; i < random.Next(20); i++)
-            values.Add(T.GetRandomInstance());
+        int count = random.Next(20);
+        for (int i = 0; i < count; i++)
+            values.Add(T.GetRandomInstance(limit));
         return new ArraySequence<T>(values);
     }
 

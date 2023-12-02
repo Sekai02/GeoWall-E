@@ -50,14 +50,14 @@ public class Context<Var, Fun>
         Context<Var,Fun>? ancestor = this;
         if(distance == 0)
             return ancestor.AccessVariable(name);
-        for (int i = 0; i < distance; i--)
+        for (int i = 0; i < distance; i++)
             ancestor = ancestor?.Enclosing;
         return ancestor.AccessVariable(name);
     }
     public Fun AccessFunctionAt(int distance, string name)
     {
         Context<Var,Fun>? ancestor = this;
-        for (int i = 0; i < distance; i--)
+        for (int i = 0; i < distance; i++)
             ancestor = ancestor?.Enclosing;
         return ancestor.AccessFunction(name);
     }

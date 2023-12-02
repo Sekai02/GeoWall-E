@@ -119,36 +119,72 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
     public void VisitDrawStatment(DrawStatement drawStatement)
     {
         var objectToDraw = drawStatement.Expression.Accept(this);
+        var expressionType = drawStatement.Expression.ExpressionType;
         var label = drawStatement.StringExpression?.String;
-        if (objectToDraw is not IDrawable)
-            throw new DefaultError("Draw argument must be a figure", "Semantic");
-        ((IDrawable)objectToDraw).Draw(Drawer, label);
+        if (objectToDraw is IDrawable)
+        {
+            ((IDrawable)objectToDraw).Draw(Drawer, label);
+            return;
+        }
+        else if (expressionType.Name == GTypeNames.GSequence && expressionType.IsFigure)
+        {
+            switch (expressionType.GenericType) 
+            {
+                case GTypeNames.Point: 
+                    var pointSequence = (GSharpSequence<GSharpPoint>)objectToDraw;
+                    Drawer.DrawSequence(pointSequence);
+                    break;
+                case GTypeNames.Line:
+                    var lineSequence = (GSharpSequence<Line>)objectToDraw;
+                    Drawer.DrawSequence(lineSequence);
+                    break;
+                case GTypeNames.Segment:
+                    var segmentSequence = (GSharpSequence<Segment>)objectToDraw;
+                    Drawer.DrawSequence(segmentSequence);
+                    break;
+                case GTypeNames.Ray:
+                    var raySequence = (GSharpSequence<Ray>)objectToDraw;
+                    Drawer.DrawSequence(raySequence);
+                    break;
+                case GTypeNames.Circle:
+                    var circleSequence = (GSharpSequence<Circle>)objectToDraw;
+                    Drawer.DrawSequence(circleSequence);
+                    break;
+                case GTypeNames.Arc:
+                    var arcSequence = (GSharpSequence<Arc>)objectToDraw;
+                    Drawer.DrawSequence(arcSequence);
+                    break;
+            }
+            return;
+        }
+        throw new DefaultError("Draw argument must be a figure", "Semantic");
     }
     public void VisitColorStatent(ColorStatement color) => Drawer.SetColor(color.Color);
     public void VisitRestoreStatement(Restore restore) => Drawer.ResetColor();
     public void VisitRecieverStatement(Reciever reciever)
     {
+        int coordinatesLimit = (Drawer.CanvasHeight + Drawer.CanvasWidth) / 2;
         if (reciever.IsSequence)
         {
             switch (reciever.ParameterType)
             {
                 case GTypeNames.Point:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<GSharpPoint>.GetRandomInstance());
+                    environment.SetVariable(reciever.Identifier, ArraySequence<GSharpPoint>.GetRandomInstance(coordinatesLimit));
                     break;
                 case GTypeNames.Circle:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Circle>.GetRandomInstance());
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Circle>.GetRandomInstance(coordinatesLimit));
                     break;
                 case GTypeNames.Line:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Line>.GetRandomInstance());
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Line>.GetRandomInstance(coordinatesLimit));
                     break;
                 case GTypeNames.Segment:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Segment>.GetRandomInstance());
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Segment>.GetRandomInstance(coordinatesLimit));
                     break;
                 case GTypeNames.Ray:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Ray>.GetRandomInstance());
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Ray>.GetRandomInstance(coordinatesLimit));
                     break;
                 case GTypeNames.Arc:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Arc>.GetRandomInstance());
+                    environment.SetVariable(reciever.Identifier, ArraySequence<Arc>.GetRandomInstance(coordinatesLimit));
                     break;
                 default:
                     throw new DefaultError("Invalid type", "semantic");
@@ -158,25 +194,30 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         switch (reciever.ParameterType)
         {
             case GTypeNames.Point:
-                environment.SetVariable(reciever.Identifier, GSharpPoint.GetRandomInstance());
+                environment.SetVariable(reciever.Identifier, GSharpPoint.GetRandomInstance(coordinatesLimit));
                 break;
             case GTypeNames.Circle:
-                environment.SetVariable(reciever.Identifier, Circle.GetRandomInstance());
+                environment.SetVariable(reciever.Identifier, Circle.GetRandomInstance(coordinatesLimit));
                 break;
             case GTypeNames.Line:
-                environment.SetVariable(reciever.Identifier, Line.GetRandomInstance());
+                environment.SetVariable(reciever.Identifier, Line.GetRandomInstance(coordinatesLimit));
                 break;
             case GTypeNames.Segment:
-                environment.SetVariable(reciever.Identifier, Segment.GetRandomInstance());
+                environment.SetVariable(reciever.Identifier, Segment.GetRandomInstance(coordinatesLimit));
                 break;
             case GTypeNames.Ray:
-                environment.SetVariable(reciever.Identifier, Ray.GetRandomInstance());
+                environment.SetVariable(reciever.Identifier, Ray.GetRandomInstance(coordinatesLimit));
                 break;
             case GTypeNames.Arc:
-                environment.SetVariable(reciever.Identifier, Arc.GetRandomInstance());
+                environment.SetVariable(reciever.Identifier, Arc.GetRandomInstance(coordinatesLimit));
                 break;
             default:
                 throw new DefaultError("Invalid type", "semantic");
         }
+    }
+    public void VisitStatements(List<Statement> statements)
+    {
+        foreach(Statement st in statements)
+            st.Accept(this);
     }
 }

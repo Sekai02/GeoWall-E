@@ -3,6 +3,7 @@
 namespace GeoWallECompiler;
 public interface IStatementVisitor
 {
+    void VisitStatements(List<Statement> statements);
     void VisitExpressionStatement(ExpressionStatement expression);
     void VisitFunctionDeclaration(FunctionDeclaration declaration);
     void VisitConstantDeclaration(ConstantsDeclaration declaration);

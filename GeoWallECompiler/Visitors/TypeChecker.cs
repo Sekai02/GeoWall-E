@@ -56,8 +56,16 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
         foreach (var constant in declaration.ConstantNames)
             TypeEnvironment.SetVariable(constant, new(type.GenericType));     
     }
-    public void VisitDrawStatment(DrawStatement drawStatement) => drawStatement.Expression.Accept(this);
-    public void VisitExpressionStatement(ExpressionStatement expression) => expression.Expression.Accept(this);
+    public void VisitDrawStatment(DrawStatement drawStatement) 
+    {
+        var type = drawStatement.Expression.Accept(this);
+        drawStatement.Expression.ExpressionType = type;
+    }
+    public void VisitExpressionStatement(ExpressionStatement expression)
+    {
+        GSharpType gSharpType = expression.Expression.Accept(this);
+        expression.Expression.ExpressionType = gSharpType;
+    }
     public GSharpType VisitFunctionCall(FunctionCall functionCall)
     {
         int distance = Interpreter.References[functionCall];
@@ -104,7 +112,7 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
         TypeEnvironment = TypeEnvironment.Enclosing;
         return result;
     }
-    public GSharpType VisitLiteralNumber(LiteralNumber literal) => new(GTypeNames.GNumber);
+    public GSharpType VisitLiteralNumber(LiteralNumber literal) => literal.ExpressionType = new(GTypeNames.GNumber);
     public GSharpType VisitLiteralSequence(LiteralSequence sequence)
     {
         //Arreglar
@@ -112,17 +120,17 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
         {
             GSharpType expressionType = expression.Accept(this);
             if (!sequence.TypeSetted)
-                sequence.ExpressionType = expressionType;
-            else if (sequence.ExpressionType != expressionType)
+                sequence.ExpressionType = new(GTypeNames.GSequence, expressionType.Name);
+            else if (sequence.ExpressionType.GenericType != expressionType.Name)
             {
                 ReportSemanticError(new DefaultError("SemanticError", "All elements of a sequence must be of the same type"));
-                return new GSharpType(GTypeNames.GSequence, sequence.ExpressionType.Name);
+                return sequence.ExpressionType;
             }
         }
-        return new GSharpType(GTypeNames.GSequence, sequence.ExpressionType.Name);
+        return sequence.ExpressionType;
     }
-    public GSharpType VisitLiteralString(LiteralString @string) => new(GTypeNames.GString);
-    public void VisitRestoreStatement(Restore restore) { }
+    public GSharpType VisitLiteralString(LiteralString @string) => @string.ExpressionType = new(GTypeNames.GString);
+    public void VisitRestoreStatement(Restore restore) { return; }
     public void VisitRecieverStatement(Reciever reciever) 
     {
         GSharpType recievedVarType = reciever.IsSequence ? 
@@ -133,9 +141,15 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     public GSharpType VisitUnaryOperation(UnaryOperation unary)
     {
         GSharpType argType = unary.Argument.Accept(this);
+        unary.ExpressionType = argType;
         if (argType.Name != GTypeNames.Undetermined && argType != unary.EnteredType)
             ReportSemanticError(new SemanticError($"Operator `{unary.OperationToken}`", unary.EnteredType.Name.ToString(), argType.Name.ToString(), null));
         return unary.ReturnedType;
+    }
+    public void VisitStatements(List<Statement> statements)
+    {
+        foreach (Statement st in statements)
+            st.Accept(this);
     }
     private void ReportSemanticError(GSharpException error)
     {

@@ -5,20 +5,29 @@ public class PictureDrawer : IDrawer
 {
     private readonly Graphics drawer;
     private Stack<Color> usedColors;
-    public PictureDrawer(Graphics graphics, Pen pen)
+    private readonly int _height;
+    private readonly int _width;
+    public PictureDrawer(Graphics graphics, Pen pen, int height, int width)
     {
         drawer = graphics;
         DrawerPen = pen;
         usedColors = new();
+        _height = height;
+        _width = width;
     }
     public Pen DrawerPen { get; }
+
+    public int CanvasHeight => _height;
+
+    public int CanvasWidth => _width;
+
     private void WriteMessage(GSharpString message, double x, double y)
     {
         string s = message?.Value ?? "";
         if (s != "")
             drawer.DrawString(s, new Font("Arial", 10), DrawerPen.Brush, (float)x + 3, (float)y + 3);
     }
-    private double GetLineAngleDeg(double x1, double y1, double x2, double y2)
+    private static double GetLineAngleDeg(double x1, double y1, double x2, double y2)
     {
         double y = (y2 - y1);
         double x = (x2 - x1);
@@ -131,8 +140,8 @@ public class PictureDrawer : IDrawer
         float y2 = (float)segment.Point2.Coordinates.Value.Y.Value;
         drawer.DrawLine(DrawerPen, x1, y1, x2, y2);
 
-        double xMessage = (x1 + y1) / 2;
-        double yMessage = (x2 + y2) / 2;
+        double xMessage = (x1 + x2) / 2;
+        double yMessage = (y1 + y2) / 2;
         WriteMessage(name, xMessage, yMessage);
     }
     public void DrawSequence<T>(GSharpSequence<T> sequence) where T : GSharpObject, IDrawable
@@ -158,7 +167,6 @@ public class PictureDrawer : IDrawer
         if (usedColors.TryPop(out Color oldColor))
              DrawerPen.Color = oldColor;
     }
-
     public void Reset()
     {
         usedColors.Clear();
