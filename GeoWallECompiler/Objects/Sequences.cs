@@ -67,58 +67,58 @@ public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>>
         }
     }
 }
-public class FiniteIntegerSequence : GSharpSequence<GSharpNumber>
+public class FiniteIntegerSequence : GSharpSequence<GSNumber>
 {
     private readonly int startNumber;
     private readonly int endNumber;
-    public FiniteIntegerSequence(GSharpNumber start, GSharpNumber end)
+    public FiniteIntegerSequence(GSNumber start, GSNumber end)
     {
-        if (!double.IsInteger(start.Value) || !double.IsInteger(end.Value))
+        if (!double.IsInteger(start) || !double.IsInteger(end))
             throw new DefaultError("Sequences declaration with '...' can only take integers as limits", "Semantic");
-        Sequence = FiniteRange((int)start.Value, (int)end.Value);
-        Count = (int)Math.Abs(end.Value - end.Value);
+        Sequence = FiniteRange(start, end);
+        Count = Math.Abs(end - start);
     }
-    private static IEnumerable<GSharpNumber> FiniteRange(int a, int b)
+    private static IEnumerable<GSNumber> FiniteRange(int a, int b)
     {
         if (a < b)
             for (int i = a; i <= b; i++)
-                yield return new GSharpNumber(i);
+                yield return (GSNumber)i;
         else
             for (int i = b; i >= a; i--)
-                yield return new GSharpNumber(i);
+                yield return (GSNumber)i;
     }
-    public override GSharpSequence<GSharpNumber> GetTail(int tailBeggining) 
+    public override GSharpSequence<GSNumber> GetTail(int tailBeggining) 
     {
         if (tailBeggining > endNumber)
             return null;
-        GSharpNumber start = new(startNumber + tailBeggining);
-        GSharpNumber end = new(endNumber);
+        GSNumber start = (GSNumber)(startNumber + tailBeggining);
+        GSNumber end = (GSNumber)endNumber;
         return new FiniteIntegerSequence(start, end);
     }
 }
-public class InfiniteIntegerSequence : GSharpSequence<GSharpNumber>
+public class InfiniteIntegerSequence : GSharpSequence<GSNumber>
 {
     private readonly int startNumber;
-    public InfiniteIntegerSequence(GSharpNumber start)
+    public InfiniteIntegerSequence(GSNumber start)
     {
-        if (!double.IsInteger(start.Value))
+        if (!double.IsInteger(start))
             throw new DefaultError("Sequences declaration with '...' can only take integers as limits", "Semantic");
-        startNumber = (int)start.Value;
-        Sequence = InfiniteRange((int)start.Value);
+        startNumber = start;
+        Sequence = InfiniteRange(start);
         Count = null;
     }
-    private static IEnumerable<GSharpNumber> InfiniteRange(int a)
+    private static IEnumerable<GSNumber> InfiniteRange(int a)
     {
         int i = a;
         while (true)
         {
-            yield return new GSharpNumber(i);
+            yield return (GSNumber)i;
             i++;
         }
     }
-    public override GSharpSequence<GSharpNumber> GetTail(int tailBeggining)
+    public override GSharpSequence<GSNumber> GetTail(int tailBeggining)
     {
-        GSharpNumber start = new(startNumber + tailBeggining);
+        GSNumber start = (GSNumber)(startNumber + tailBeggining);
         return new InfiniteIntegerSequence(start);
     }
 }

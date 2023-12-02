@@ -131,7 +131,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
             switch (expressionType.GenericType) 
             {
                 case GTypeNames.Point: 
-                    var pointSequence = (GSharpSequence<GSharpPoint>)objectToDraw;
+                    var pointSequence = (GSharpSequence<GSPoint>)objectToDraw;
                     Drawer.DrawSequence(pointSequence);
                     break;
                 case GTypeNames.Line:
@@ -169,7 +169,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
             switch (reciever.ParameterType)
             {
                 case GTypeNames.Point:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<GSharpPoint>.GetRandomInstance(coordinatesLimit));
+                    environment.SetVariable(reciever.Identifier, ArraySequence<GSPoint>.GetRandomInstance(coordinatesLimit));
                     break;
                 case GTypeNames.Circle:
                     environment.SetVariable(reciever.Identifier, ArraySequence<Circle>.GetRandomInstance(coordinatesLimit));
@@ -194,7 +194,7 @@ public class Evaluator : IExpressionVisitor<GSharpObject>, IStatementVisitor
         switch (reciever.ParameterType)
         {
             case GTypeNames.Point:
-                environment.SetVariable(reciever.Identifier, GSharpPoint.GetRandomInstance(coordinatesLimit));
+                environment.SetVariable(reciever.Identifier, GSPoint.GetRandomInstance(coordinatesLimit));
                 break;
             case GTypeNames.Circle:
                 environment.SetVariable(reciever.Identifier, Circle.GetRandomInstance(coordinatesLimit));

@@ -49,27 +49,27 @@ public class FiniteRangeExpression : LiteralSequence
         Expressions = FiniteRange((LiteralNumber)leftBoundExpression, (LiteralNumber)rightBoundExpression);
         LeftBound = (LiteralNumber)leftBoundExpression;
         RightBound = (LiteralNumber)rightBoundExpression;
-        Count = (int)(RightBound.Value.Value - LeftBound.Value.Value);
+        Count = RightBound.Value - LeftBound.Value;
         ExpressionType = new(GTypeNames.GSequence, GTypeNames.GNumber);
     }
     public LiteralNumber LeftBound { get; }
     public LiteralNumber RightBound { get; }
     private static IEnumerable<GSharpExpression> FiniteRange(LiteralNumber left, LiteralNumber right)
     {
-        double start = left.Value.Value;
-        double end = right.Value.Value;
+        double start = left.Value;
+        double end = right.Value;
         if (!double.IsInteger(start) || !double.IsInteger(end))
             throw new DefaultError("Sequences declaration with '...' can only take integers as limits", "Semantic");
         if (start < end)
             for (int i = (int)start; i <= end; i++)
-                yield return new LiteralNumber(new GSharpNumber(i));
+                yield return new LiteralNumber((GSNumber)i);
     }
 
     public override LiteralSequence GetTail(int tailBeggining) 
     {
-        if (tailBeggining > RightBound.Value.Value)
+        if (tailBeggining > RightBound.Value)
             return new LiteralArrayExpression(new List<GSharpExpression>());
-        GSharpExpression leftBound = new Addition(LeftBound ,new LiteralNumber(new GSharpNumber(tailBeggining)));
+        GSharpExpression leftBound = new Addition(LeftBound ,new LiteralNumber((GSNumber)tailBeggining));
         return new FiniteRangeExpression(leftBound, RightBound);
     }
 }
@@ -86,19 +86,19 @@ public class InfiniteRangeExpression : LiteralSequence
     }
     private static IEnumerable<GSharpExpression> InfiniteRange(LiteralNumber start)
     {
-        double bound = start.Value.Value;
+        double bound = start.Value;
         if (!double.IsInteger(bound))
             throw new DefaultError("Sequences declaration with '...' can only take integers as limits", "Semantic");
         double i = bound;
         while (true)
         {
-            yield return new LiteralNumber(new GSharpNumber(i));
+            yield return new LiteralNumber((GSNumber)i);
             i++;
         }
     }
     public override LiteralSequence GetTail(int tailBeggining)
     {
-        GSharpExpression leftBound = new Addition(LeftBoundExpression, new LiteralNumber(new GSharpNumber(tailBeggining)));
+        GSharpExpression leftBound = new Addition(LeftBoundExpression, new LiteralNumber((GSNumber)tailBeggining));
         return new InfiniteRangeExpression(leftBound);
     }
     public GSharpExpression LeftBoundExpression { get; }

@@ -56,7 +56,7 @@ public class Negation : UnaryOperation
         EnteredType = new(GTypeNames.GObject);
         AcceptedType = typeof(GSharpObject);
         OperationToken = "not";
-        GSharpNumber func(GSharpObject a) => a.ToValueOfTruth() == 0 ? new GSharpNumber(1) : new GSharpNumber(0);
+        GSNumber func(GSharpObject a) => a.ToValueOfTruth() == 0 ? (GSNumber)1 : (GSNumber)0;
         Operation = func;
     }
 }
@@ -77,9 +77,9 @@ public class Positive : UnaryOperation
         Argument = Arg;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = "+";
-        GSharpNumber func(GSharpObject a) => (GSharpNumber)a;
+        GSNumber func(GSharpObject a) => (GSNumber)a;
         Operation = func;
     }
 }
@@ -98,13 +98,9 @@ public class Negative : UnaryOperation
         Argument = Arg;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = "-";
-        GSharpNumber func(GSharpObject a)
-        {
-            var arg = a as GSharpNumber;
-            return new GSharpNumber(-arg.Value);
-        }
+        GSNumber func(GSharpObject a) => -(GSNumber)a;
         Operation = func;
     }
 }

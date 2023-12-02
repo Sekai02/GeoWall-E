@@ -9,10 +9,10 @@ public class LiteralNumber : GSharpExpression
     /// Construye un objeto que representa un valor literal
     /// </summary>
     /// <param name="value">Objeto valor de la expresion</param>
-    public LiteralNumber(GSharpNumber value) => Value = value;
+    public LiteralNumber(GSNumber value) => Value = value;
     public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitLiteralNumber(this);
     /// <summary>
     /// Valor del literal
     /// </summary>
-    public GSharpNumber Value { get; private set; }
+    public GSNumber Value { get; private set; }
 }

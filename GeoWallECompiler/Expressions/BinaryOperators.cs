@@ -64,7 +64,7 @@ public class Conjunction : BinaryOperation
         GSharpObject func(GSharpObject a, GSharpObject b)
         {
             bool result = a.ToValueOfTruth() == 1 && b.ToValueOfTruth() == 1;
-            return result ? new GSharpNumber(1) : new GSharpNumber(0);
+            return result ? (GSNumber)1 : (GSNumber)0;
         }
         Operation = func;
     }
@@ -90,7 +90,7 @@ public class Disjunction : BinaryOperation
         GSharpObject func(GSharpObject a, GSharpObject b)
         {
             bool result = a.ToValueOfTruth() == 1 || b.ToValueOfTruth() == 1;
-            return result ? new GSharpNumber(1) : new GSharpNumber(0);
+            return result ? (GSNumber)1 : (GSNumber)0;
         }
         Operation = func;
     }
@@ -113,12 +113,12 @@ public class LowerThan : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = "<";
         GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            var result = (GSharpNumber)a < (GSharpNumber)b;
-            return result.ToValueOfTruth() == 1 ? new GSharpNumber(1) : new GSharpNumber(0);
+            var result = (GSNumber)a < (GSNumber)b;
+            return result? (GSNumber)1 : (GSNumber)0;
         }
         Operation = func;
     }
@@ -139,12 +139,12 @@ public class GreaterThan : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = ">";
         GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            var result = (GSharpNumber)a > (GSharpNumber)b;
-            return result.ToValueOfTruth() == 1 ? new GSharpNumber(1) : new GSharpNumber(0);
+            var result = (GSNumber)a > (GSNumber)b;
+            return result? (GSNumber)1 : (GSNumber)0;
         }
         Operation = func;
     }
@@ -165,12 +165,12 @@ public class LowerEqualThan : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = "<=";
         GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            var result = (GSharpNumber)a <= (GSharpNumber)b;
-            return result.ToValueOfTruth() == 1 ? new GSharpNumber(1) : new GSharpNumber(0);
+            var result = (GSNumber)a <= (GSNumber)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
         }
         Operation = func;
     }
@@ -191,12 +191,12 @@ public class GreaterEqualThan : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = ">=";
         GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            var result = (GSharpNumber)a >= (GSharpNumber)b;
-            return result.ToValueOfTruth() == 1 ? new GSharpNumber(1) : new GSharpNumber(0);
+            var result = (GSNumber)a >= (GSNumber)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
         }
         Operation = func;
     }
@@ -217,12 +217,12 @@ public class Equal : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GObject);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = "==";
         GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            var result = (GSharpNumber)a == (GSharpNumber)b;
-            return result.ToValueOfTruth() == 1 ? new GSharpNumber(1) : new GSharpNumber(0);
+            var result = (GSNumber)a == (GSNumber)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
         }
         Operation = func;
     }
@@ -243,18 +243,21 @@ public class UnEqual : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GObject);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = "!=";
         GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            var result = (GSharpNumber)a != (GSharpNumber)b;
-            return result.ToValueOfTruth() == 1 ? new GSharpNumber(1) : new GSharpNumber(0);
+            var result = (GSNumber)a != (GSNumber)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
         }
         Operation = func;
     }
 }
 #endregion
 #region Arithmetic Basic Operations
+/// <summary>
+/// Clase que representa el nodo de una operacion de adición en un arbol de expresion
+/// </summary>
 public class Addition : BinaryOperation
 {
     /// <summary>
@@ -268,14 +271,14 @@ public class Addition : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = "+";
-        GSharpObject func(GSharpObject a, GSharpObject b) => (GSharpNumber)a + (GSharpNumber)b;
+        GSharpObject func(GSharpObject a, GSharpObject b) => (GSNumber)a + (GSNumber)b;
         Operation = func;
     }
 }
 /// <summary>
-/// Clase que representa el nodo de una operacion de adición en un arbol de expresion
+/// Clase que representa el nodo de una operacion de sustracción en un arbol de expresion
 /// </summary>
 public class Subtraction : BinaryOperation
 {
@@ -290,14 +293,14 @@ public class Subtraction : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = "-";
-        GSharpObject func(GSharpObject a, GSharpObject b) => (GSharpNumber)a - (GSharpNumber)b;
+        GSharpObject func(GSharpObject a, GSharpObject b) => (GSNumber)a - (GSNumber)b;
         Operation = func;
     }
 }
 /// <summary>
-/// Clase que representa el nodo de una operacion de sustracción en un arbol de expresion
+/// Clase que representa el nodo de una operacion de multiplicación en un arbol de expresion
 /// </summary>
 public class Multiplication : BinaryOperation
 {
@@ -312,14 +315,14 @@ public class Multiplication : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = "*";
-        GSharpObject func(GSharpObject a, GSharpObject b) => (GSharpNumber)a * (GSharpNumber)b; 
+        GSharpObject func(GSharpObject a, GSharpObject b) => (GSNumber)a * (GSNumber)b; 
         Operation = func;
     }
 }
 /// <summary>
-/// Clase que representa el nodo de una operacion de multiplicación en un arbol de expresion
+/// Clase que representa el nodo de una operacion de division en un arbol de expresion
 /// </summary>
 public class Division : BinaryOperation
 {
@@ -334,15 +337,15 @@ public class Division : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = "/";
         GSharpObject func(GSharpObject a, GSharpObject b) => 
-            b.ToValueOfTruth() == 0 ? throw new DefaultError("Atempted to divide by 0", "arithmetic") : (GSharpNumber)a / (GSharpNumber)b;
+            b.ToValueOfTruth() == 0 ? throw new DefaultError("Atempted to divide by 0", "arithmetic") : (GSNumber)a / (GSNumber)b;
         Operation = func;
     }
 }
 /// <summary>
-/// Clase que representa el nodo de una operacion de division en un arbol de expresion
+/// Clase que representa el nodo de una operacion de modulo o resto en un arbol de expresion
 /// </summary>
 public class Module : BinaryOperation
 {
@@ -357,15 +360,15 @@ public class Module : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = "%";
         GSharpObject func(GSharpObject a, GSharpObject b) =>
-            b.ToValueOfTruth() == 0 ? throw new DefaultError("Atempted to divide by 0", "arithmetic") : (GSharpNumber)a % (GSharpNumber)b;
+            b.ToValueOfTruth() == 0 ? throw new DefaultError("Atempted to divide by 0", "arithmetic") : (GSNumber)a % (GSNumber)b;
         Operation = func;
     }
 }
 /// <summary>
-/// Clase que representa el nodo de una operacion de modulo o resto en un arbol de expresion
+/// Clase que representa el nodo de una operacion de potencia en un arbol de expresion
 /// </summary>
 public class Power : BinaryOperation
 {
@@ -380,18 +383,15 @@ public class Power : BinaryOperation
         RightArgument = rightArgument;
         ReturnedType = new(GTypeNames.GNumber);
         EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSharpNumber);
+        AcceptedType = typeof(GSNumber);
         OperationToken = "^";
         GSharpObject func(GSharpObject a, GSharpObject b)
         {
-            GSharpNumber left = (GSharpNumber)a;
-            GSharpNumber right = (GSharpNumber)b;
-            return new GSharpNumber(Math.Pow(left.Value,right.Value));
+            GSNumber left = (GSNumber)a;
+            GSNumber right = (GSNumber)b;
+            return (GSNumber)Math.Pow(left, right);
         }
         Operation = func;
     }
 }
-/// <summary>
-/// Clase que representa el nodo de una operacion de potencia en un arbol de expresion
-/// </summary>
 #endregion

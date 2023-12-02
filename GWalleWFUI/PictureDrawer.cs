@@ -21,7 +21,7 @@ public class PictureDrawer : IDrawer
 
     public int CanvasWidth => _width;
 
-    private void WriteMessage(GSharpString message, double x, double y)
+    private void WriteMessage(GSString message, double x, double y)
     {
         string s = message?.Value ?? "";
         if (s != "")
@@ -34,15 +34,15 @@ public class PictureDrawer : IDrawer
         double angle = Math.Atan2(y, x);
         return angle;
     }
-    public void DrawArc(Arc arc, GSharpString name = null)
+    public void DrawArc(Arc arc, GSString name = null)
     {
-        double xc = arc.Center.Coordinates.Value.X.Value;
-        double yc = arc.Center.Coordinates.Value.Y.Value;
-        double x1 = arc.StartPoint.Coordinates.Value.X.Value;
-        double y1 = arc.StartPoint.Coordinates.Value.Y.Value;
-        double x2 = arc.EndPoint.Coordinates.Value.X.Value;
-        double y2 = arc.EndPoint.Coordinates.Value.Y.Value;
-        double radius = arc.Radius.Value;
+        double xc = arc.Center.Coordinates.Value.X;
+        double yc = arc.Center.Coordinates.Value.Y;
+        double x1 = arc.StartPoint.Coordinates.Value.X;
+        double y1 = arc.StartPoint.Coordinates.Value.Y;
+        double x2 = arc.EndPoint.Coordinates.Value.X;
+        double y2 = arc.EndPoint.Coordinates.Value.Y;
+        double radius = arc.Radius;
 
         double startAngle = GetLineAngleDeg(xc, yc, x1, y1);
         double endAngle = GetLineAngleDeg(xc, yc, x2, y2);
@@ -57,21 +57,21 @@ public class PictureDrawer : IDrawer
 
         WriteMessage(name, xc, yc);
     }
-    public void DrawCircle(Circle circle, GSharpString name = null)
+    public void DrawCircle(Circle circle, GSString name = null)
     {
-        float x = (float)circle.Center.Coordinates.Value.X.Value;
-        float y = (float)circle.Center.Coordinates.Value.Y.Value;
-        float radius = (float)circle.Radius.Value;
+        float x = circle.Center.Coordinates.Value.X;
+        float y = circle.Center.Coordinates.Value.Y;
+        float radius = circle.Radius;
         drawer.DrawEllipse(DrawerPen, x - radius, y - radius, 2 * radius, 2 * radius);
 
         WriteMessage(name, x, y);
     }
-    public void DrawLine(Line line, GSharpString name = null)
+    public void DrawLine(Line line, GSString name = null)
     {
-        double x1 = line.Point1.Coordinates.Value.X.Value;
-        double y1 = line.Point1.Coordinates.Value.Y.Value;
-        double x2 = line.Point2.Coordinates.Value.X.Value;
-        double y2 = line.Point2.Coordinates.Value.Y.Value;
+        double x1 = line.Point1.Coordinates.Value.X;
+        double y1 = line.Point1.Coordinates.Value.Y;
+        double x2 = line.Point2.Coordinates.Value.X;
+        double y2 = line.Point2.Coordinates.Value.Y;
 
         if (x1 == x2)
         {
@@ -93,20 +93,20 @@ public class PictureDrawer : IDrawer
         double yMessage = (finalY1 + finalY2) / 2;
         WriteMessage(name, xMessage, yMessage);
     }
-    public void DrawPoint(GSharpPoint point, GSharpString name = null)
+    public void DrawPoint(GSPoint point, GSString name = null)
     {
-        float x = (float)point.Coordinates.Value.X.Value;
-        float y = (float)point.Coordinates.Value.Y.Value;
+        float x = point.Coordinates.Value.X;
+        float y = point.Coordinates.Value.Y;
         drawer.DrawEllipse(DrawerPen, x, y, 2, 2);
 
         WriteMessage(name, x, y);
     }
-    public void DrawRay(Ray ray, GSharpString name = null)
+    public void DrawRay(Ray ray, GSString name = null)
     {
-        double x1 = ray.Point1.Coordinates.Value.X.Value;
-        double y1 = ray.Point1.Coordinates.Value.Y.Value;
-        double x2 = ray.Point2.Coordinates.Value.X.Value;
-        double y2 = ray.Point2.Coordinates.Value.Y.Value;
+        double x1 = ray.Point1.Coordinates.Value.X;
+        double y1 = ray.Point1.Coordinates.Value.Y;
+        double x2 = ray.Point2.Coordinates.Value.X;
+        double y2 = ray.Point2.Coordinates.Value.Y;
 
         if (x1 == x2)
         {
@@ -132,12 +132,12 @@ public class PictureDrawer : IDrawer
 
         WriteMessage(name, x1, y1);
     }
-    public void DrawSegment(Segment segment, GSharpString name = null)
+    public void DrawSegment(Segment segment, GSString name = null)
     {
-        float x1 = (float)segment.Point1.Coordinates.Value.X.Value;
-        float y1 = (float)segment.Point1.Coordinates.Value.Y.Value;
-        float x2 = (float)segment.Point2.Coordinates.Value.X.Value;
-        float y2 = (float)segment.Point2.Coordinates.Value.Y.Value;
+        float x1 = segment.Point1.Coordinates.Value.X;
+        float y1 = segment.Point1.Coordinates.Value.Y;
+        float x2 = segment.Point2.Coordinates.Value.X;
+        float y2 = segment.Point2.Coordinates.Value.Y;
         drawer.DrawLine(DrawerPen, x1, y1, x2, y2);
 
         double xMessage = (x1 + x2) / 2;
@@ -149,7 +149,7 @@ public class PictureDrawer : IDrawer
         foreach (var obj in sequence.Sequence)
             obj.Draw(this, null);
     }
-    public void DrawString(GSharpString gString)
+    public void DrawString(GSString gString)
     {
         Font font = new("Arial", 16);
         Brush brush = new SolidBrush(Color.Black);

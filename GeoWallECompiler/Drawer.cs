@@ -9,13 +9,13 @@ public interface IDrawer
     public void Reset();
     public void SetColor(string newColor);
     public void ResetColor();
-    public void DrawPoint(GSharpPoint point, GSharpString name = null);
-    public void DrawLine(Line line, GSharpString name = null);
-    public void DrawSegment(Segment segment, GSharpString name = null);
-    public void DrawCircle(Circle circle, GSharpString name = null);
-    public void DrawArc(Arc arc, GSharpString name = null);
-    public void DrawRay(Ray ray, GSharpString name = null);
-    public void DrawString(GSharpString gString);
+    public void DrawPoint(GSPoint point, GSString name = null);
+    public void DrawLine(Line line, GSString name = null);
+    public void DrawSegment(Segment segment, GSString name = null);
+    public void DrawCircle(Circle circle, GSString name = null);
+    public void DrawArc(Arc arc, GSString name = null);
+    public void DrawRay(Ray ray, GSString name = null);
+    public void DrawString(GSString gString);
     public void DrawSequence<T>(GSharpSequence<T> sequence) where T: GSharpObject, IDrawable;
 }
 /// <summary>
@@ -23,5 +23,5 @@ public interface IDrawer
 /// </summary>
 public interface IDrawable
 {
-    public void Draw(IDrawer drawer, GSharpString? label);
+    public void Draw(IDrawer drawer, GSString? label);
 }
