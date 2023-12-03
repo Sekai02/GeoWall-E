@@ -11,4 +11,5 @@ public interface IStatementVisitor
     void VisitColorStatent(ColorStatement color);
     void VisitRestoreStatement(Restore restore);
     void VisitRecieverStatement(Reciever reciever);
+    void VisitPrintStatement(PrintStatement printStatement);
 }

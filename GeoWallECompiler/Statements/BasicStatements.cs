@@ -19,6 +19,12 @@ public class DrawStatement : Statement
 
     public override void Accept(IStatementVisitor visitor) => visitor.VisitDrawStatment(this);
 }
+public class PrintStatement : Statement
+{
+    public PrintStatement(GSharpExpression expression) => Expression = expression;
+    public GSharpExpression Expression { get; }
+    public override void Accept(IStatementVisitor visitor) => visitor.VisitPrintStatement(this);
+}
 public class ColorStatement : Statement
 {
     public ColorStatement(string color) => Color = color;

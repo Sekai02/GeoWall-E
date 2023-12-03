@@ -199,4 +199,5 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
         DeclareVariable(reciever.Identifier);
         DefineVariable(reciever.Identifier);
     }
+    public void VisitPrintStatement(PrintStatement printStatement) => printStatement.Expression.Accept(this);
 }

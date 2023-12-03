@@ -1,4 +1,5 @@
 ﻿using GeoWallECompiler;
+using System.Collections;
 
 namespace ConsoleTester;
 
@@ -12,6 +13,7 @@ internal class Program : IWalleUI
         foreach (var error in ErrorHandler.GetErrors())
             Console.WriteLine(error.Message);
     }
+    public void Print(object obj) => Console.WriteLine(obj);
 }
 public class DrawerDummie : IDrawer
 {
@@ -21,6 +23,7 @@ public class DrawerDummie : IDrawer
     public int CanvasWidth => 1000;
     public void DrawArc(Arc arc, GSString name = null) => Console.WriteLine("draw succeded");
     public void DrawCircle(Circle circle, GSString name = null) => Console.WriteLine("draw succeded");
+    public void DrawEnumerable(IEnumerable values) => Console.WriteLine("draw succeded");
     public void DrawLine(Line line, GSString name = null) => Console.WriteLine("draw succeded");
     public void DrawPoint(GSPoint point, GSString name = null) => Console.WriteLine("draw succeded");
     public void DrawRay(Ray ray, GSString name = null) => Console.WriteLine("draw succeded");  

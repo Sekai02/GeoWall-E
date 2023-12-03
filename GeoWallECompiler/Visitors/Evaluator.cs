@@ -220,4 +220,9 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
         foreach(Statement st in statements)
             st.Accept(this);
     }
+    public void VisitPrintStatement(PrintStatement printStatement)
+    {
+        var objectToPrint = printStatement.Expression.Accept(this);
+        UserInterface.Print(objectToPrint);
+    }
 }

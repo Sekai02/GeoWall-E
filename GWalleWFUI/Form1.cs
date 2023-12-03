@@ -220,4 +220,5 @@ public partial class Aplication : Form, IWalleUI
         box.AppendText(text);
         box.SelectionColor = box.ForeColor;
     }
+    public void Print(object obj) => AppendLineWithColor(Terminal, obj.ToString(), Color.White);
 }

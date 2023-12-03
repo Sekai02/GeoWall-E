@@ -159,4 +159,9 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
             throw error;
         ErrorHandler.AddError(error);
     }
+    public void VisitPrintStatement(PrintStatement printStatement) 
+    {
+        GSharpType type = printStatement.Expression.Accept(this);
+        printStatement.Expression.ExpressionType = type;
+    }
 }
