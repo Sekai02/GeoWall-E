@@ -22,10 +22,12 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
     {
         GSObject left = binary.LeftArgument.Accept(this);
         GSObject right = binary.RightArgument.Accept(this);
-        if (left.GetType() == binary.AcceptedType && right.GetType() == binary.AcceptedType)
-            return binary.Operation(left, right);
-        var conflictiveType = left.GetType() != binary.AcceptedType ? left.GetType().Name : right.GetType().Name;
-        throw new SemanticError($"Operator `{binary.OperationToken}`", binary.ReturnedType.ToString(), conflictiveType);
+        foreach(BinaryOverloadInfo overload in binary.PosibleOverloads)
+        {
+            if (BinaryOperation.IsAnAcceptedOverload(left, right, overload))
+                return binary.Operation(left, right);
+        }
+        throw new DefaultError($"Operator `{binary.OperationToken}` cannot be used between {left.GetType().Name} and {left.GetType().Name}");
     }
     public GSObject VisitConstant(Constant constant)
     {

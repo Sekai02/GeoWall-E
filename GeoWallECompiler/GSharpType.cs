@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GeoWallECompiler;
+﻿namespace GeoWallECompiler;
 public class GSharpType
 {
     public bool HasGenericType;
@@ -42,6 +36,7 @@ public class GSharpType
     public bool IsFigure { get; private set; }
     public GTypeNames Name { get; }
     public GTypeNames GenericType => HasGenericType ? genericType : throw new Exception("Type does not contain generic type");
+    public override string ToString() => HasGenericType? $"{genericType} sequence": Name.ToString();
     public static bool operator ==(GSharpType a, GSharpType b)
     {
         if(a.Name == b.Name)
