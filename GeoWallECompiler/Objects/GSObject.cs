@@ -16,7 +16,6 @@ public abstract class GSObject : IRandomable<GSObject>, IUserParameter<GSObject>
     /// <returns>0 si el objeto evalua como falso y 1 en caso contrario</returns>
     public abstract double ToValueOfTruth();
     public override string ToString() => "G# object";
-    public bool IsSequence = false;
 }
 /// <summary>
 /// Clase que representa los valores numericos en G#
@@ -72,21 +71,21 @@ public class GSNumber : GSObject, IRandomable<GSNumber>, IUserParameter<GSNumber
 /// <summary>
 /// Clase que representa las cadenas de caracteres en G#
 /// </summary>
-public class GSString : GSObject
+public class GString : GSObject
 {
     /// <summary>
     /// Crea una instancia de una cadena de texto en G#
     /// </summary>
     /// <param name="val"></param>
-    public GSString(string val) => Value = val;
+    public GString(string val) => Value = val;
     public override double ToValueOfTruth() => Value == "" ? 0 : 1;
     public override string ToString() => Value;
     /// <summary>
     /// Valor de la cadena de texto
     /// </summary>
     public string Value { get; private set; }
-    public static implicit operator string(GSString s) => s.Value;
-    public static explicit operator GSString(string s) => new(s);
+    public static implicit operator string(GString s) => s.Value;
+    public static explicit operator GString(string s) => new(s);
 }
 /// <summary>
 /// Clase que representa un objeto medida

@@ -20,7 +20,7 @@ public class CountFunction : ICallable
 }
 public class RandomsFunction : ICallable
 {
-    public GSObject? Evaluate(Evaluator evaluator, List<GSObject> arguments) => new RandomNumberSequence();
+    public GSObject? Evaluate(Evaluator evaluator, List<GSObject> arguments) => GSequence.GetRandomNumbers();
     public int GetArgumentsAmount() => 0;
     public GSharpType GetType(TypeChecker checker, List<GSharpType> argumentsTypes) => new(GTypeNames.GSequence, GTypeNames.GNumber);
 }

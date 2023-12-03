@@ -25,7 +25,7 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
         foreach(BinaryOverloadInfo overload in binary.PosibleOverloads)
         {
             if (BinaryOperation.IsAnAcceptedOverload(left, right, overload))
-                return binary.Operation(left, right);
+                return overload.Operation(left, right);
         }
         throw new DefaultError($"Operator `{binary.OperationToken}` cannot be used between {left.GetType().Name} and {left.GetType().Name}");
     }
@@ -66,7 +66,7 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
         }
         GSharpSequence<GSObject> sequence = (GSharpSequence<GSObject>)value;
         int index = 0;
-        foreach (GSObject obj in sequence.Sequence)
+        foreach (GSObject obj in sequence.NonGenericSequence)
         {
             if (index == constantNames.Count - 1)
             {

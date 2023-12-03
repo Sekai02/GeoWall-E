@@ -19,7 +19,7 @@ public class PictureDrawer : IDrawer
     public Pen DrawerPen { get; }
     public int CanvasHeight => _height;
     public int CanvasWidth => _width;
-    private void WriteMessage(GSString message, double x, double y)
+    private void WriteMessage(GString message, double x, double y)
     {
         string s = message?.Value ?? "";
         if (s != "")
@@ -32,7 +32,7 @@ public class PictureDrawer : IDrawer
         double angle = Math.Atan2(y, x);
         return angle;
     }
-    public void DrawArc(Arc arc, GSString name = null)
+    public void DrawArc(Arc arc, GString name = null)
     {
         double xc = arc.Center.Coordinates.Value.X;
         double yc = arc.Center.Coordinates.Value.Y;
@@ -55,7 +55,7 @@ public class PictureDrawer : IDrawer
 
         WriteMessage(name, xc, yc);
     }
-    public void DrawCircle(Circle circle, GSString name = null)
+    public void DrawCircle(Circle circle, GString name = null)
     {
         float x = circle.Center.Coordinates.Value.X;
         float y = circle.Center.Coordinates.Value.Y;
@@ -64,7 +64,7 @@ public class PictureDrawer : IDrawer
 
         WriteMessage(name, x, y);
     }
-    public void DrawLine(Line line, GSString name = null)
+    public void DrawLine(Line line, GString name = null)
     {
         double x1 = line.Point1.Coordinates.Value.X;
         double y1 = line.Point1.Coordinates.Value.Y;
@@ -91,7 +91,7 @@ public class PictureDrawer : IDrawer
         double yMessage = (finalY1 + finalY2) / 2;
         WriteMessage(name, xMessage, yMessage);
     }
-    public void DrawPoint(GSPoint point, GSString name = null)
+    public void DrawPoint(GSPoint point, GString name = null)
     {
         float x = point.Coordinates.Value.X;
         float y = point.Coordinates.Value.Y;
@@ -99,7 +99,7 @@ public class PictureDrawer : IDrawer
 
         WriteMessage(name, x, y);
     }
-    public void DrawRay(Ray ray, GSString name = null)
+    public void DrawRay(Ray ray, GString name = null)
     {
         double x1 = ray.Point1.Coordinates.Value.X;
         double y1 = ray.Point1.Coordinates.Value.Y;
@@ -130,7 +130,7 @@ public class PictureDrawer : IDrawer
 
         WriteMessage(name, x1, y1);
     }
-    public void DrawSegment(Segment segment, GSString name = null)
+    public void DrawSegment(Segment segment, GString name = null)
     {
         float x1 = segment.Point1.Coordinates.Value.X;
         float y1 = segment.Point1.Coordinates.Value.Y;
@@ -144,7 +144,7 @@ public class PictureDrawer : IDrawer
     }
     public void DrawSequence<T>(GSharpSequence<T> sequence) where T : GSObject, IDrawable
     {
-        foreach (var obj in sequence.Sequence)
+        foreach (var obj in sequence.GenericSequence)
             obj.Draw(this, null);
     }
     public void DrawEnumerable(IEnumerable values)
@@ -159,7 +159,7 @@ public class PictureDrawer : IDrawer
             throw new DefaultError("Object cannot be drawed");
         }
     }
-    public void DrawString(GSString gString)
+    public void DrawString(GString gString)
     {
         Font font = new("Arial", 16);
         Brush brush = new SolidBrush(Color.Black);

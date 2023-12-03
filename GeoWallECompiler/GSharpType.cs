@@ -36,6 +36,24 @@ public class GSharpType
     public bool IsFigure { get; private set; }
     public GTypeNames Name { get; }
     public GTypeNames GenericType => HasGenericType ? genericType : throw new Exception("Type does not contain generic type");
+    public static Type ConvertToType(GTypeNames gType)
+    {
+        return gType switch
+        {
+            GTypeNames.GSequence => typeof(GSequence),
+            GTypeNames.GNumber => typeof(GSNumber),
+            GTypeNames.GString => typeof(GString),
+            GTypeNames.GObject => typeof(GSObject),
+            GTypeNames.Point => typeof(GSPoint),
+            GTypeNames.Circle => typeof(Circle),
+            GTypeNames.Line => typeof(Line),
+            GTypeNames.Segment => typeof(Segment),
+            GTypeNames.Ray => typeof(Ray),
+            GTypeNames.Arc => typeof(Arc),
+            GTypeNames.Measure => typeof(Measure),
+            _ => typeof(GSObject),
+        };
+    }
     public override string ToString() => HasGenericType? $"{genericType} sequence": Name.ToString();
     public static bool operator ==(GSharpType a, GSharpType b)
     {
