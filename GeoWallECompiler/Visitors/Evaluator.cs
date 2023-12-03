@@ -59,18 +59,18 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
             EvaluationContext.SetVariable(constantNames[0], value);
             return;
         }
-        if (value is not GSharpSequence<GSObject>)
+        if (value is not GSequence)
         {
             ErrorHandler.AddError(new DefaultError("Match statements can only take a sequence as value", "semantic"));
             return;
         }
-        GSharpSequence<GSObject> sequence = (GSharpSequence<GSObject>)value;
+        GSequence sequence = (GSequence)value;
         int index = 0;
         foreach (GSObject obj in sequence.NonGenericSequence)
         {
             if (index == constantNames.Count - 1)
             {
-                EvaluationContext.SetVariable(constantNames[index], sequence.GetTail(index));
+                EvaluationContext.SetVariable(constantNames[index], new GSequence(sequence.GetTail(index)));
                 break;
             }
             EvaluationContext.SetVariable(constantNames[index], obj);
@@ -119,7 +119,7 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
         return result;
     }
     public GSObject VisitLiteralString(LiteralString @string) => @string.String;
-    public void VisitDrawStatment(DrawStatement drawStatement)
+    public void VisitDrawStatement(DrawStatement drawStatement)
     {
         var objectToDraw = drawStatement.Expression.Accept(this);
         var expressionType = drawStatement.Expression.ExpressionType;

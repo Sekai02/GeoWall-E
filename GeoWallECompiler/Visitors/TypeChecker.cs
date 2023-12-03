@@ -56,7 +56,7 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
         foreach (var constant in declaration.ConstantNames)
             TypeEnvironment.SetVariable(constant, new(type.GenericType));     
     }
-    public void VisitDrawStatment(DrawStatement drawStatement) 
+    public void VisitDrawStatement(DrawStatement drawStatement) 
     {
         var type = drawStatement.Expression.Accept(this);
         drawStatement.Expression.ExpressionType = type;
@@ -120,7 +120,8 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     public GSharpType VisitLiteralNumber(LiteralNumber literal) => literal.ExpressionType = new(GTypeNames.GNumber);
     public GSharpType VisitLiteralSequence(LiteralSequence sequence)
     {
-        //Arreglar
+        if (sequence.TypeSetted)
+            return sequence.ExpressionType;
         foreach (GSharpExpression expression in sequence.Expressions)
         {
             GSharpType expressionType = expression.Accept(this);

@@ -94,16 +94,13 @@ public class Measure : GSObject, IRandomable<Measure>, IUserParameter<Measure>
 {
     public Measure(GSPoint p1, GSPoint p2)
     {
-        Point1 = p1;
-        Point2 = p2;
         double x1 = p1.Coordinates.Value.X;
         double x2 = p2.Coordinates.Value.X;
         double y1 = p1.Coordinates.Value.Y;
         double y2 = p2.Coordinates.Value.Y;
         Value = (GSNumber)Math.Sqrt(Math.Pow(x2-x1, 2) + Math.Pow(y2-y1,2));
     }
-    public GSPoint Point1 { get; }
-    public GSPoint Point2 { get; }
+    public Measure(GSNumber value) => Value = value.Value < 0? -value : value;
     public GSNumber Value { get; }
     public static Measure GetRandomInstance(int limit) 
     {
@@ -117,6 +114,17 @@ public class Measure : GSObject, IRandomable<Measure>, IUserParameter<Measure>
         GSPoint point2 = GSPoint.GetInstanceFromParameters(parameters);
         return new Measure(point1, point2);
     }
-    public override double ToValueOfTruth() => 1;
+    public override double ToValueOfTruth() => Value.ToValueOfTruth();
     public override string ToString() => "measure " + Value;
+    public static Measure operator +(Measure a, Measure b) => new(a.Value + b.Value);
+    public static Measure operator -(Measure a, Measure b) => new(a.Value - b.Value);
+    public static Measure operator *(Measure a, int n) => new((GSNumber)(a.Value * n));
+    public static Measure operator *(int n, Measure a) => new((GSNumber)(a.Value * n));
+    public static Measure operator /(Measure a, Measure b) => new((GSNumber)(int)(a.Value / b.Value));
+    public static bool operator <(Measure a, Measure b) => a.Value < b.Value;
+    public static bool operator >(Measure a, Measure b) => a.Value > b.Value;
+    public static bool operator <=(Measure a, Measure b) => a.Value <= b.Value;
+    public static bool operator >=(Measure a, Measure b) => a.Value >= b.Value;
+    public static bool operator ==(Measure a, Measure b) => a.Value == b.Value;
+    public static bool operator !=(Measure a, Measure b) => a.Value != b.Value;
 }

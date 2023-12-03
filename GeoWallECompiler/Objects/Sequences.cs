@@ -7,6 +7,7 @@ public interface ISequenciable
     public int? GetCount();
     public IEnumerable GetSequence();
     public ISequenciable AttachSequence(ISequenciable? sequence);
+    public ISequenciable GetTail(int tailStart);
 }
 public class GSequence : GSObject, ISequenciable
 {
@@ -41,6 +42,23 @@ public class GSequence : GSObject, ISequenciable
         int? newCount = Count + sequenceToAppend.GetCount();
         return new GSequence(newSequence, newCount);
     }
+    public ISequenciable GetTail(int tailStart)
+    {
+        IEnumerable newSequence = Skip(NonGenericSequence, tailStart);
+        int? newCount = Count is null ? Count : Count - tailStart;
+        return new GSequence(newSequence, newCount);
+    }
+    public static GSharpSequence<GSNumber> GetRandomNumbers() => new(RandomNumbers(), null);
+    private static IEnumerable Skip(IEnumerable objects, int count)
+    {
+        int i = 0;
+        foreach (var item in objects)
+        {
+            if (i >= count)
+                yield return item;
+            i++;
+        }
+    }
     private static IEnumerable JoinSequences(IEnumerable left, IEnumerable right)
     {
         foreach (var item in left)
@@ -48,14 +66,11 @@ public class GSequence : GSObject, ISequenciable
         foreach (var item in right)
             yield return item;
     }
-    public static GSharpSequence<GSNumber> GetRandomNumbers() => new(RandomNumbers(), null);
     private static IEnumerable<GSNumber> RandomNumbers()
     {
         Random random = new();
         while (true)
-        {
             yield return (GSNumber)random.NextDouble();
-        }
     }
 }
 /// <summary>
@@ -69,7 +84,7 @@ public class GSharpSequence<T> : GSequence where T : GSObject
     }    
     public virtual GSharpSequence<T> GetTail(int tailBeggining)
     {
-        IEnumerable<T> newSequence = GenericSequence.SkipLast(tailBeggining);
+        IEnumerable<T> newSequence = GenericSequence.Skip(tailBeggining);
         int? newCount = Count is null? Count : Count - tailBeggining;
         return new GSharpSequence<T>(newSequence, newCount);
     }
@@ -113,7 +128,6 @@ public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>>
     /// </summary>
     /// <param name="a">Numero inicial</param>
     /// <returns>IEnumerable que contiene los numeros en el rango</returns>
-    
     private IEnumerable<T> ChoppSequence(int a)
     {
         int count = 0;

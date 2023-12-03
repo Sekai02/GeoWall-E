@@ -17,7 +17,7 @@ public class DrawStatement : Statement
     public GSharpExpression Expression { get; }
     public LiteralString? StringExpression { get; }
 
-    public override void Accept(IStatementVisitor visitor) => visitor.VisitDrawStatment(this);
+    public override void Accept(IStatementVisitor visitor) => visitor.VisitDrawStatement(this);
 }
 public class PrintStatement : Statement
 {
