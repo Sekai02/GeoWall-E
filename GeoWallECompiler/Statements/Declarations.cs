@@ -36,12 +36,12 @@ public class DeclaredFunction : ICallable
     public FunctionDeclaration Declaration { get; }
     public GSObject Evaluate(Evaluator evaluator, List<GSObject> arguments)
     {
-        Context<GSObject, DeclaredFunction> functionContext = new(evaluator.EvaluationContext);
+        Context<GSObject, ICallable> functionContext = new(evaluator.EvaluationContext);
         for (int i = 0; i < Declaration.Parameters.Count; i++)
         {
             functionContext.SetVariable(Declaration.Parameters[i], arguments[i]);
         }
-        Context<GSObject, DeclaredFunction> previous = evaluator.EvaluationContext;
+        Context<GSObject, ICallable> previous = evaluator.EvaluationContext;
         evaluator.EvaluationContext = functionContext;
         GSObject result = Declaration.Body.Accept(evaluator);
         evaluator.EvaluationContext = previous;
@@ -49,12 +49,12 @@ public class DeclaredFunction : ICallable
     } 
     public GSharpType GetType(TypeChecker checker, List<GSharpType> argumentsTypes)
     {
-        Context<GSharpType, DeclaredFunction> functionContext = new(checker.TypeEnvironment);
+        Context<GSharpType, ICallable> functionContext = new(checker.TypeEnvironment);
         for (int i = 0; i < Declaration.Parameters.Count; i++)
         {
             functionContext.SetVariable(Declaration.Parameters[i], argumentsTypes[i]);
         }
-        Context<GSharpType, DeclaredFunction> previous = checker.TypeEnvironment;
+        Context<GSharpType, ICallable> previous = checker.TypeEnvironment;
         checker.TypeEnvironment = functionContext;
         GSharpType result = Declaration.Body.Accept(checker);
         checker.TypeEnvironment = previous;

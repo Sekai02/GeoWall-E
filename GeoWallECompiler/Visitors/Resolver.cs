@@ -9,6 +9,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
     {
         Scopes = new();
         BeginScope(); // global scope
+        GSharp.InitializeGSharpStandard(Scopes.Peek());
         Interpreter = evaluator;
     }
     private void BeginScope() => Scopes.Push(new Scope());

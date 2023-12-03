@@ -1,4 +1,7 @@
-﻿namespace GeoWallECompiler;
+﻿using GeoWallECompiler.StandardLibrary;
+using System.Runtime.InteropServices;
+
+namespace GeoWallECompiler;
 
 public class Context<Var, Fun>
 {

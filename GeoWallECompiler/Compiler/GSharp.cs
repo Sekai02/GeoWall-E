@@ -1,4 +1,5 @@
 
+using GeoWallECompiler.StandardLibrary;
 using GeoWallECompiler.Visitors;
 using System.Text;
 
@@ -61,4 +62,26 @@ public static class GSharp
         if (ErrorHandler.HadError)
             return;
     }
+    public static void InitializeGSharpStandard<V>(Context<V, ICallable> context)
+    {
+        context.SetFunction("line", new LineGetter());
+        context.SetFunction("segment", new SegmentGetter());
+        context.SetFunction("ray", new RayGetter());
+        context.SetFunction("arc", new ArcGetter());
+        context.SetFunction("circle", new CircleGetter());
+        context.SetFunction("measure", new MeasureFunction());
+        context.SetFunction("count", new CountFunction());
+        context.SetFunction("randoms", new RandomsFunction());
+    }
+    public static void InitializeGSharpStandard(Scope scope)
+    {
+        scope.Functions.Add("line", true);
+        scope.Functions.Add("segment", true);
+        scope.Functions.Add("ray", true);
+        scope.Functions.Add("arc", true);
+        scope.Functions.Add("circle", true);
+        scope.Functions.Add("measure", true);
+        scope.Functions.Add("count", true);
+        scope.Functions.Add("randoms", true);
+    }   
 }

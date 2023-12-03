@@ -22,17 +22,30 @@ public partial class Aplication : Form, IWalleUI
             Width = 2
         };
         ProgramPath = "";
-        Test();
+        //Test();
     }
     private void Test()
     {
         Bitmap image = new(pictureBox1.Width, pictureBox1.Height);
         PictureDrawer drawer = new(Graphics.FromImage(image), Pencil, pictureBox1.Height, pictureBox1.Width);
-        var sequence = new ArraySequence<GSNumber>(new List<GSNumber>() {(GSNumber)1, (GSNumber)2, (GSNumber)3 });
+        var reciever = new Reciever(GTypeNames.Point, "p", true);
+        List<GSharpExpression> expr = new() { new Constant("p") };
+        var count = new FunctionCall("count", expr);
+        var countcall = new ExpressionStatement(count);
+
+        List<Statement> statements = new() { reciever, countcall};
         Evaluator evaluator = new(drawer);
-        CountFunction count = new();
-        var result = count.Evaluate(evaluator, new List<GSObject>() { sequence });
-        Terminal.AppendText(((GSNumber)result).Value.ToString());
+        Resolver resolver = new(evaluator);
+        TypeChecker typeChecker = new(evaluator);
+        resolver.VisitStatements(statements);
+        if (ErrorHandler.HadError)
+            return;
+        typeChecker.VisitStatements(statements);
+        if (ErrorHandler.HadError)
+            return;
+        evaluator.VisitStatements(statements);
+        if (ErrorHandler.HadError)
+            return;
     }
     private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Dispose();
     private void openToolStripMenuItem_Click(object sender, EventArgs e)

@@ -71,5 +71,6 @@ public enum GTypeNames
     Segment,
     Ray,
     Arc,
+    Measure,
     Undetermined
 }

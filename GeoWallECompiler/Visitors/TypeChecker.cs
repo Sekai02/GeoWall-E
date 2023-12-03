@@ -1,16 +1,18 @@
 ﻿using GeoWallECompiler.Expressions;
+using System;
 using System.Reflection.Metadata;
 
 namespace GeoWallECompiler;
 public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
 {
     Evaluator Interpreter;
-    public Context<GSharpType, DeclaredFunction> TypeEnvironment;
+    public Context<GSharpType, ICallable> TypeEnvironment;
     private bool IsCheckingFunctionCall = false;
     public TypeChecker(Evaluator evaluator)
     {
         Interpreter = evaluator;
         TypeEnvironment = new();
+        GSharp.InitializeGSharpStandard(TypeEnvironment);
         IsCheckingFunctionCall = false;
     }
     public GSharpType VisitBinaryOperation(BinaryOperation binary)
@@ -69,7 +71,7 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     public GSharpType VisitFunctionCall(FunctionCall functionCall)
     {
         int distance = Interpreter.References[functionCall];
-        DeclaredFunction callee = TypeEnvironment.AccessFunctionAt(distance, functionCall.FunctionName);
+        ICallable callee = TypeEnvironment.AccessFunctionAt(distance, functionCall.FunctionName);
         List<GSharpType> arguments = new();
         foreach (GSharpExpression argument in functionCall.Arguments)
         {
@@ -104,7 +106,7 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     }
     public GSharpType VisitLetIn(LetIn letIn)
     {
-        Context<GSharpType, DeclaredFunction> letInContext = new(TypeEnvironment);
+        Context<GSharpType, ICallable> letInContext = new(TypeEnvironment);
         TypeEnvironment = letInContext;
         foreach (Statement instruction in letIn.Instructions)
             instruction.Accept(this);

@@ -4,14 +4,14 @@ namespace GeoWallECompiler;
 public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
 {
     public Dictionary<GSharpExpression, int> References = new();
-    private Context<GSObject, DeclaredFunction>? environment = new();
     private IWalleUI UserInterface;
     public Evaluator(IDrawer drawer)
     {
-        environment = new();
+        EvaluationContext = new();
         Drawer = drawer;
+        GSharp.InitializeGSharpStandard(EvaluationContext);
     }
-    public Context<GSObject, DeclaredFunction>? EvaluationContext { get => environment; set => environment = value; }
+    public Context<GSObject, ICallable>? EvaluationContext { get; set; } = new();
     public IDrawer Drawer { get; }
     public void ResolveReference(GSharpExpression expression, int depth)
     {
@@ -29,12 +29,12 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
     public GSObject VisitConstant(Constant constant)
     {
         int distance = References[constant];
-        return environment.AccessVariableAt(distance, constant.Name);
+        return EvaluationContext.AccessVariableAt(distance, constant.Name);
     }
     public GSObject VisitFunctionCall(FunctionCall functionCall)
     {
         int distance = References[functionCall];
-        DeclaredFunction callee = environment.AccessFunctionAt(distance, functionCall.FunctionName);
+        ICallable callee = EvaluationContext.AccessFunctionAt(distance, functionCall.FunctionName);
         List<GSObject> arguments = new();
         foreach (GSharpExpression argument in functionCall.Arguments)
         {
@@ -53,7 +53,7 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
         }
         if (constantNames.Count == 1)
         {
-            environment.SetVariable(constantNames[0], value);
+            EvaluationContext.SetVariable(constantNames[0], value);
             return;
         }
         if (value is not GSharpSequence<GSObject>)
@@ -67,23 +67,23 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
         {
             if (index == constantNames.Count - 1)
             {
-                environment.SetVariable(constantNames[index], sequence.GetTail(index));
+                EvaluationContext.SetVariable(constantNames[index], sequence.GetTail(index));
                 break;
             }
-            environment.SetVariable(constantNames[index], obj);
+            EvaluationContext.SetVariable(constantNames[index], obj);
             index++;
         }
         if (index < constantNames.Count - 1)
         {
             for (int i = index; index < constantNames.Count; i++)
-                environment.SetVariable(constantNames[index], null);
+                EvaluationContext.SetVariable(constantNames[index], null);
         }
     }
-    public void VisitExpressionStatement(ExpressionStatement expression) => expression.Accept(this);
+    public void VisitExpressionStatement(ExpressionStatement expression) => expression.Expression.Accept(this);
     public void VisitFunctionDeclaration(FunctionDeclaration declaration)
     {
         DeclaredFunction function = new(declaration);
-        environment.SetFunction(function.Declaration.Name, function);
+        EvaluationContext.SetFunction(function.Declaration.Name, function);
     }
     public GSObject VisitIfThenElse(IfThenElse ifThen)
     {
@@ -94,12 +94,12 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
     }
     public GSObject VisitLetIn(LetIn letIn)
     {
-        Context<GSObject, DeclaredFunction> letInContext = new(environment);
-        environment = letInContext;
+        Context<GSObject, ICallable> letInContext = new(EvaluationContext);
+        EvaluationContext = letInContext;
         foreach (var statement in letIn.Instructions)
             statement.Accept(this);
         GSObject result = letIn.Body.Accept(this);
-        environment = environment.Enclosing;
+        EvaluationContext = EvaluationContext.Enclosing;
         return result;
     }
     public GSObject VisitLiteralNumber(LiteralNumber literal) => literal.Value;
@@ -169,22 +169,22 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
             switch (reciever.ParameterType)
             {
                 case GTypeNames.Point:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<GSPoint>.GetRandomInstance(coordinatesLimit));
+                    EvaluationContext.SetVariable(reciever.Identifier, ArraySequence<GSPoint>.GetRandomInstance(coordinatesLimit));
                     break;
                 case GTypeNames.Circle:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Circle>.GetRandomInstance(coordinatesLimit));
+                    EvaluationContext.SetVariable(reciever.Identifier, ArraySequence<Circle>.GetRandomInstance(coordinatesLimit));
                     break;
                 case GTypeNames.Line:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Line>.GetRandomInstance(coordinatesLimit));
+                    EvaluationContext.SetVariable(reciever.Identifier, ArraySequence<Line>.GetRandomInstance(coordinatesLimit));
                     break;
                 case GTypeNames.Segment:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Segment>.GetRandomInstance(coordinatesLimit));
+                    EvaluationContext.SetVariable(reciever.Identifier, ArraySequence<Segment>.GetRandomInstance(coordinatesLimit));
                     break;
                 case GTypeNames.Ray:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Ray>.GetRandomInstance(coordinatesLimit));
+                    EvaluationContext.SetVariable(reciever.Identifier, ArraySequence<Ray>.GetRandomInstance(coordinatesLimit));
                     break;
                 case GTypeNames.Arc:
-                    environment.SetVariable(reciever.Identifier, ArraySequence<Arc>.GetRandomInstance(coordinatesLimit));
+                    EvaluationContext.SetVariable(reciever.Identifier, ArraySequence<Arc>.GetRandomInstance(coordinatesLimit));
                     break;
                 default:
                     throw new DefaultError("Invalid type", "semantic");
@@ -194,22 +194,22 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
         switch (reciever.ParameterType)
         {
             case GTypeNames.Point:
-                environment.SetVariable(reciever.Identifier, GSPoint.GetRandomInstance(coordinatesLimit));
+                EvaluationContext.SetVariable(reciever.Identifier, GSPoint.GetRandomInstance(coordinatesLimit));
                 break;
             case GTypeNames.Circle:
-                environment.SetVariable(reciever.Identifier, Circle.GetRandomInstance(coordinatesLimit));
+                EvaluationContext.SetVariable(reciever.Identifier, Circle.GetRandomInstance(coordinatesLimit));
                 break;
             case GTypeNames.Line:
-                environment.SetVariable(reciever.Identifier, Line.GetRandomInstance(coordinatesLimit));
+                EvaluationContext.SetVariable(reciever.Identifier, Line.GetRandomInstance(coordinatesLimit));
                 break;
             case GTypeNames.Segment:
-                environment.SetVariable(reciever.Identifier, Segment.GetRandomInstance(coordinatesLimit));
+                EvaluationContext.SetVariable(reciever.Identifier, Segment.GetRandomInstance(coordinatesLimit));
                 break;
             case GTypeNames.Ray:
-                environment.SetVariable(reciever.Identifier, Ray.GetRandomInstance(coordinatesLimit));
+                EvaluationContext.SetVariable(reciever.Identifier, Ray.GetRandomInstance(coordinatesLimit));
                 break;
             case GTypeNames.Arc:
-                environment.SetVariable(reciever.Identifier, Arc.GetRandomInstance(coordinatesLimit));
+                EvaluationContext.SetVariable(reciever.Identifier, Arc.GetRandomInstance(coordinatesLimit));
                 break;
             default:
                 throw new DefaultError("Invalid type", "semantic");
