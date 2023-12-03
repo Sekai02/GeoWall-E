@@ -15,6 +15,7 @@ public abstract class GSObject : IRandomable<GSObject>, IUserParameter<GSObject>
     /// </summary>
     /// <returns>0 si el objeto evalua como falso y 1 en caso contrario</returns>
     public abstract double ToValueOfTruth();
+    public override string ToString() => "G# object";
     public bool IsSequence = false;
 }
 /// <summary>
@@ -28,6 +29,7 @@ public class GSNumber : GSObject, IRandomable<GSNumber>, IUserParameter<GSNumber
     /// <param name="val"></param>
     public GSNumber(double val) => Value = val;
     public override double ToValueOfTruth() => Value == 0 ? 0 : 1;
+    public override string ToString() => Value.ToString();
     public static new GSNumber GetRandomInstance(int limit = 500)
     {
         Random random = new();
@@ -46,21 +48,20 @@ public class GSNumber : GSObject, IRandomable<GSNumber>, IUserParameter<GSNumber
     /// Valor numerico del numero
     /// </summary>
     public double Value { get; private set; }
-
     #region Operators Overloads
     public static GSNumber operator +(GSNumber a) => a;
     public static GSNumber operator -(GSNumber a) => -a;
-    public static GSNumber operator +(GSNumber a, GSNumber b) => a + b;
-    public static GSNumber operator -(GSNumber a, GSNumber b) => a - b;
-    public static GSNumber operator *(GSNumber a, GSNumber b) => a * b;
-    public static GSNumber operator /(GSNumber a, GSNumber b) => a / b;
-    public static GSNumber operator %(GSNumber a, GSNumber b) => a % b;
-    public static bool operator <(GSNumber a, GSNumber b) => a < b;
-    public static bool operator >(GSNumber a, GSNumber b) => a > b;
-    public static bool operator <=(GSNumber a, GSNumber b) => a <= b;
-    public static bool operator >=(GSNumber a, GSNumber b) => a >= b;
-    public static bool operator ==(GSNumber a, GSNumber b) => a == b;
-    public static bool operator !=(GSNumber a, GSNumber b) => a != b;
+    public static GSNumber operator +(GSNumber a, GSNumber b) => (GSNumber)(a.Value + b.Value);
+    public static GSNumber operator -(GSNumber a, GSNumber b) => (GSNumber)(a.Value - b.Value);
+    public static GSNumber operator *(GSNumber a, GSNumber b) => (GSNumber)(a.Value * b.Value);
+    public static GSNumber operator /(GSNumber a, GSNumber b) => (GSNumber)(a.Value / b.Value);
+    public static GSNumber operator %(GSNumber a, GSNumber b) => (GSNumber)(a.Value % b.Value);
+    public static bool operator <(GSNumber a, GSNumber b) => a.Value < b.Value;
+    public static bool operator >(GSNumber a, GSNumber b) => a.Value > b.Value;
+    public static bool operator <=(GSNumber a, GSNumber b) => a.Value <= b.Value;
+    public static bool operator >=(GSNumber a, GSNumber b) => a.Value >= b.Value;
+    public static bool operator ==(GSNumber a, GSNumber b) => a.Value == b.Value;
+    public static bool operator !=(GSNumber a, GSNumber b) => a.Value != b.Value;
     public static implicit operator double(GSNumber n) => n.Value;
     public static implicit operator int(GSNumber n) => (int)n.Value;
     public static implicit operator float(GSNumber n) => (float)n.Value;
@@ -79,6 +80,7 @@ public class GSString : GSObject
     /// <param name="val"></param>
     public GSString(string val) => Value = val;
     public override double ToValueOfTruth() => Value == "" ? 0 : 1;
+    public override string ToString() => Value;
     /// <summary>
     /// Valor de la cadena de texto
     /// </summary>
@@ -117,4 +119,5 @@ public class Measure : GSObject, IRandomable<Measure>, IUserParameter<Measure>
         return new Measure(point1, point2);
     }
     public override double ToValueOfTruth() => 1;
+    public override string ToString() => "measure " + Value;
 }

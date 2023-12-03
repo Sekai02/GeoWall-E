@@ -19,6 +19,7 @@ public class GSPoint : GSObject, IDrawable, IRandomable<GSPoint>, IUserParameter
             Coordinates = null;
     }
     public override double ToValueOfTruth() => Coordinates is null ? 0 : 1;
+    public override string ToString() => $"G# Point";
     public void Draw(IDrawer drawer, GSString label) => drawer.DrawPoint(this, label);
     public static new GSPoint GetRandomInstance(int limit = 500)
     {
@@ -33,7 +34,6 @@ public class GSPoint : GSObject, IDrawable, IRandomable<GSPoint>, IUserParameter
         var y = GSNumber.GetInstanceFromParameters(parameters);
         return new GSPoint(x, y);
     }
-
     /// <summary>
     /// Coordendas rectangulares del punto
     /// </summary>
@@ -68,6 +68,7 @@ public class Line : GSObject, IDrawable, IRandomable<Line>, IUserParameter<Line>
         var point2 = GSPoint.GetRandomInstance(limit);
         return new Line(point1, point2);
     }
+    public override string ToString() => "G# line";
     public void Draw(IDrawer drawer, GSString label) => drawer.DrawLine(this, label);
     public override double ToValueOfTruth() => Point1 is null || Point2 is null ? 0 : 1;
 }
@@ -106,6 +107,7 @@ public class Segment : GSObject, IDrawable, IRandomable<Segment>, IUserParameter
         var p2 = GSPoint.GetInstanceFromParameters(parameters);
         return new Segment(p1, p2);
     }
+    public override string ToString() => "G# Segment";
     public void Draw(IDrawer drawer, GSString label) => drawer.DrawSegment(this, label);
     public override double ToValueOfTruth() => Point1 is null || Point2 is null ? 0 : 1;
 }
@@ -144,6 +146,7 @@ public class Ray : GSObject, IDrawable, IRandomable<Ray>, IUserParameter<Ray>
         var p2 = GSPoint.GetInstanceFromParameters(parameters);
         return new Ray(p1, p2);
     }
+    public override string ToString() => "G# Ray";
     public void Draw(IDrawer drawer, GSString label) => drawer.DrawRay(this, label);
     public override double ToValueOfTruth() => Point1 is null || Point2 is null ? 0 : 1;
 }
@@ -184,6 +187,7 @@ public class Circle : GSObject, IDrawable, IRandomable<Circle>, IUserParameter<C
     }
     public void Draw(IDrawer drawer, GSString label) => drawer.DrawCircle(this, label);
     public override double ToValueOfTruth() => Center is null || Radius is null ? 0 : 1;
+    public override string ToString() => "G# Circle";
 }
 /// <summary>
 /// Representa un arco de circunferencia en el plano
@@ -239,4 +243,5 @@ public class Arc : GSObject, IDrawable, IRandomable<Arc>, IUserParameter<Arc>
     }
     public void Draw(IDrawer drawer, GSString label) => drawer.DrawArc(this, label);
     public override double ToValueOfTruth() => Center is null || StartPoint is null || EndPoint is null || Radius is null ? 0 : 1;
+    public override string ToString() => "G# Arc";
 }
