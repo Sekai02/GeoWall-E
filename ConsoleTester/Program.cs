@@ -3,22 +3,24 @@ using System.Collections;
 
 namespace ConsoleTester;
 
-internal class Program : IWalleUI
+internal class Program
 {
     static void Main(string[] args)
     {
         string path = "..\\..\\..\\..\\test.txt";
-        GSharp.RunFile(path, new DrawerDummie());
+        GSharp.RunFile(path, new DrawerDummie(), new ConsoleUI());
 
         foreach (var error in ErrorHandler.GetErrors())
             Console.WriteLine(error.Message);
     }
+}
+public class ConsoleUI : IWalleUI
+{
     public void Print(object obj) => Console.WriteLine(obj);
 }
 public class DrawerDummie : IDrawer
 {
     public DrawerDummie() { }
-
     public int CanvasHeight => 1000;
     public int CanvasWidth => 1000;
     public void DrawArc(Arc arc, GSString name = null) => Console.WriteLine("draw succeded");

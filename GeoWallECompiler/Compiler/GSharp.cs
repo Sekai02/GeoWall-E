@@ -25,12 +25,12 @@ public static class GSharp
     /// Ejecuta el codigo desde un archivo del sistema
     /// </summary>
     /// <param name="path"></param>
-    public static void RunFile(string path, IDrawer drawer)
+    public static void RunFile(string path, IDrawer drawer, IWalleUI userInterface)
     {
         Scanner.Line = 0;
 
         byte[] bytes = File.ReadAllBytes(Path.GetFullPath(path));
-        Run(Encoding.Default.GetString(bytes), drawer);
+        Run(Encoding.Default.GetString(bytes), drawer, userInterface);
 
         if (Error.HadError) Environment.Exit(65);
     }
@@ -39,7 +39,7 @@ public static class GSharp
     /// Ejecuta una sola linea de codigo
     /// </summary>
     /// <param name="source"></param>
-    private static void Run(string source, IDrawer drawer)
+    private static void Run(string source, IDrawer drawer, IWalleUI userInterface)
     {
         drawer.Reset();
         List<Token> tokens = Scan(source);
@@ -49,7 +49,7 @@ public static class GSharp
         List<Statement> statements = parser.Parse();
         if (ErrorHandler.HadError)
             return;
-        Evaluator evaluator = new(drawer);
+        Evaluator evaluator = new(drawer, userInterface);
         Resolver resolver = new(evaluator);
         TypeChecker typeChecker = new(evaluator);
         resolver.VisitStatements(statements);

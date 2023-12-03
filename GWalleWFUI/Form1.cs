@@ -34,7 +34,7 @@ public partial class Aplication : Form, IWalleUI
         var countcall = new ExpressionStatement(count);
 
         List<Statement> statements = new() { reciever, countcall};
-        Evaluator evaluator = new(drawer);
+        Evaluator evaluator = new(drawer, this);
         Resolver resolver = new(evaluator);
         TypeChecker typeChecker = new(evaluator);
         resolver.VisitStatements(statements);
@@ -199,7 +199,7 @@ public partial class Aplication : Form, IWalleUI
 
         //File.Create(ProgramPath);
         File.WriteAllText(ProgramPath, Entry.Text);
-        GSharp.RunFile(ProgramPath, drawer);
+        GSharp.RunFile(ProgramPath, drawer, this);
         if (!ErrorHandler.HadError)
         {
             AppendLineWithColor(Terminal, "Process exited whitout errors", Color.White);

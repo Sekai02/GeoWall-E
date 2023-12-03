@@ -5,10 +5,11 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
 {
     public Dictionary<GSharpExpression, int> References = new();
     private IWalleUI UserInterface;
-    public Evaluator(IDrawer drawer)
+    public Evaluator(IDrawer drawer, IWalleUI userInterface)
     {
         EvaluationContext = new();
         Drawer = drawer;
+        UserInterface = userInterface;
         GSharp.InitializeGSharpStandard(EvaluationContext);
     }
     public Context<GSObject, ICallable>? EvaluationContext { get; set; } = new();
