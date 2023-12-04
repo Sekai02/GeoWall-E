@@ -126,7 +126,7 @@ public partial class Aplication : Form, IWalleUI
     }
     private void Entry_TextChanged(object sender, EventArgs e)
     {
-        string keywords = @"\b(draw|color|restore|import|point|line|sequence|circle|ray|segment|print|arc|and|or|not)\b";
+        string keywords = @"\b(draw|color|restore|import|point|line|sequence|circle|ray|segment|print|arc|and|or|not|_)\b";
         MatchCollection keywordsMatch = Regex.Matches(Entry.Text, keywords);
         string strings = "\".*?\"";
         MatchCollection stringsMatch = Regex.Matches(Entry.Text, strings);
@@ -245,14 +245,14 @@ public partial class Aplication : Form, IWalleUI
         box.AppendText(text);
         box.SelectionColor = box.ForeColor;
     }
-    public void Print(object? obj)
+    public void Print(object? obj, string caption = "")
     {
         if (obj is null)
         {
             AppendLineWithColor(Terminal, "undefined", Color.White);
             return;
         }
-        AppendLineWithColor(Terminal, obj.ToString()!, Color.White);
+        AppendLineWithColor(Terminal, obj.ToString()! + caption, Color.White);
     }
 
     public void PrintError(GSharpException ex) => AppendLineWithColor(Terminal, ex.Message, Color.Red);

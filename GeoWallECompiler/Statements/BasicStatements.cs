@@ -23,6 +23,7 @@ public class PrintStatement : Statement
 {
     public PrintStatement(GSharpExpression expression) => Expression = expression;
     public GSharpExpression Expression { get; }
+    public LiteralString? StringExpression { get; }
     public override void Accept(IStatementVisitor visitor) => visitor.VisitPrintStatement(this);
 }
 public class ColorStatement : Statement

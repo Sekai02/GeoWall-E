@@ -16,7 +16,7 @@ internal class Program
 }
 public class ConsoleUI : IWalleUI
 {
-    public void Print(object obj) => Console.WriteLine(obj);
+    public void Print(object? obj, string message = "") => Console.WriteLine(obj + message);
 }
 public class DrawerDummie : IDrawer
 {

@@ -135,7 +135,7 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
                 sequence.ExpressionType = new(GTypeNames.GSequence, expressionType.Name);
             else if (sequence.ExpressionType.GenericType != expressionType.Name)
             {
-                ReportSemanticError(new DefaultError("SemanticError", "All elements of a sequence must be of the same type"));
+                ReportSemanticError(new DefaultError("All elements of a sequence must be of the same type", "SemanticError"));
                 return sequence.ExpressionType;
             }
         }

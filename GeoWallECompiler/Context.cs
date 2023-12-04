@@ -30,6 +30,8 @@ public class Context<Var, Fun>
     }
     public void SetVariable(string variableName, Var variableValue)
     {
+        if (variableName == "_")
+            return;
         if (!Variables.TryAdd(variableName, variableValue))
             ErrorHandler.AddError(new DefaultError($"Variable {variableName} already exist"));
     }
@@ -45,6 +47,8 @@ public class Context<Var, Fun>
     }
     public void SetFunction(string functionName, Fun function)
     {
+        if (functionName == "_")
+            return;
         if (!Functions.TryAdd(functionName, function))
             ErrorHandler.AddError(new DefaultError($"Function {function} already exist"));
     }
