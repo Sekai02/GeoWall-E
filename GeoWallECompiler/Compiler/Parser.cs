@@ -385,6 +385,13 @@ public class Parser
         return new DrawStatement(expressionToDraw, new LiteralString(new GSString(label)));
     }
 
+    private Statement ParsePrintStatement()
+    {
+        GSharpExpression expressionToPrint = ParseExpression();
+        Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after string");
+        return new PrintStatement(expressionToPrint);
+    }
+
     private Statement ParseImportStatement()
     {
         string libraryName = Consume(TokenType.STRING, "Expect string after import statement.").lexeme;
@@ -419,6 +426,7 @@ public class Parser
         if (Match(TokenType.COLOR)) return ParseColorStatement();
         if (Match(TokenType.DRAW)) return ParseDrawStatement();
         if (Match(TokenType.IMPORT)) return ParseImportStatement();
+        if (Match(TokenType.PRINT)) return ParsePrintStatement();
         if (Match(TokenType.POINT, TokenType.LINE, TokenType.SEGMENT, TokenType.RAY,
         TokenType.CIRCLE, TokenType.ARC)) return ParseReceiverStatement(Previous().type);
 
