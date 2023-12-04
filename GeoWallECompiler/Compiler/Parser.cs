@@ -23,7 +23,7 @@ public class Parser
         {
             try
             {
-                statements.Add(ParseDeclaration());
+                statements.Add(ParseDeclaration(false));
             }
             catch (GSharpException error)
             {
@@ -35,31 +35,11 @@ public class Parser
         return statements;
     }
 
-    private Statement ParseDeclaration()
+    private Statement ParseDeclaration(bool isInsideLet)
     {
-        if (!Check(TokenType.IDENTIFIER) || !TryFind(TokenType.EQUAL)) return ParseStatement();
-        if (TryFindBefore(TokenType.LEFT_PAREN, TokenType.EQUAL)) return ParseFunctionDeclaration();
+        if (!Check(TokenType.IDENTIFIER) || !TryFindBefore(TokenType.EQUAL, TokenType.INSTRUCTION_SEPARATOR)) return ParseStatement();
+        if (TryFindBefore(TokenType.LEFT_PAREN, TokenType.EQUAL) && !isInsideLet) return ParseFunctionDeclaration();
         return ParseConstantDeclaration();
-
-        /*Statement declaration;
-        if (!Check(TokenType.IDENTIFIER))
-        {
-            declaration = ParseStatement();
-            //Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after declaration");
-            return declaration;
-        }
-        checkPoint = current - 1;
-        if (!TryFind(TokenType.EQUAL))
-        {
-            Regression();
-            return ParseStatement();
-        }
-        Regression();
-        //aqui hay que a�adir para que consuma el identificador
-        if (Check(TokenType.LEFT_PAREN)) declaration = ParseFunctionDeclaration();
-        else declaration = ParseConstantDeclaration();
-        Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after declaration");
-        return declaration;*/
     }
 
     private Statement ParseConstantDeclaration()
@@ -121,13 +101,13 @@ public class Parser
         List<Statement> expressions = new List<Statement>();
         while (!Check(TokenType.IN) && !IsAtEnd())
         {
-            expressions.Add(ParseStatement());
-            Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after statement.");
+            expressions.Add(ParseDeclaration(true));
+            // Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after statement.");
         }
 
-        GSharpExpression expr = ParseExpression();
-
         Consume(TokenType.IN, "Expect 'in' keyword after statements.");
+
+        GSharpExpression expr = ParseExpression();
 
         return new LetIn(expressions, expr);
     }
@@ -155,11 +135,7 @@ public class Parser
 
         return expr;
     }
-    /*
-        {l...r}
-        {l...}
-        {l,i,j}
-    */
+
     private GSharpExpression ParsePrimary()
     {
         if (Match(TokenType.NUMBER, TokenType.STRING, TokenType.LEFT_BRACE))
@@ -464,21 +440,6 @@ public class Parser
         return Peek().type == type;
     }
 
-    /*private Token GetBack()
-    {
-        current--;
-        return tokens[current];
-    }
-
-    private void Regression()
-    {
-        while (checkPoint != -1 && current > checkPoint)
-        {
-            GetBack();
-        }
-        checkPoint = NotPresent;
-    }*/
-
     private bool TryFind(TokenType type)
     {
         for (int i = current; i < tokens.Count; i++)
@@ -539,27 +500,6 @@ public class Parser
                 return GTypeNames.Undetermined;
         }
     }
-
-    //private GTypeNames InferSequenceType(TokenType type)
-    //{
-    //    switch (type)
-    //    {
-    //        case TokenType.LINE:
-    //            return GTypeNames.LineSequence;
-    //        case TokenType.ARC:
-    //            return GTypeNames.ArcSequence;
-    //        case TokenType.CIRCLE:
-    //            return GTypeNames.CircleSequence;
-    //        case TokenType.RAY:
-    //            return GTypeNames.RaySequence;
-    //        case TokenType.POINT:
-    //            return GTypeNames.PointSequence;
-    //        case TokenType.SEGMENT:
-    //            return GTypeNames.SegmentSequence;
-    //        default:
-    //            return GTypeNames.Undetermined;
-    //    }
-    //}
 
     private const int NotPresent = -1;
 }

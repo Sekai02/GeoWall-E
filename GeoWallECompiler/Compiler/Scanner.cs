@@ -39,6 +39,7 @@ public class Scanner
         {"color",TokenType.COLOR},
         {"restore",TokenType.RESTORE},
         {"import",TokenType.IMPORT},
+        {"print",TokenType.PRINT},
 
         {"sequence", TokenType.SEQUENCE},
 

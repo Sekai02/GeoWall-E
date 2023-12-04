@@ -49,7 +49,7 @@ public static class GSharp
         List<Statement> statements = parser.Parse();
         if (ErrorHandler.HadError)
             return;
-        Console.WriteLine("yei");
+        Console.WriteLine("Todo bien");
         Evaluator evaluator = new(drawer, userInterface);
         Resolver resolver = new(evaluator);
         TypeChecker typeChecker = new(evaluator);
