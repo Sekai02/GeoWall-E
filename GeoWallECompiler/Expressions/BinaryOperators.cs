@@ -16,7 +16,7 @@ public abstract class BinaryOperation : GSharpExpression
     /// Expresion de G# que representa al argumeto derecho de la operacion binaria
     /// </summary>
     public GSharpExpression RightArgument { get; protected set; }
-    public List<BinaryOverloadInfo> PosibleOverloads;
+    public List<BinaryOverloadInfo> PosibleOverloads { get; protected set; }
     /// <summary>
     /// Token de la operacion binaria
     /// </summary>
@@ -35,16 +35,19 @@ public abstract class BinaryOperation : GSharpExpression
         }
         return true;
     }
-    public static bool IsAnAcceptedOverload(GSObject left, GSObject right, BinaryOverloadInfo overload)
+    public static bool IsAnAcceptedOverload(GSObject? left, GSObject? right, BinaryOverloadInfo overload)
     {
-        if (!left.GetType().IsAssignableTo(overload.LeftAccepted))
-            return false;
-        if (right.GetType().IsAssignableTo(overload.RightAccepted))
-            return false;
+        if(left is not null)
+            if (!left.GetType().IsAssignableTo(overload.LeftAccepted))
+                return false;
+        if(right is not null)
+            if (right.GetType().IsAssignableTo(overload.RightAccepted))
+                return false;
         if (overload.LeftAccepted.ContainsGenericParameters && overload.RightAccepted.ContainsGenericParameters)
         {
-            if (left.GetType() != right.GetType())
-                return false;
+            if(left is not null && right is not null)
+                if (left.GetType() != right.GetType())
+                    return false;
         }
         return true;
     }
@@ -71,7 +74,7 @@ public class BinaryOverloadInfo
         Operation = operation;
     }
     public BinaryFunc Operation { get; protected set; }
-    public delegate GSObject BinaryFunc(GSObject left, GSObject right);
+    public delegate GSObject? BinaryFunc(GSObject? left, GSObject? right);
     public static BinaryOverloadInfo GetArithmetic(BinaryFunc operation)
     {
         return new(new(GTypeNames.GNumber), new(GTypeNames.GNumber), operation);
@@ -101,9 +104,9 @@ public class Conjunction : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject func(GSObject a, GSObject b)
+        GSObject? func(GSObject? a, GSObject? b)
         {
-            bool result = a.ToValueOfTruth() == 1 && b.ToValueOfTruth() == 1;
+            bool result = GSObject.ToValueOfTruth(a) == 1 && GSObject.ToValueOfTruth(b) == 1;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo info = BinaryOverloadInfo.GetLogic(func);
@@ -125,9 +128,9 @@ public class Disjunction : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject func(GSObject a, GSObject b)
+        GSObject? func(GSObject? a, GSObject? b)
         {
-            bool result = a.ToValueOfTruth() == 1 || b.ToValueOfTruth() == 1;
+            bool result = GSObject.ToValueOfTruth(a) == 1 || GSObject.ToValueOfTruth(b) == 1;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo info = BinaryOverloadInfo.GetLogic(func);
@@ -151,15 +154,15 @@ public class LowerThan : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject compareNumbers(GSObject a, GSObject b)
+        GSObject? compareNumbers(GSObject? a, GSObject? b)
         {
-            var result = (GSNumber)a < (GSNumber)b;
+            var result = (GSNumber?)a < (GSNumber?)b;
             return result? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareNumbersInfo = BinaryOverloadInfo.GetArithmetic(compareNumbers);
-        GSObject compareMeasures(GSObject a, GSObject b)
+        GSObject? compareMeasures(GSObject? a, GSObject? b)
         {
-            var result = (Measure)a < (Measure)b;
+            var result = (Measure?)a < (Measure?)b;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), compareMeasures);
@@ -181,15 +184,15 @@ public class GreaterThan : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject compareNumbers(GSObject a, GSObject b)
+        GSObject? compareNumbers(GSObject? a, GSObject? b)
         {
-            var result = (GSNumber)a > (GSNumber)b;
+            var result = (GSNumber?)a > (GSNumber?)b;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareNumbersInfo = BinaryOverloadInfo.GetArithmetic(compareNumbers);
-        GSObject compareMeasures(GSObject a, GSObject b)
+        GSObject? compareMeasures(GSObject? a, GSObject? b)
         {
-            var result = (Measure)a > (Measure)b;
+            var result = (Measure?)a > (Measure?)b;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), compareMeasures);
@@ -211,15 +214,15 @@ public class LowerEqualThan : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject compareNumbers(GSObject a, GSObject b)
+        GSObject? compareNumbers(GSObject? a, GSObject? b)
         {
-            var result = (GSNumber)a <= (GSNumber)b;
+            var result = (GSNumber?)a <= (GSNumber?)b;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareNumbersInfo = BinaryOverloadInfo.GetArithmetic(compareNumbers);
-        GSObject compareMeasures(GSObject a, GSObject b)
+        GSObject? compareMeasures(GSObject? a, GSObject? b)
         {
-            var result = (Measure)a <= (Measure)b;
+            var result = (Measure?)a <= (Measure?)b;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), compareMeasures);
@@ -241,15 +244,15 @@ public class GreaterEqualThan : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject compareNumbers(GSObject a, GSObject b)
+        GSObject? compareNumbers(GSObject? a, GSObject? b)
         {
-            var result = (GSNumber)a >= (GSNumber)b;
+            var result = (GSNumber?)a >= (GSNumber?)b;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareNumbersInfo = BinaryOverloadInfo.GetArithmetic(compareNumbers);
-        GSObject compareMeasures(GSObject a, GSObject b)
+        GSObject? compareMeasures(GSObject? a, GSObject? b)
         {
-            var result = (Measure)a >= (Measure)b;
+            var result = (Measure?)a >= (Measure?)b;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), compareMeasures);
@@ -271,15 +274,15 @@ public class Equal : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject compareNumbers(GSObject a, GSObject b)
+        GSObject? compareNumbers(GSObject? a, GSObject? b)
         {
-            var result = (GSNumber)a == (GSNumber)b;
+            var result = (GSNumber?)a == (GSNumber?)b;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareNumbersInfo = BinaryOverloadInfo.GetArithmetic(compareNumbers);
-        GSObject compareMeasures(GSObject a, GSObject b)
+        GSObject? compareMeasures(GSObject? a, GSObject? b)
         {
-            var result = (Measure)a == (Measure)b;
+            var result = (Measure?)a == (Measure?)b;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), compareMeasures);
@@ -301,15 +304,15 @@ public class UnEqual : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject compareNumbers(GSObject a, GSObject b)
+        GSObject? compareNumbers(GSObject? a, GSObject? b)
         {
-            var result = (GSNumber)a != (GSNumber)b;
+            var result = (GSNumber?)a != (GSNumber?)b;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareNumbersInfo = BinaryOverloadInfo.GetArithmetic(compareNumbers);
-        GSObject compareMeasures(GSObject a, GSObject b)
+        GSObject? compareMeasures(GSObject? a, GSObject? b)
         {
-            var result = (Measure)a != (Measure)b;
+            var result = (Measure?)a != (Measure?)b;
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), compareMeasures);
@@ -333,17 +336,20 @@ public class Addition : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject numberSum(GSObject a, GSObject b) => (GSNumber)a + (GSNumber)b;
+        GSObject? numberSum(GSObject? a, GSObject? b) => (GSNumber?)a + (GSNumber?)b;
         BinaryOverloadInfo numberSumInfo = BinaryOverloadInfo.GetArithmetic(numberSum);
-        GSObject sequenceConcat(GSObject a, GSObject b)
+        GSObject? sequenceConcat(GSObject? a, GSObject? b)
         {
-            ISequenciable left = (ISequenciable)a;
-            ISequenciable right = (ISequenciable)b;
+            ISequenciable? left = (ISequenciable?)a;
+            if (left is null)
+                return null;
+            ISequenciable? right = (ISequenciable?)b;
             ISequenciable result = left.AttachSequence(right);
+            
             return new GSequence(result);
         }
         BinaryOverloadInfo sequenceConcatInfo = new(new(GTypeNames.GSequence), new(GTypeNames.GSequence), sequenceConcat);
-        GSObject measureSum(GSObject a, GSObject b) => (Measure)a + (Measure)b;
+        GSObject? measureSum(GSObject? a, GSObject? b) => (Measure?)a + (Measure?)b;
         BinaryOverloadInfo measureSumInfo = new(new(GTypeNames.Measure), new(GTypeNames.Measure), measureSum);
         PosibleOverloads = new() { numberSumInfo , sequenceConcatInfo, measureSumInfo};
         OperationToken = "+";
@@ -363,9 +369,9 @@ public class Subtraction : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject func(GSObject a, GSObject b) => (GSNumber)a - (GSNumber)b;
+        GSObject? func(GSObject? a, GSObject? b) => (GSNumber?)a - (GSNumber?)b;
         BinaryOverloadInfo info = BinaryOverloadInfo.GetArithmetic(func);
-        GSObject measureRest(GSObject a, GSObject b) => (Measure)a - (Measure)b;
+        GSObject? measureRest(GSObject? a, GSObject? b) => (Measure?)a - (Measure?)b;
         BinaryOverloadInfo measureSumInfo = new(new(GTypeNames.Measure), new(GTypeNames.Measure), measureRest);
         PosibleOverloads = new() { info };
         OperationToken = "-";
@@ -385,14 +391,14 @@ public class Multiplication : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject multiplyNumbers(GSObject a, GSObject b) => (GSNumber)a * (GSNumber)b;
+        GSObject? multiplyNumbers(GSObject? a, GSObject? b) => (GSNumber?)a * (GSNumber?)b;
         BinaryOverloadInfo multiplyNumbersInfo = BinaryOverloadInfo.GetArithmetic(multiplyNumbers);
 
-        GSObject measureTimesNatural(GSObject a, GSObject b) => (Measure)a * (GSNumber)b;
+        GSObject? measureTimesNatural(GSObject? a, GSObject? b) => (Measure?)a * (GSNumber?)b;
         BinaryOverloadInfo measureTimesNaturalInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), new(GTypeNames.Measure), measureTimesNatural);
         
-        GSObject naturalTimesMeasure(GSObject a, GSObject b) => (GSNumber)a * (Measure)b;
-        BinaryOverloadInfo naturalTimesMeasureInfo = new(new(GTypeNames.GNumber), new(GTypeNames.Measure), new(GTypeNames.Measure), measureTimesNatural);
+        GSObject? naturalTimesMeasure(GSObject? a, GSObject? b) => (GSNumber?)a * (Measure?)b;
+        BinaryOverloadInfo naturalTimesMeasureInfo = new(new(GTypeNames.GNumber), new(GTypeNames.Measure), new(GTypeNames.Measure), naturalTimesMeasure);
         
         PosibleOverloads = new() { multiplyNumbersInfo,  measureTimesNaturalInfo, naturalTimesMeasureInfo};
         OperationToken = "*";
@@ -412,14 +418,14 @@ public class Division : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject divideNumbers(GSObject a, GSObject b) => b.ToValueOfTruth() == 0 ?
+        GSObject? divideNumbers(GSObject? a, GSObject? b) => GSObject.ToValueOfTruth(b) == 0 ?
                                                         throw new DefaultError("Atempted to divide by 0", "arithmetic")
-                                                        : (GSNumber)a / (GSNumber)b;
+                                                        : (GSNumber?)a / (GSNumber?)b;
         BinaryOverloadInfo divideNumbersInfo = BinaryOverloadInfo.GetArithmetic(divideNumbers);
 
-        GSObject divideMeasures(GSObject a, GSObject b) => b.ToValueOfTruth() == 0 ?
+        GSObject? divideMeasures(GSObject? a, GSObject? b) => GSObject.ToValueOfTruth(b) == 0 ?
                                                         throw new DefaultError("Atempted to divide by 0", "arithmetic")
-                                                        : (Measure)a / (Measure)b;
+                                                        : (Measure?)a / (Measure?)b;
         BinaryOverloadInfo divideMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.Measure), divideMeasures);
         PosibleOverloads = new() { divideNumbersInfo, divideMeasuresInfo};
         OperationToken = "/";
@@ -439,7 +445,9 @@ public class Module : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject func(GSObject a, GSObject b) => b.ToValueOfTruth() == 0 ? throw new DefaultError("Atempted to divide by 0", "arithmetic") : (GSNumber)a % (GSNumber)b;
+        GSObject? func(GSObject? a, GSObject? b) => GSObject.ToValueOfTruth(b) == 0 ? 
+                                                    throw new DefaultError("Atempted to divide by 0", "arithmetic") 
+                                                    : (GSNumber?)a % (GSNumber?)b;
         BinaryOverloadInfo info = BinaryOverloadInfo.GetArithmetic(func);
         PosibleOverloads = new() { info };
         OperationToken = "%";
@@ -459,11 +467,13 @@ public class Power : BinaryOperation
     {
         LeftArgument = leftArgument;
         RightArgument = rightArgument;
-        GSObject func(GSObject a, GSObject b)
+        GSObject? func(GSObject? a, GSObject? b)
         {
-            GSNumber left = (GSNumber)a;
-            GSNumber right = (GSNumber)b;
-            return (GSNumber)Math.Pow(left, right);
+            GSNumber? left = (GSNumber?)a;
+            GSNumber? right = (GSNumber?)b;
+            if (left is null || right is null)
+                return null;
+            return (GSNumber?)Math.Pow(left, right);
         }
         BinaryOverloadInfo info = BinaryOverloadInfo.GetArithmetic(func);
         PosibleOverloads = new() { info };

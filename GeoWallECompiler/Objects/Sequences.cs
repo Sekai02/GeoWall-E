@@ -29,7 +29,6 @@ public class GSequence : GSObject, ISequenciable
     /// Cantidad de elementos que contiene la secuencia
     /// </summary>
     public int? Count { get; protected set; }
-    public override double ToValueOfTruth() => Count != 0 ? 1 : 0;
     public int? GetCount() => Count;
     public IEnumerable GetSequence() => NonGenericSequence;
     public ISequenciable AttachSequence(ISequenciable? sequenceToAppend)
@@ -76,27 +75,27 @@ public class GSequence : GSObject, ISequenciable
 /// <summary>
 /// Representa las secuencias en G#
 /// </summary>
-public class GSharpSequence<T> : GSequence where T : GSObject
+public class GSharpSequence<T> : GSequence where T : GSObject?
 {
-    public GSharpSequence(IEnumerable<T> sequence, int? count) : base(sequence, count)
+    public GSharpSequence(IEnumerable<T?> sequence, int? count) : base(sequence, count)
     {
         GenericSequence = sequence;
     }    
-    public virtual GSharpSequence<T> GetTail(int tailBeggining)
+    public virtual new GSharpSequence<T> GetTail(int tailBeggining)
     {
-        IEnumerable<T> newSequence = GenericSequence.Skip(tailBeggining);
+        IEnumerable<T?> newSequence = GenericSequence.Skip(tailBeggining);
         int? newCount = Count is null? Count : Count - tailBeggining;
         return new GSharpSequence<T>(newSequence, newCount);
     }
-    public IEnumerable<T> GenericSequence { get; protected set; }
+    public IEnumerable<T?> GenericSequence { get; protected set; }
 }
-public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>>, IUserParameter<ArraySequence<T>> where T : GSObject, IRandomable<T>, IUserParameter<T>
+public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>>, IUserParameter<ArraySequence<T>> where T : GSObject?, IRandomable<T>, IUserParameter<T>
 {
     /// <summary>
     /// Construye una secuencia de objetos de G#. Por ejemplo {p1,p2,p3,p4}
     /// </summary>
     /// <param name="objects">Lista de los objetos que se van a guardar en la secuencia</param>
-    public ArraySequence(List<T> objects) : base(objects, objects.Count)
+    public ArraySequence(List<T?> objects) : base(objects, objects.Count)
     {
         NonGenericSequence = objects;
         Count = objects.Count;
@@ -104,7 +103,7 @@ public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>>
     public static new ArraySequence<T> GetRandomInstance(int limit = 500)
     {
         Random random = new();
-        List<T> values = new();
+        List<T?> values = new();
         int count = random.Next(20);
         for (int i = 0; i < count; i++)
             values.Add(T.GetRandomInstance(limit));
@@ -113,14 +112,14 @@ public class ArraySequence<T> : GSharpSequence<T>, IRandomable<ArraySequence<T>>
 
     public static new ArraySequence<T> GetInstanceFromParameters(Queue<double> parameters)
     {
-        List<T> values = new();
+        List<T?> values = new();
         while(parameters.Count > 0)
             values.Add(T.GetInstanceFromParameters(parameters));
         return new ArraySequence<T>(values);
     }
     public override GSharpSequence<T> GetTail(int a) 
     {
-        List<T> objects = new(ChoppSequence(a));
+        List<T?> objects = new(ChoppSequence(a));
         return new ArraySequence<T>(objects);
     }   
     /// <summary>
@@ -143,7 +142,7 @@ public class FiniteIntegerSequence : GSharpSequence<GSNumber>
 {
     private readonly int startNumber;
     private readonly int endNumber;
-    public FiniteIntegerSequence(GSNumber start, GSNumber end) : base(FiniteRange(start, end), Math.Abs(end - start)) { }
+    public FiniteIntegerSequence(GSNumber start, GSNumber end) : base(FiniteRange(start, end), Math.Abs((end - start)!)) { }
     private static IEnumerable<GSNumber> FiniteRange(GSNumber start, GSNumber end)
     {
         if (!double.IsInteger(start) || !double.IsInteger(end))
@@ -158,7 +157,7 @@ public class FiniteIntegerSequence : GSharpSequence<GSNumber>
     public override GSharpSequence<GSNumber> GetTail(int tailBeggining) 
     {
         if (tailBeggining > endNumber)
-            return null;
+            return new GSharpSequence<GSNumber>(Array.Empty<GSNumber>(), 0);
         GSNumber start = (GSNumber)(startNumber + tailBeggining);
         GSNumber end = (GSNumber)endNumber;
         return new FiniteIntegerSequence(start, end);

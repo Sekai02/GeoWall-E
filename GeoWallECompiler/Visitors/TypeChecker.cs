@@ -148,9 +148,14 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     {
         GSharpType argType = unary.Argument.Accept(this);
         unary.ExpressionType = argType;
-        if (argType.Name != GTypeNames.Undetermined && argType != unary.EnteredType)
-            ReportSemanticError(new SemanticError($"Operator `{unary.OperationToken}`", unary.EnteredType.Name.ToString(), argType.Name.ToString(), null));
-        return unary.ReturnedType;
+
+        foreach (UnaryOverloadInfo overload in unary.PosibleOverloads)
+        {
+            if (UnaryOperation.IsAnAcceptedOverload(argType, overload))
+                return overload.ReturnedType;
+        }
+        ReportSemanticError(new DefaultError($"Operator '{unary.OperationToken}' cannot be used with {argType}"));
+        return unary.PosibleOverloads[0].ReturnedType;
     }
     public void VisitStatements(List<Statement> statements)
     {

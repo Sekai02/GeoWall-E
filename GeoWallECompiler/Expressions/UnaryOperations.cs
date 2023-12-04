@@ -12,31 +12,46 @@ public abstract class UnaryOperation : GSharpExpression
     /// </summary>
     public GSharpExpression Argument { get; protected set; }
     /// <summary>
-    /// Tipo de retorno de la operacion unaria en forma de enum
-    /// </summary>
-    public GSharpType ReturnedType { get; protected set; }
-    /// <summary>
-    /// Tipo de entrada de la operacion unaria en forma de enum
-    /// </summary>
-    public GSharpType EnteredType { get; protected set; }
-    /// <summary>
-    /// Tipo de entrada de la operacion unaria en forma de Type
-    /// </summary>
-    public Type AcceptedType { get; protected set; }
-    /// <summary>
     /// Token de la operacion
     /// </summary>
     public string OperationToken { get; protected set; }
-    /// <summary>
-    /// Funcion que efectuara la operacion unaria
-    /// </summary>
+    public List<UnaryOverloadInfo> PosibleOverloads { get; protected set; }
+    public static bool IsAnAcceptedOverload(GSharpType arg, UnaryOverloadInfo overload)
+    {
+        return arg.Name == overload.ArgumentType.Name || 
+            arg.Name == GTypeNames.Undetermined || 
+            overload.ArgumentType.Name != GTypeNames.Undetermined;
+    }
+    public static bool IsAnAcceptedOverload(GSObject? arg, UnaryOverloadInfo overload)
+    {
+        if (arg is not null)
+            if (!arg.GetType().IsAssignableTo(overload.ArgumentAccepted))
+                return false;
+        return true;
+    }
+}
+public class UnaryOverloadInfo
+{
+    public UnaryOverloadInfo(GSharpType argType, GSharpType returnedType, UnaryFunc operation)
+    {
+        ArgumentType = argType;
+        ReturnedType = returnedType;
+        ArgumentAccepted = GSharpType.ConvertToType(argType.Name);
+        Operation = operation;
+    }
     public UnaryFunc Operation { get; protected set; }
-    /// <summary>
-    /// Funcion unaria que efectuara la operacion
-    /// </summary>
-    /// <param name="arg">Valor del argumento de la operacion</param>
-    /// <returns></returns>
-    public delegate GSObject UnaryFunc(GSObject arg);
+    public delegate GSObject? UnaryFunc(GSObject? arg);
+    public static UnaryOverloadInfo GetArithmetic(UnaryFunc operation)
+    {
+        return new(new(GTypeNames.GNumber), new(GTypeNames.GNumber), operation);
+    }
+    public static UnaryOverloadInfo GetLogic(UnaryFunc operation)
+    {
+        return new(new(GTypeNames.GObject), new(GTypeNames.GNumber), operation);
+    }
+    public GSharpType ArgumentType { get; }
+    public GSharpType ReturnedType { get; }
+    public Type ArgumentAccepted { get; }
 }
 #region Boolean
 
@@ -52,12 +67,10 @@ public class Negation : UnaryOperation
     public Negation(GSharpExpression Arg) 
     {
         Argument = Arg;
-        ReturnedType = new(GTypeNames.GNumber);
-        EnteredType = new(GTypeNames.GObject);
-        AcceptedType = typeof(GSObject);
+        GSNumber? func(GSObject? a) => GSObject.ToValueOfTruth(a) == 0 ? (GSNumber)1 : (GSNumber)0;
+        UnaryOverloadInfo info = UnaryOverloadInfo.GetLogic(func);
         OperationToken = "not";
-        GSNumber func(GSObject a) => a.ToValueOfTruth() == 0 ? (GSNumber)1 : (GSNumber)0;
-        Operation = func;
+        PosibleOverloads = new() { info };
     }
 }
 #endregion
@@ -75,12 +88,10 @@ public class Positive : UnaryOperation
     public Positive(GSharpExpression Arg) 
     {
         Argument = Arg;
-        ReturnedType = new(GTypeNames.GNumber);
-        EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSNumber);
+        GSNumber? func(GSObject? a) => (GSNumber?)a;
+        UnaryOverloadInfo info = UnaryOverloadInfo.GetArithmetic(func);
         OperationToken = "+";
-        GSNumber func(GSObject a) => (GSNumber)a;
-        Operation = func;
+        PosibleOverloads = new() { info };
     }
 }
 
@@ -96,12 +107,10 @@ public class Negative : UnaryOperation
     public Negative(GSharpExpression Arg) 
     {
         Argument = Arg;
-        ReturnedType = new(GTypeNames.GNumber);
-        EnteredType = new(GTypeNames.GNumber);
-        AcceptedType = typeof(GSNumber);
+        GSNumber? func(GSObject? a) => -(GSNumber?)a;
+        UnaryOverloadInfo info = UnaryOverloadInfo.GetArithmetic(func);
         OperationToken = "-";
-        GSNumber func(GSObject a) => -(GSNumber)a;
-        Operation = func;
+        PosibleOverloads = new() { info };
     }
 }
 #endregion
