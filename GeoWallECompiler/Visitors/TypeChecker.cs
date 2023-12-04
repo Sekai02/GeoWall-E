@@ -26,7 +26,7 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
         foreach(BinaryOverloadInfo overload in binary.PosibleOverloads)
         {
             if (BinaryOperation.IsAnAcceptedOverload(leftType, rightType, overload))
-                return overload.ReturnedType;
+                return overload.GetType(leftType, rightType);
         }
         ReportSemanticError(new DefaultError($"Operator '{binary.OperationToken}' cannot be used between {leftType} and {rightType}"));
         return binary.PosibleOverloads[0].ReturnedType;
@@ -53,8 +53,13 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
             ReportSemanticError(new DefaultError("Match statements can only take a sequence as value", "semantic"));
             return;
         }
-        foreach (var constant in declaration.ConstantNames)
-            TypeEnvironment.SetVariable(constant, new(type.GenericType));     
+        for (int i = 0; i < declaration.ConstantNames.Count - 1; i++)
+        {
+            string? constant = declaration.ConstantNames[i];
+            TypeEnvironment.SetVariable(constant, new(type.GenericType));
+        }
+        string? lastConstant = declaration.ConstantNames[^1];
+        TypeEnvironment.SetVariable(lastConstant, type);
     }
     public void VisitDrawStatement(DrawStatement drawStatement) 
     {

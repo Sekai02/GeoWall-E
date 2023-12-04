@@ -6,13 +6,14 @@ public class GSharpType
     public GSharpType(GTypeNames typeName)
     {
         Name = typeName;
-        HasGenericType = false;
+        HasGenericType = Name == GTypeNames.GSequence;
         SetIsFigureProperty(typeName);
     }
     public GSharpType(GTypeNames typeName, GTypeNames genericType)
     {
         Name = typeName;
-        if (Name != GTypeNames.GSequence) { 
+        if (Name != GTypeNames.GSequence) 
+        { 
             HasGenericType = false;
             SetIsFigureProperty(typeName);
         }

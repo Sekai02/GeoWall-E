@@ -24,13 +24,13 @@ public abstract class BinaryOperation : GSharpExpression
     #endregion
     public static bool IsAnAcceptedOverload(GSharpType left, GSharpType right, BinaryOverloadInfo overload)
     {
-        if (left.Name != overload.LeftType.Name && left.Name != GTypeNames.Undetermined && overload.LeftType.Name == GTypeNames.Undetermined)
+        if (left.Name != overload.LeftType.Name && left.Name != GTypeNames.Undetermined && overload.LeftType.Name != GTypeNames.GObject)
             return false;
-        if (right.Name != overload.RightType.Name && right.Name != GTypeNames.Undetermined && overload.RightType.Name == GTypeNames.Undetermined)
+        if (right.Name != overload.RightType.Name && right.Name != GTypeNames.Undetermined && overload.RightType.Name != GTypeNames.GObject)
             return false;
         if(overload.LeftType.HasGenericType && overload.RightType.HasGenericType)
         {
-            if (left.GenericType != right.GenericType && left.Name != GTypeNames.Undetermined && right.Name != GTypeNames.Undetermined)
+            if (left.GenericType != right.GenericType /*&& left.Name != GTypeNames.Undetermined && right.Name != GTypeNames.Undetermined*/)
                 return false;
         }
         return true;
@@ -57,7 +57,8 @@ public class BinaryOverloadInfo
     public BinaryOverloadInfo(GSharpType leftType,
                               GSharpType rightType,
                               GSharpType returnedType,
-                              BinaryFunc operation)
+                              BinaryFunc operation,
+                              TypeGetter? getType = null)
     {
         LeftType = leftType;
         RightType = rightType;
@@ -65,16 +66,32 @@ public class BinaryOverloadInfo
         LeftAccepted = GSharpType.ConvertToType(leftType.Name);
         RightAccepted = GSharpType.ConvertToType(rightType.Name);
         Operation = operation;
+        if(getType is null)
+        {
+            GSharpType func(GSharpType a, GSharpType b) => returnedType;
+            GetType = func;
+        }
+        else
+            GetType = getType;
     }
-    public BinaryOverloadInfo(GSharpType parameterType, GSharpType returnedType, BinaryFunc operation)
+    public BinaryOverloadInfo(GSharpType parameterType, GSharpType returnedType, BinaryFunc operation, TypeGetter? getType = null)
     {
         LeftType = RightType = parameterType;
         ReturnedType = returnedType;
         LeftAccepted = RightAccepted = GSharpType.ConvertToType(parameterType.Name);
         Operation = operation;
+        if (getType is null)
+        {
+            GSharpType func(GSharpType a, GSharpType b) => returnedType;
+            GetType = func;
+        }
+        else
+            GetType = getType;
     }
     public BinaryFunc Operation { get; protected set; }
+    public TypeGetter GetType { get; protected set; }
     public delegate GSObject? BinaryFunc(GSObject? left, GSObject? right);
+    public delegate GSharpType TypeGetter(GSharpType left, GSharpType right);
     public static BinaryOverloadInfo GetArithmetic(BinaryFunc operation)
     {
         return new(new(GTypeNames.GNumber), new(GTypeNames.GNumber), operation);
@@ -348,7 +365,8 @@ public class Addition : BinaryOperation
             
             return new GSequence(result);
         }
-        BinaryOverloadInfo sequenceConcatInfo = new(new(GTypeNames.GSequence), new(GTypeNames.GSequence), sequenceConcat);
+        GSharpType concatType(GSharpType left, GSharpType right) => left;
+        BinaryOverloadInfo sequenceConcatInfo = new(new(GTypeNames.GSequence), new(GTypeNames.GSequence), sequenceConcat, concatType);
         GSObject? measureSum(GSObject? a, GSObject? b) => (Measure?)a + (Measure?)b;
         BinaryOverloadInfo measureSumInfo = new(new(GTypeNames.Measure), new(GTypeNames.Measure), measureSum);
         PosibleOverloads = new() { numberSumInfo , sequenceConcatInfo, measureSumInfo};

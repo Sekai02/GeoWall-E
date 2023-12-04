@@ -89,44 +89,6 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
     }
     public void VisitConstantDeclaration(ConstantsDeclaration declaration)
     {
-        #region cosascomentadas
-        //if (declaration.ConstantNames.Count == 1)
-        //{
-        //    DeclareVariable(declaration.ConstantNames[0]);
-        //    declaration.Value.Accept(this);
-        //    DefineVariable(declaration.ConstantNames[0]);
-        //    return;
-        //}
-        //if (declaration.Value is not LiteralSequence)
-        //    throw new Exception("Match declaration");
-        //LiteralSequence sequence = (LiteralSequence)declaration.Value;
-        //int index = 0;
-        //foreach (GSharpExpression expression in sequence.Expressions)
-        //{
-        //    if (index == declaration.ConstantNames.Count - 1)
-        //    {
-        //        DeclareVariable(declaration.ConstantNames[index]);
-        //        sequence.GetTail(index).Accept(this);
-        //        DefineVariable(declaration.ConstantNames[index]);
-        //        break;
-        //    }
-        //    DeclareVariable(declaration.ConstantNames[index]);
-        //    expression.Accept(this);
-        //    DefineVariable(declaration.ConstantNames[index]);
-        //    index++;
-        //}
-        //if (index < declaration.ConstantNames.Count - 2)
-        //{
-        //    for (int i = index; index < declaration.ConstantNames.Count - 1; i++)
-        //    {
-        //        DeclareVariable(declaration.ConstantNames[i]);
-        //        DefineVariable(declaration.ConstantNames[i]);
-        //    }
-        //}
-        //DeclareVariable(declaration.ConstantNames[^1]);
-        //sequence.GetTail(declaration.ConstantNames.Count - 1).Accept(this);
-        //DefineVariable(declaration.ConstantNames[^1]);
-        #endregion
         foreach (string constant in declaration.ConstantNames)
             DeclareVariable(constant);
         declaration.ValueExpression.Accept(this);

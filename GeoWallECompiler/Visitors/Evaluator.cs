@@ -105,15 +105,16 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
             if (index == constantNames.Count - 1)
             {
                 EvaluationContext.SetVariable(constantNames[index], new GSequence(sequence.GetTail(index)));
+                index++;
                 break;
             }
             EvaluationContext.SetVariable(constantNames[index], obj);
             index++;
         }
-        if (index < constantNames.Count - 1)
+        if (index < constantNames.Count)
         {
-            for (int i = index; index < constantNames.Count; i++)
-                EvaluationContext.SetVariable(constantNames[index], null);
+            for (int i = index; i < constantNames.Count; i++)
+                EvaluationContext.SetVariable(constantNames[i], null);
         }
     }
     public void VisitExpressionStatement(ExpressionStatement expression) => expression.Expression.Accept(this);
