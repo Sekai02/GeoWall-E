@@ -121,7 +121,7 @@ public class Measure : GSObject, IRandomable<Measure>, IUserParameter<Measure>
     }
 
     public GSNumber Lenght { get; }
-    public static new Measure GetRandomInstance(int limit) 
+    public static new Measure GetRandomInstance(int limit = 500) 
     {
         GSPoint point1 = GSPoint.GetRandomInstance();
         GSPoint point2 = GSPoint.GetRandomInstance();

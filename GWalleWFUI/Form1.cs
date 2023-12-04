@@ -28,12 +28,16 @@ public partial class Aplication : Form, IWalleUI
     {
         Bitmap image = new(pictureBox1.Width, pictureBox1.Height);
         PictureDrawer drawer = new(Graphics.FromImage(image), Pencil, pictureBox1.Height, pictureBox1.Width);
-        var reciever = new Reciever(GTypeNames.Point, "p", true);
-        List<GSharpExpression> expr = new() { new Constant("p") };
-        var count = new FunctionCall("count", expr);
-        var countcall = new ExpressionStatement(count);
+        pictureBox1.Image = image;
+        //var reciever = new Reciever(GTypeNames.Line, "p", false);
+        //var call = new FunctionCall("points", new() { new Constant((GString)"p") });
+        //var drawStatement = new DrawStatement(call, null);
 
-        List<Statement> statements = new() { reciever, countcall};
+        var match = new ConstantsDeclaration(new() { "a" }, new InfiniteRangeExpression(new LiteralNumber((GSNumber)1)));
+        var count = new FunctionCall("count", new() { new Constant("a") });
+        var countcall = new PrintStatement(count);
+
+        List<Statement> statements = new() { match /*reciever, drawStatement*/, countcall };
         Evaluator evaluator = new(drawer, this);
         Resolver resolver = new(evaluator);
         TypeChecker typeChecker = new(evaluator);
@@ -46,6 +50,30 @@ public partial class Aplication : Form, IWalleUI
         evaluator.VisitStatements(statements);
         if (ErrorHandler.HadError)
             return;
+        //GSharp.CanvasHeight = pictureBox1.Height;
+        //GSharp.CanvasWidth = pictureBox1.Width;
+        //for (int i = 0; i < 5; i++)
+        //{
+        //    drawer.Reset();
+        //    var c = GSPoint.GetRandomInstance();
+        //    var p1 = GSPoint.GetRandomInstance();
+        //    var p2 = GSPoint.GetRandomInstance();
+        //    var radius = Measure.GetRandomInstance();
+        //    var a =  new Arc(c, p1, p2, radius);
+        //    var l1 = new Segment(c, p1);
+        //    var l2 = new Segment(c, p2);
+        //    a.Draw(drawer);
+        //    //drawer.SetColor("blue");
+        //    //c.Draw(drawer, (GString)"c");
+        //    //l1.Draw(drawer, (GString)"1");
+        //    //l2.Draw(drawer, (GString)"2");
+        //    drawer.SetColor("red");
+        //    for (int j = 0; j < 30; j++)
+        //    {
+        //        drawer.DrawPoint(a.GetRandomPoint());
+        //    }
+        //    image.Save("C:\\Users\\Jossue\\Cosas\\test.bmp");
+        //}
     }
     private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Dispose();
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -220,5 +248,15 @@ public partial class Aplication : Form, IWalleUI
         box.AppendText(text);
         box.SelectionColor = box.ForeColor;
     }
-    public void Print(object obj) => AppendLineWithColor(Terminal, obj.ToString(), Color.White);
+    public void Print(object? obj)
+    {
+        if (obj is null)
+        {
+            AppendLineWithColor(Terminal, "undefined", Color.White);
+            return;
+        }
+        AppendLineWithColor(Terminal, obj.ToString()!, Color.White);
+    }
+
+    public void PrintError(GSharpException ex) => AppendLineWithColor(Terminal, ex.Message, Color.White);
 }

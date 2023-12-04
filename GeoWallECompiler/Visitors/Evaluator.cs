@@ -75,7 +75,7 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
     }
     public GSObject? VisitLiteralSequence(LiteralSequence sequence)
     {
-        GSharpSequence<GSObject>? result = sequence.GetSequenceValue(this);
+        GSequence result = sequence.GetSequenceValue(this);
         return result;
     }
     public GSObject? VisitLiteralString(LiteralString @string) => @string.String;

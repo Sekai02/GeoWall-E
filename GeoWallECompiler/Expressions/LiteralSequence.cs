@@ -3,13 +3,14 @@
 public abstract class LiteralSequence : GSharpExpression
 {
     public IEnumerable<GSharpExpression> Expressions { get; protected set; }
-    public int Count { get; protected set; }
+    public int? Count { get; protected set; }
     public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitLiteralSequence(this);
     public abstract LiteralSequence GetTail(int tailBeggining);
-    public GSharpSequence<GSObject> GetSequenceValue(Evaluator evaluator)
+    public GSequence GetSequenceValue(Evaluator evaluator)
     {
-        List<GSObject?> values = new(ToGSharpObjectSequence(evaluator));
-        return new ArraySequence<GSObject>(values);
+        //List<GSObject?> values = new(ToGSharpObjectSequence(evaluator));
+        //return new ArraySequence<GSObject>(values);
+        return new(ToGSharpObjectSequence(evaluator), Count);
     }
     private IEnumerable<T> ToGSharpObjectSequence<T>(IExpressionVisitor<T> visitor)
     {
@@ -83,6 +84,7 @@ public class InfiniteRangeExpression : LiteralSequence
         Expressions = InfiniteRange((LiteralNumber)leftBoundExpression);
         LeftBoundExpression = leftBoundExpression;
         ExpressionType = new(GTypeNames.GSequence, GTypeNames.GNumber);
+        Count = null;
     }
     private static IEnumerable<GSharpExpression> InfiniteRange(LiteralNumber start)
     {

@@ -41,7 +41,7 @@ public abstract class BinaryOperation : GSharpExpression
             if (!left.GetType().IsAssignableTo(overload.LeftAccepted))
                 return false;
         if(right is not null)
-            if (right.GetType().IsAssignableTo(overload.RightAccepted))
+            if (!right.GetType().IsAssignableTo(overload.RightAccepted))
                 return false;
         if (overload.LeftAccepted.ContainsGenericParameters && overload.RightAccepted.ContainsGenericParameters)
         {

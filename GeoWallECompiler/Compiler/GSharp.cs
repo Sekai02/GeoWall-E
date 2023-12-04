@@ -41,27 +41,53 @@ public static class GSharp
     /// <param name="source"></param>
     private static void Run(string source, IDrawer drawer, IWalleUI userInterface)
     {
+        CanvasHeight = drawer.CanvasHeight;
+        CanvasWidth = drawer.CanvasWidth;
         drawer.Reset();
         List<Token> tokens = Scan(source);
         if (ErrorHandler.HadError)
+        {
+            userInterface.PrintErrors(ErrorHandler.GetErrors());
             return;
+        }
         Parser parser = new(tokens);        
         List<Statement> statements = parser.Parse();
         if (ErrorHandler.HadError)
+        {
+            userInterface.PrintErrors(ErrorHandler.GetErrors());
             return;
+        }
         Evaluator evaluator = new(drawer, userInterface);
         Resolver resolver = new(evaluator);
         TypeChecker typeChecker = new(evaluator);
         resolver.VisitStatements(statements);
         if (ErrorHandler.HadError)
+        {
+            userInterface.PrintErrors(ErrorHandler.GetErrors());
             return;
+        }
         typeChecker.VisitStatements(statements);
         if (ErrorHandler.HadError)
+        {
+            userInterface.PrintErrors(ErrorHandler.GetErrors());
             return;
-        evaluator.VisitStatements(statements);
+        }
+        try
+        {
+            evaluator.VisitStatements(statements);
+        }
+        catch (GSharpException ex) 
+        {
+            userInterface.PrintError(ex);
+        }
         if (ErrorHandler.HadError)
+        {
+            userInterface.PrintErrors(ErrorHandler.GetErrors());
             return;
+        }
     }
+    public static int CanvasWidth { get; set; }
+    public static int CanvasHeight { get; set; }
     public static void InitializeGSharpStandard<V>(Context<V, ICallable> context)
     {
         context.SetFunction("line", new LineGetter());
@@ -72,6 +98,7 @@ public static class GSharp
         context.SetFunction("measure", new MeasureFunction());
         context.SetFunction("count", new CountFunction());
         context.SetFunction("randoms", new RandomsFunction());
+        context.SetFunction("points", new PointsFunction());
     }
     public static void InitializeGSharpStandard(Scope scope)
     {
@@ -83,5 +110,6 @@ public static class GSharp
         scope.Functions.Add("measure", true);
         scope.Functions.Add("count", true);
         scope.Functions.Add("randoms", true);
+        scope.Functions.Add("points", true);
     }   
 }

@@ -30,7 +30,7 @@ public class PictureDrawer : IDrawer
         double y = (y2 - y1);
         double x = (x2 - x1);
         double angle = Math.Atan2(y, x);
-        return angle;
+        return angle * (180 / Math.PI);
     }
     public void DrawArc(Arc arc, GString? name = null)
     {
@@ -95,7 +95,7 @@ public class PictureDrawer : IDrawer
     {
         float x = point.Coordinates.X;
         float y = point.Coordinates.Y;
-        drawer.DrawEllipse(DrawerPen, x, y, 2, 2);
+        drawer.DrawEllipse(DrawerPen, x - 1.75f, y - 1.75f, 3.5f, 3.5f);
 
         WriteMessage(name, x, y);
     }
