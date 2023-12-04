@@ -1,4 +1,6 @@
-﻿namespace GeoWallECompiler;
+﻿using System.Xml.Serialization;
+
+namespace GeoWallECompiler;
 public class ConstantsDeclaration : Statement
 {
     public override void Accept(IStatementVisitor visitor) => visitor.VisitConstantDeclaration(this);
@@ -49,16 +51,30 @@ public class DeclaredFunction : ICallable
     } 
     public GSharpType GetType(TypeChecker checker, List<GSharpType> argumentsTypes)
     {
+        return Declaration.Body.ExpressionType;
+        //Context<GSharpType, ICallable> functionContext = new(checker.TypeEnvironment);
+        //for (int i = 0; i < Declaration.Parameters.Count; i++)
+        //{
+        //    functionContext.SetVariable(Declaration.Parameters[i], argumentsTypes[i]);
+        //}
+        //Context<GSharpType, ICallable> previous = checker.TypeEnvironment;
+        //checker.TypeEnvironment = functionContext;
+        //GSharpType result = Declaration.Body.Accept(checker);
+        //checker.TypeEnvironment = previous;
+        //return result;
+    }
+    public void SetType(TypeChecker checker)
+    {
         Context<GSharpType, ICallable> functionContext = new(checker.TypeEnvironment);
         for (int i = 0; i < Declaration.Parameters.Count; i++)
         {
-            functionContext.SetVariable(Declaration.Parameters[i], argumentsTypes[i]);
+            functionContext.SetVariable(Declaration.Parameters[i], new(GTypeNames.Undetermined));
         }
         Context<GSharpType, ICallable> previous = checker.TypeEnvironment;
         checker.TypeEnvironment = functionContext;
         GSharpType result = Declaration.Body.Accept(checker);
         checker.TypeEnvironment = previous;
-        return result;
+        Declaration.Body.ExpressionType = result;
     }
     public int GetArgumentsAmount() => Declaration.Parameters.Count;
 }

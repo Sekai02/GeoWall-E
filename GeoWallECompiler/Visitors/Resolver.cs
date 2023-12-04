@@ -46,22 +46,22 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
     }
     private void BindValue(GSharpExpression expr, string variableName)
     {
-        for (int i = Scopes.Count - 1; i >= 0; i--)
+        for (int i = 0; i < Scopes.Count; i++)
         {
             if (Scopes.ElementAt(i).Variables.ContainsKey(variableName))
             {
-                Interpreter.ResolveReference(expr, Scopes.Count - 1 - i);
+                Interpreter.ResolveReference(expr, i);
                 return;
             }
         }
     }
     private void BindFunctionbody(GSharpExpression expr, string functionName)
     {
-        for (int i = Scopes.Count - 1; i >= 0; i--)
+        for (int i = 0; i < Scopes.Count; i++)
         {
             if (Scopes.ElementAt(i).Functions.ContainsKey(functionName))
             {
-                Interpreter.ResolveReference(expr, Scopes.Count - 1 - i);
+                Interpreter.ResolveReference(expr, i);
                 return;
             }
         }

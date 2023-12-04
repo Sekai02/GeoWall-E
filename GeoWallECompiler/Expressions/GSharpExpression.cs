@@ -5,7 +5,7 @@
 public abstract class GSharpExpression
 {
     public bool TypeSetted = false;
-    private GSharpType types;
+    private GSharpType types = new(GTypeNames.Undetermined);
     public GSharpType ExpressionType
     {
         get => types;

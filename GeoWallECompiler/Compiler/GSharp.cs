@@ -79,6 +79,7 @@ public static class GSharp
         catch (GSharpException ex) 
         {
             userInterface.PrintError(ex);
+            return;
         }
         if (ErrorHandler.HadError)
         {

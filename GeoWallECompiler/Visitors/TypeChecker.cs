@@ -93,6 +93,7 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     {
         DeclaredFunction function = new(declaration);
         TypeEnvironment.SetFunction(function.Declaration.Name, function);
+        function.SetType(this);
     }
     public GSharpType VisitIfThenElse(IfThenElse ifThen)
     {
