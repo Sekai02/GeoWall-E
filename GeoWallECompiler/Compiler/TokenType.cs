@@ -22,7 +22,7 @@ public enum TokenType
     POWER,
     AND,
     OR,
-    
+
     //Tokens with one or two characters
     NOT,
     BANG_EQUAL,
@@ -66,6 +66,7 @@ public enum TokenType
     IN,
 
     //Geo Keywords
+    SEQUENCE,
 
     //Drawing
     DRAW,

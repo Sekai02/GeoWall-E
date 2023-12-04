@@ -40,7 +40,7 @@ public class Scanner
         {"restore",TokenType.RESTORE},
         {"import",TokenType.IMPORT},
 
-        //Temporally removed
+        {"sequence", TokenType.SEQUENCE},
 
         {"point",TokenType.POINT},
         {"line",TokenType.LINE},
@@ -48,7 +48,7 @@ public class Scanner
         {"ray",TokenType.RAY},
         {"circle",TokenType.CIRCLE},
         {"arc",TokenType.ARC},
-        
+
         {"undefined",TokenType.UNDEFINED},
         {"PI",TokenType.PI},
         {"E",TokenType.EULER}
@@ -101,8 +101,9 @@ public class Scanner
             case '%': AddToken(TokenType.MOD); break;
 
             case ';':
-                if (isInLet) AddToken(TokenType.ASSIGN_SEPARATOR);
-                else AddToken(TokenType.INSTRUCTION_SEPARATOR);
+                /*if (isInLet) AddToken(TokenType.ASSIGN_SEPARATOR);
+                else*/
+                AddToken(TokenType.INSTRUCTION_SEPARATOR);
                 break;
 
             case '.':

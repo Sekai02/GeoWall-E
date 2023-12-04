@@ -1,13 +1,1 @@
-point p1;
-point p2;
-color blue;
-draw line(p1, p2);
-restore;
-draw p1;
-draw p2;
-{1,2..}
-{1,2...}
-not
-and
-or;
-let a=3; b=2; in a+b;
+{1...3}

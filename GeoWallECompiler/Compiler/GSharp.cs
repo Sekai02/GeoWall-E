@@ -45,10 +45,11 @@ public static class GSharp
         List<Token> tokens = Scan(source);
         if (ErrorHandler.HadError)
             return;
-        Parser parser = new(tokens);        
+        Parser parser = new(tokens);
         List<Statement> statements = parser.Parse();
         if (ErrorHandler.HadError)
             return;
+        Console.WriteLine("yei");
         Evaluator evaluator = new(drawer, userInterface);
         Resolver resolver = new(evaluator);
         TypeChecker typeChecker = new(evaluator);
@@ -83,5 +84,5 @@ public static class GSharp
         scope.Functions.Add("measure", true);
         scope.Functions.Add("count", true);
         scope.Functions.Add("randoms", true);
-    }   
+    }
 }

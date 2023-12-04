@@ -37,7 +37,11 @@ public class Parser
 
     private Statement ParseDeclaration()
     {
-        Statement declaration;
+        if (!Check(TokenType.IDENTIFIER) || !TryFind(TokenType.EQUAL)) return ParseStatement();
+        if (TryFindBefore(TokenType.LEFT_PAREN, TokenType.EQUAL)) return ParseFunctionDeclaration();
+        return ParseConstantDeclaration();
+
+        /*Statement declaration;
         if (!Check(TokenType.IDENTIFIER))
         {
             declaration = ParseStatement();
@@ -51,11 +55,11 @@ public class Parser
             return ParseStatement();
         }
         Regression();
-        //aqui hay que añadir para que consuma el identificador
+        //aqui hay que aï¿½adir para que consuma el identificador
         if (Check(TokenType.LEFT_PAREN)) declaration = ParseFunctionDeclaration();
-        else declaration= ParseConstantDeclaration();
+        else declaration = ParseConstantDeclaration();
         Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after declaration");
-        return declaration;
+        return declaration;*/
     }
 
     private Statement ParseConstantDeclaration()
@@ -68,7 +72,7 @@ public class Parser
 
         Consume(TokenType.EQUAL, "Expect '=' after identifier");
         GSharpExpression value = ParseExpression();
-
+        Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after expression.");
         return new ConstantsDeclaration(variableNames, value);
     }
 
@@ -94,7 +98,7 @@ public class Parser
         Consume(TokenType.EQUAL, "Expect '=' after ')'.");
 
         GSharpExpression body = ParseExpression();
-
+        Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after expression.");
         return new FunctionDeclaration(name, parameters, body);
     }
 
@@ -130,10 +134,10 @@ public class Parser
 
     private GSharpExpression ParseIfStatement()
     {
-        Consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+        //Consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
         GSharpExpression condition = ParseExpression();
-        Consume(TokenType.RIGHT_BRACE, "Expect ')' after if condition.");
-        Consume(TokenType.THEN, "Expect 'then' after ')'.");
+        //Consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+        Consume(TokenType.THEN, "Expect 'then' after condition.");
         GSharpExpression thenBranch = ParseExpression();
         GSharpExpression elseBranch = null!;
         if (Match(TokenType.ELSE)) elseBranch = ParseExpression();
@@ -215,7 +219,7 @@ public class Parser
                     while (Match(TokenType.COMMA));
                 }
                 Consume(TokenType.RIGHT_PAREN, "Expect ')' after arguments");
-                GSharpExpression body = ParseExpression();
+                //GSharpExpression body = ParseExpression();
 
                 return new FunctionCall(name, arguments);
             }
@@ -230,7 +234,7 @@ public class Parser
             return new Grouping(expr);
         }
 
-        throw new DefaultError("Expect expression");
+        throw new DefaultError("Expect expression.");
     }
 
     private GSharpExpression ParseUnary()
@@ -390,8 +394,9 @@ public class Parser
 
     private Statement ParseReceiverStatement(TokenType type)
     {
-        if (Check(TokenType.IDENTIFIER) && tokens[current].lexeme == "sequence")
+        if (Check(TokenType.SEQUENCE))
         {
+            Consume(TokenType.SEQUENCE, "Expect 'sequence' after type.");
             string name = Consume(TokenType.IDENTIFIER, "Expect sequence name.").lexeme;
             Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after name.");
             return new Reciever(InferType(type), name, true);
@@ -451,7 +456,7 @@ public class Parser
         return Peek().type == type;
     }
 
-    private Token GetBack()
+    /*private Token GetBack()
     {
         current--;
         return tokens[current];
@@ -464,7 +469,7 @@ public class Parser
             GetBack();
         }
         checkPoint = NotPresent;
-    }
+    }*/
 
     private bool TryFind(TokenType type)
     {
