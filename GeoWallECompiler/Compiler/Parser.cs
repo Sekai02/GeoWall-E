@@ -146,7 +146,7 @@ public class Parser
                 case TokenType.NUMBER:
                     return new LiteralNumber(new GSNumber((double)previous.literal));
                 case TokenType.STRING:
-                    return new LiteralString(new GSString((string)previous.literal));
+                    return new LiteralString(new GString((string)previous.literal));
                 case TokenType.LEFT_BRACE:
                     bool ellipsisBetween = TryFindBefore(TokenType.ELLIPSIS, TokenType.RIGHT_BRACE);
 
@@ -358,7 +358,7 @@ public class Parser
         }
         string label = Consume(TokenType.STRING, "Expect string after identifier.").lexeme;
         Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after string");
-        return new DrawStatement(expressionToDraw, new LiteralString(new GSString(label)));
+        return new DrawStatement(expressionToDraw, new LiteralString(new GString(label)));
     }
 
     private Statement ParsePrintStatement()

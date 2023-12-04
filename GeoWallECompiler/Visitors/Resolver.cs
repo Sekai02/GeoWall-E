@@ -185,7 +185,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
         }
         return null;
     }
-    public void VisitDrawStatment(DrawStatement drawStatement) => drawStatement.Expression.Accept(this);
+    public void VisitDrawStatement(DrawStatement drawStatement) => drawStatement.Expression.Accept(this);
     public void VisitColorStatent(ColorStatement color) { return; }
     public void VisitRestoreStatement(Restore restore) { return; }
     public GSObject VisitLiteralString(LiteralString @string) => null;

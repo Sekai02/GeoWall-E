@@ -17,21 +17,19 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     }
     public GSharpType VisitBinaryOperation(BinaryOperation binary)
     {
-        if (binary.EnteredType.Name == GTypeNames.Undetermined)
-            return binary.ReturnedType;
         var leftType = binary.LeftArgument.Accept(this);
         var rightType = binary.RightArgument.Accept(this);
 
         binary.LeftArgument.ExpressionType = leftType;
         binary.RightArgument.ExpressionType = rightType;
         
-        if (leftType != binary.EnteredType && leftType.Name != GTypeNames.Undetermined)
-            ReportSemanticError(new SemanticError($"Operator `{binary.OperationToken}`", binary.EnteredType.ToString(), leftType.ToString()));
-        if (rightType != binary.EnteredType && rightType.Name != GTypeNames.Undetermined)
-            ReportSemanticError(new SemanticError($"Operator `{binary.OperationToken}`", binary.EnteredType.ToString(), rightType.ToString()));
-        
-        binary.ExpressionType = binary.ReturnedType;
-        return binary.ReturnedType;
+        foreach(BinaryOverloadInfo overload in binary.PosibleOverloads)
+        {
+            if (BinaryOperation.IsAnAcceptedOverload(leftType, rightType, overload))
+                return overload.ReturnedType;
+        }
+        ReportSemanticError(new DefaultError($"Operator '{binary.OperationToken}' cannot be used between {leftType} and {rightType}"));
+        return binary.PosibleOverloads[0].ReturnedType;
     }
     public void VisitColorStatent(ColorStatement color) { return; }
     public GSharpType VisitConstant(Constant constant)
@@ -58,7 +56,7 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
         foreach (var constant in declaration.ConstantNames)
             TypeEnvironment.SetVariable(constant, new(type.GenericType));     
     }
-    public void VisitDrawStatment(DrawStatement drawStatement) 
+    public void VisitDrawStatement(DrawStatement drawStatement) 
     {
         var type = drawStatement.Expression.Accept(this);
         drawStatement.Expression.ExpressionType = type;
@@ -79,7 +77,17 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
             argument.ExpressionType = argument.ExpressionType;
             arguments.Add(argumentType);
         }
-        return callee.GetType(this, arguments);
+        IsCheckingFunctionCall = true;
+        try
+        { 
+            return callee.GetType(this, arguments);
+        }
+        catch(SemanticError ex)
+        {
+            IsCheckingFunctionCall = false;
+            ReportSemanticError(new SemanticError($"Function {functionCall.FunctionName}", ex.ExpressionExpected, ex.ExpressionReceived));
+            return new(GTypeNames.Undetermined);
+        }
     }
     public void VisitFunctionDeclaration(FunctionDeclaration declaration)
     {
@@ -93,16 +101,11 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
         GSharpType elseType = ifThen.ElseExpression.Accept(this);
         ifThen.IfExpression.ExpressionType = ifType;
         ifThen.ElseExpression.ExpressionType = elseType;
-        if (ifType == elseType)
-        {
-            ifThen.ExpressionType = ifType;
-            return ifType;
-        }
-        else
-        {
+
+        ifThen.ExpressionType = ifType;
+        if (ifType != elseType)
             ReportSemanticError(new DefaultError("SemanticError", "if-then-else statements must have the same return type"));
-            return new(GTypeNames.Undetermined);
-        }
+        return ifType;
     }
     public GSharpType VisitLetIn(LetIn letIn)
     {
@@ -117,7 +120,8 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     public GSharpType VisitLiteralNumber(LiteralNumber literal) => literal.ExpressionType = new(GTypeNames.GNumber);
     public GSharpType VisitLiteralSequence(LiteralSequence sequence)
     {
-        //Arreglar
+        if (sequence.TypeSetted)
+            return sequence.ExpressionType;
         foreach (GSharpExpression expression in sequence.Expressions)
         {
             GSharpType expressionType = expression.Accept(this);
@@ -144,9 +148,14 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     {
         GSharpType argType = unary.Argument.Accept(this);
         unary.ExpressionType = argType;
-        if (argType.Name != GTypeNames.Undetermined && argType != unary.EnteredType)
-            ReportSemanticError(new SemanticError($"Operator `{unary.OperationToken}`", unary.EnteredType.Name.ToString(), argType.Name.ToString(), null));
-        return unary.ReturnedType;
+
+        foreach (UnaryOverloadInfo overload in unary.PosibleOverloads)
+        {
+            if (UnaryOperation.IsAnAcceptedOverload(argType, overload))
+                return overload.ReturnedType;
+        }
+        ReportSemanticError(new DefaultError($"Operator '{unary.OperationToken}' cannot be used with {argType}"));
+        return unary.PosibleOverloads[0].ReturnedType;
     }
     public void VisitStatements(List<Statement> statements)
     {

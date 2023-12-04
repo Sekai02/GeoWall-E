@@ -1,7 +1,7 @@
 ﻿using GeoWallECompiler.Expressions;
 
 namespace GeoWallECompiler;
-public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
+public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
 {
     public Dictionary<GSharpExpression, int> References = new();
     private IWalleUI UserInterface;
@@ -12,40 +12,76 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
         UserInterface = userInterface;
         GSharp.InitializeGSharpStandard(EvaluationContext);
     }
-    public Context<GSObject, ICallable>? EvaluationContext { get; set; } = new();
+    public Context<GSObject?, ICallable> EvaluationContext { get; set; } = new();
     public IDrawer Drawer { get; }
     public void ResolveReference(GSharpExpression expression, int depth)
     {
         References.Add(expression, depth);
     }
-    public GSObject VisitBinaryOperation(BinaryOperation binary)
+    public GSObject? VisitBinaryOperation(BinaryOperation binary)
     {
-        GSObject left = binary.LeftArgument.Accept(this);
-        GSObject right = binary.RightArgument.Accept(this);
-        if (left.GetType() == binary.AcceptedType && right.GetType() == binary.AcceptedType)
-            return binary.Operation(left, right);
-        var conflictiveType = left.GetType() != binary.AcceptedType ? left.GetType().Name : right.GetType().Name;
-        throw new SemanticError($"Operator `{binary.OperationToken}`", binary.ReturnedType.ToString(), conflictiveType);
+        GSObject? left = binary.LeftArgument.Accept(this);
+        GSObject? right = binary.RightArgument.Accept(this);
+        foreach(BinaryOverloadInfo overload in binary.PosibleOverloads)
+        {
+            if (BinaryOperation.IsAnAcceptedOverload(left, right, overload))
+                return overload.Operation(left, right);
+        }
+        throw new DefaultError($"Operator `{binary.OperationToken}` cannot be used between {left!.GetType().Name} and {right!.GetType().Name}");
     }
-    public GSObject VisitConstant(Constant constant)
+    public GSObject? VisitConstant(Constant constant)
     {
         int distance = References[constant];
         return EvaluationContext.AccessVariableAt(distance, constant.Name);
     }
-    public GSObject VisitFunctionCall(FunctionCall functionCall)
+    public GSObject? VisitFunctionCall(FunctionCall functionCall)
     {
         int distance = References[functionCall];
         ICallable callee = EvaluationContext.AccessFunctionAt(distance, functionCall.FunctionName);
-        List<GSObject> arguments = new();
+        List<GSObject?> arguments = new();
         foreach (GSharpExpression argument in functionCall.Arguments)
         {
             arguments.Add(argument.Accept(this));
         }
         return callee.Evaluate(this, arguments);
     }
+    public GSObject? VisitIfThenElse(IfThenElse ifThen)
+    {
+        bool condition = GSObject.ToValueOfTruth(ifThen.Condition.Accept(this)) == 1;
+        if (condition)
+            return ifThen.IfExpression.Accept(this);
+        return ifThen.ElseExpression.Accept(this);
+    }
+    public GSObject? VisitLetIn(LetIn letIn)
+    {
+        Context<GSObject?, ICallable> letInContext = new(EvaluationContext);
+        EvaluationContext = letInContext;
+        foreach (var statement in letIn.Instructions)
+            statement.Accept(this);
+        GSObject? result = letIn.Body.Accept(this);
+        EvaluationContext = EvaluationContext!.Enclosing!;
+        return result;
+    }
+    public GSObject? VisitLiteralNumber(LiteralNumber literal) => literal.Value;
+    public GSObject? VisitUnaryOperation(UnaryOperation unary)
+    {
+        GSObject? arg = unary.Argument.Accept(this);
+        foreach (UnaryOverloadInfo overload in unary.PosibleOverloads)
+        {
+            if (UnaryOperation.IsAnAcceptedOverload(arg, overload))
+                return overload.Operation(arg);
+        }
+        throw new DefaultError($"Operator `{unary.OperationToken}` cannot be used with {arg!.GetType().Name}");
+    }
+    public GSObject? VisitLiteralSequence(LiteralSequence sequence)
+    {
+        GSequence result = sequence.GetSequenceValue(this);
+        return result;
+    }
+    public GSObject? VisitLiteralString(LiteralString @string) => @string.String;
     public void VisitConstantDeclaration(ConstantsDeclaration declaration)
     {
-        GSObject value = declaration.ValueExpression.Accept(this);
+        GSObject? value = declaration.ValueExpression.Accept(this);
         List<string> constantNames = declaration.ConstantNames;
         if (value == null)
         {
@@ -57,18 +93,18 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
             EvaluationContext.SetVariable(constantNames[0], value);
             return;
         }
-        if (value is not GSharpSequence<GSObject>)
+        if (value is not GSequence)
         {
             ErrorHandler.AddError(new DefaultError("Match statements can only take a sequence as value", "semantic"));
             return;
         }
-        GSharpSequence<GSObject> sequence = (GSharpSequence<GSObject>)value;
+        GSequence sequence = (GSequence)value;
         int index = 0;
-        foreach (GSObject obj in sequence.Sequence)
+        foreach (GSObject obj in sequence.NonGenericSequence)
         {
             if (index == constantNames.Count - 1)
             {
-                EvaluationContext.SetVariable(constantNames[index], sequence.GetTail(index));
+                EvaluationContext.SetVariable(constantNames[index], new GSequence(sequence.GetTail(index)));
                 break;
             }
             EvaluationContext.SetVariable(constantNames[index], obj);
@@ -86,38 +122,7 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
         DeclaredFunction function = new(declaration);
         EvaluationContext.SetFunction(function.Declaration.Name, function);
     }
-    public GSObject VisitIfThenElse(IfThenElse ifThen)
-    {
-        bool condition = ifThen.Condition.Accept(this)?.ToValueOfTruth() == 1;
-        if (condition)
-            return ifThen.IfExpression.Accept(this);
-        return ifThen.ElseExpression.Accept(this);
-    }
-    public GSObject VisitLetIn(LetIn letIn)
-    {
-        Context<GSObject, ICallable> letInContext = new(EvaluationContext);
-        EvaluationContext = letInContext;
-        foreach (var statement in letIn.Instructions)
-            statement.Accept(this);
-        GSObject result = letIn.Body.Accept(this);
-        EvaluationContext = EvaluationContext.Enclosing;
-        return result;
-    }
-    public GSObject VisitLiteralNumber(LiteralNumber literal) => literal.Value;
-    public GSObject VisitUnaryOperation(UnaryOperation unary)
-    {
-        GSObject arg = unary.Argument.Accept(this);
-        return arg.GetType() == unary.AcceptedType
-            ? unary.Operation(arg)
-            : throw new SemanticError($"Operator `{unary.OperationToken}`", unary.EnteredType.ToString(), arg.GetType().Name, null); ;
-    }
-    public GSObject VisitLiteralSequence(LiteralSequence sequence)
-    {
-        GSharpSequence<GSObject> result = sequence.GetSequenceValue(this);
-        return result;
-    }
-    public GSObject VisitLiteralString(LiteralString @string) => @string.String;
-    public void VisitDrawStatment(DrawStatement drawStatement)
+    public void VisitDrawStatement(DrawStatement drawStatement)
     {
         var objectToDraw = drawStatement.Expression.Accept(this);
         var expressionType = drawStatement.Expression.ExpressionType;
@@ -132,27 +137,27 @@ public class Evaluator : IExpressionVisitor<GSObject>, IStatementVisitor
             switch (expressionType.GenericType) 
             {
                 case GTypeNames.Point: 
-                    var pointSequence = (GSharpSequence<GSPoint>)objectToDraw;
+                    var pointSequence = (GSharpSequence<GSPoint>)objectToDraw!;
                     Drawer.DrawSequence(pointSequence);
                     break;
                 case GTypeNames.Line:
-                    var lineSequence = (GSharpSequence<Line>)objectToDraw;
+                    var lineSequence = (GSharpSequence<Line>)objectToDraw!;
                     Drawer.DrawSequence(lineSequence);
                     break;
                 case GTypeNames.Segment:
-                    var segmentSequence = (GSharpSequence<Segment>)objectToDraw;
+                    var segmentSequence = (GSharpSequence<Segment>)objectToDraw!;
                     Drawer.DrawSequence(segmentSequence);
                     break;
                 case GTypeNames.Ray:
-                    var raySequence = (GSharpSequence<Ray>)objectToDraw;
+                    var raySequence = (GSharpSequence<Ray>)objectToDraw!;
                     Drawer.DrawSequence(raySequence);
                     break;
                 case GTypeNames.Circle:
-                    var circleSequence = (GSharpSequence<Circle>)objectToDraw;
+                    var circleSequence = (GSharpSequence<Circle>)objectToDraw!;
                     Drawer.DrawSequence(circleSequence);
                     break;
                 case GTypeNames.Arc:
-                    var arcSequence = (GSharpSequence<Arc>)objectToDraw;
+                    var arcSequence = (GSharpSequence<Arc>)objectToDraw!;
                     Drawer.DrawSequence(arcSequence);
                     break;
             }
