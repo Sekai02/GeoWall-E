@@ -1,4 +1,6 @@
-﻿namespace GeoWallECompiler;
+﻿using GeoWallECompiler.Expressions;
+
+namespace GeoWallECompiler;
 
 public interface IExpressionVisitor<T>
 {
@@ -11,4 +13,5 @@ public interface IExpressionVisitor<T>
     T VisitConstant(Constant constant);
     T VisitFunctionCall(FunctionCall functionCall);
     T VisitLiteralSequence(LiteralSequence sequence);
+    T VisitLiteralUndefined(LiteralUndefined undefined);
 }

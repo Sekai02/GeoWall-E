@@ -54,6 +54,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
                 return;
             }
         }
+        ErrorHandler.AddError(new DefaultError($"Variable {variableName} is not defined", "Semantic"));
     }
     private void BindFunctionbody(GSharpExpression expr, string functionName)
     {
@@ -65,6 +66,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
                 return;
             }
         }
+        ErrorHandler.AddError(new DefaultError($"Function {functionName} is not defined", "Semantic"));
     }
     public GSObject VisitBinaryOperation(BinaryOperation binary)
     {
@@ -162,4 +164,5 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
         DefineVariable(reciever.Identifier);
     }
     public void VisitPrintStatement(PrintStatement printStatement) => printStatement.Expression.Accept(this);
+    public GSObject VisitLiteralUndefined(LiteralUndefined undefined) => null;
 }

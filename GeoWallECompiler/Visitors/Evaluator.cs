@@ -232,4 +232,5 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
         var objectToPrint = printStatement.Expression.Accept(this);
         UserInterface.Print(objectToPrint);
     }
+    public GSObject? VisitLiteralUndefined(LiteralUndefined undefined) => null;
 }

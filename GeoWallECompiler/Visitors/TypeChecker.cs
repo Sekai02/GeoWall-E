@@ -179,4 +179,5 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
         GSharpType type = printStatement.Expression.Accept(this);
         printStatement.Expression.ExpressionType = type;
     }
+    public GSharpType VisitLiteralUndefined(LiteralUndefined undefined) => new(GTypeNames.GObject);
 }

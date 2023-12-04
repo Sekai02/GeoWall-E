@@ -233,9 +233,6 @@ public partial class Aplication : Form, IWalleUI
             AppendLineWithColor(Terminal, "Process exited whitout errors", Color.White);
             return;
         }
-        Terminal.SelectionStart = Terminal.Text.Length;
-        foreach (var error in ErrorHandler.GetErrors())
-            AppendLineWithColor(Terminal, error.Message, Color.Red);
         ErrorHandler.Reset();
     }
     private static void AppendLineWithColor(RichTextBox box, string text, Color color)
