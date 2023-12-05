@@ -8,12 +8,10 @@ public class Parser
 {
     private readonly List<Token> tokens;
     private int current = 0;
-    private int checkPoint = NotPresent;
 
     public Parser(List<Token> tokens)
     {
         this.tokens = tokens;
-        this.checkPoint = -1;
     }
 
     public List<Statement> Parse()
@@ -23,7 +21,7 @@ public class Parser
         {
             try
             {
-                statements.Add(ParseDeclaration(false));
+                statements.Add(ParseDeclaration());
             }
             catch (GSharpException error)
             {
@@ -35,10 +33,10 @@ public class Parser
         return statements;
     }
 
-    private Statement ParseDeclaration(bool isInsideLet)
+    private Statement ParseDeclaration()
     {
         if (!Check(TokenType.IDENTIFIER) || !TryFindBefore(TokenType.EQUAL, TokenType.INSTRUCTION_SEPARATOR)) return ParseStatement();
-        if (TryFindBefore(TokenType.LEFT_PAREN, TokenType.EQUAL) && !isInsideLet) return ParseFunctionDeclaration();
+        if (TryFindBefore(TokenType.LEFT_PAREN, TokenType.EQUAL) /*&& !isInsideLet*/) return ParseFunctionDeclaration();
         return ParseConstantDeclaration();
     }
 
@@ -101,7 +99,7 @@ public class Parser
         List<Statement> expressions = new List<Statement>();
         while (!Check(TokenType.IN) && !IsAtEnd())
         {
-            expressions.Add(ParseDeclaration(true));
+            expressions.Add(ParseDeclaration());
             // Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after statement.");
         }
 
@@ -178,6 +176,29 @@ public class Parser
                         return new LiteralArrayExpression(sequenceValues);
                     }
             }
+        }
+
+        if (Match(TokenType.UNDEFINED))
+        {
+            return new LiteralUndefined();
+        }
+
+        if (Match(TokenType.POINT, TokenType.CIRCLE, TokenType.ARC, TokenType.LINE, TokenType.RAY, TokenType.SEGMENT))
+        {
+            string name = Previous().lexeme;
+            Consume(TokenType.LEFT_PAREN, "Expect '(' after constructor.");
+            List<GSharpExpression> arguments = new List<GSharpExpression>();
+            if (!Check(TokenType.RIGHT_PAREN))
+            {
+                do
+                {
+                    arguments.Add(ParseExpression());
+                }
+                while (Match(TokenType.COMMA));
+            }
+            Consume(TokenType.RIGHT_PAREN, "Expect ')' after arguments");
+
+            return new FunctionCall(name, arguments);
         }
 
         if (Match(TokenType.IDENTIFIER))
@@ -364,8 +385,18 @@ public class Parser
     private Statement ParsePrintStatement()
     {
         GSharpExpression expressionToPrint = ParseExpression();
+        if (Check(TokenType.INSTRUCTION_SEPARATOR))
+        {
+            Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after identifier");
+            return new PrintStatement(expressionToPrint, null!);
+        }
+        string label = Consume(TokenType.STRING, "Expect string after identifier.").lexeme;
         Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after string");
-        return new PrintStatement(expressionToPrint);
+        return new PrintStatement(expressionToPrint, new LiteralString(new GString(label)));
+
+        /*GSharpExpression expressionToPrint = ParseExpression();
+        Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after string");
+        return new PrintStatement(expressionToPrint);*/
     }
 
     private Statement ParseImportStatement()
@@ -403,8 +434,12 @@ public class Parser
         if (Match(TokenType.DRAW)) return ParseDrawStatement();
         if (Match(TokenType.IMPORT)) return ParseImportStatement();
         if (Match(TokenType.PRINT)) return ParsePrintStatement();
-        if (Match(TokenType.POINT, TokenType.LINE, TokenType.SEGMENT, TokenType.RAY,
-        TokenType.CIRCLE, TokenType.ARC)) return ParseReceiverStatement(Previous().type);
+        if (Check(TokenType.POINT, TokenType.LINE, TokenType.SEGMENT, TokenType.RAY,
+        TokenType.CIRCLE, TokenType.ARC) && !CheckAhead(TokenType.LEFT_PAREN))
+        {
+            Match(TokenType.POINT, TokenType.LINE, TokenType.SEGMENT, TokenType.RAY, TokenType.CIRCLE, TokenType.ARC);
+            return ParseReceiverStatement(Previous().type);
+        }
 
         return ParseExpressionStatement();
     }
@@ -434,10 +469,28 @@ public class Parser
         throw new DefaultError(message, "syntax", Scanner.Line);
     }
 
-    private bool Check(TokenType type)
+    private bool CheckAhead(params TokenType[] types)
+    {
+        if (current + 1 >= tokens.Count) return false;
+        if (tokens[current + 1].type == TokenType.EOF) return false;
+        foreach (TokenType type in types)
+        {
+            if (tokens[current + 1].type == type)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool Check(params TokenType[] types)
     {
         if (IsAtEnd()) return false;
-        return Peek().type == type;
+        foreach (TokenType type in types)
+        {
+            if (Peek().type == type) return true;
+        }
+        return false;
     }
 
     private bool TryFind(TokenType type)
@@ -450,6 +503,11 @@ public class Parser
         }
         return false;
     }
+
+    /*private bool IsAtReceiverType()
+    {
+        return Check(TokenType.POINT,TokenType.CIRCLE,TokenType.ARC,TokenType.LINE,TokenType.RAY,TokenType.SEGMENT);
+    }*/
 
     private bool TryFindBefore(TokenType target, TokenType breakpoint)
     {
@@ -500,6 +558,4 @@ public class Parser
                 return GTypeNames.Undetermined;
         }
     }
-
-    private const int NotPresent = -1;
 }

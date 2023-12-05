@@ -29,7 +29,7 @@ public class DrawerDummie : IDrawer
     public void DrawEnumerable(IEnumerable values) => Console.WriteLine("draw succeded");
     public void DrawLine(Line line, GString name = null) => Console.WriteLine("draw succeded");
     public void DrawPoint(GSPoint point, GString name = null) => Console.WriteLine("draw succeded");
-    public void DrawRay(Ray ray, GString name = null) => Console.WriteLine("draw succeded");  
+    public void DrawRay(Ray ray, GString name = null) => Console.WriteLine("draw succeded");
     public void DrawSegment(Segment segment, GString name = null) => Console.WriteLine("draw succeded");
     public void DrawSequence<T>(GSharpSequence<T> sequence) where T : GSObject, IDrawable => Console.WriteLine("draw succeded");
     public void DrawString(GString gString) => Console.WriteLine("draw succeded");

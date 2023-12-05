@@ -50,7 +50,7 @@ public static class GSharp
             userInterface.PrintErrors(ErrorHandler.GetErrors());
             return;
         }
-        Parser parser = new(tokens);        
+        Parser parser = new(tokens);
         List<Statement> statements = parser.Parse();
         if (ErrorHandler.HadError)
         {
@@ -76,7 +76,7 @@ public static class GSharp
         {
             evaluator.VisitStatements(statements);
         }
-        catch (GSharpException ex) 
+        catch (GSharpException ex)
         {
             userInterface.PrintError(ex);
             return;
@@ -114,5 +114,5 @@ public static class GSharp
         scope.Functions.Add("randoms", true);
         scope.Functions.Add("points", true);
         scope.Functions.Add("samples", true);
-    }   
+    }
 }
