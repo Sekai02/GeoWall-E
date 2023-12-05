@@ -1,0 +1,8 @@
+point p1;
+point(5,6);
+//asggehrjrt
+let f(x)=x; in f(1);
+undefined;
+//asfassfassfhgh print(5); asdasda f(x,y)=x+y;
+// // 
+print 5 "boniato";

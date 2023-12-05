@@ -98,8 +98,12 @@ public class Scanner
             case '+': AddToken(TokenType.PLUS); break;
             case '*': AddToken(TokenType.PRODUCT); break;
             case '^': AddToken(TokenType.POWER); break;
-            case '/': AddToken(TokenType.DIVISION); break;
             case '%': AddToken(TokenType.MOD); break;
+
+            case '/':
+                if (Match('/')) SkipLine();
+                else AddToken(TokenType.DIVISION);
+                break;
 
             case ';':
                 /*if (isInLet) AddToken(TokenType.ASSIGN_SEPARATOR);
@@ -341,6 +345,11 @@ public class Scanner
     private void AddToken(TokenType type)
     {
         AddToken(type, null!);
+    }
+
+    private void SkipLine()
+    {
+        while (!IsAtEnd() && Peek() != '\n') current++;
     }
 
     /// <summary>
