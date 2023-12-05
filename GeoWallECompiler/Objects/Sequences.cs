@@ -49,6 +49,7 @@ public class GSequence : GSObject, ISequenciable
     }
     public static GSharpSequence<GSNumber> GetRandomNumbers() => new(RandomNumbers(), null);
     public static GSharpSequence<GSPoint> GetRandomPoints(IDrawable figure) => new(RandomPoints(figure), null);
+    public static GSharpSequence<GSPoint> GetRandomPoints() => new(RandomPoints(), null);
     private static IEnumerable Skip(IEnumerable objects, int count)
     {
         int i = 0;
@@ -76,6 +77,16 @@ public class GSequence : GSObject, ISequenciable
     {
         while (true)
             yield return figure.GetRandomPoint();
+    }
+    private static IEnumerable<GSPoint> RandomPoints()
+    {
+        Random random = new();
+        while (true)
+        {
+            GSNumber x = (GSNumber)random.Next(GSharp.CanvasWidth);
+            GSNumber y = (GSNumber)random.Next(GSharp.CanvasHeight);
+            yield return new(x,y);
+        }
     }
 }
 /// <summary>

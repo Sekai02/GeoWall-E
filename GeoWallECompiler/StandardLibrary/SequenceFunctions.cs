@@ -45,3 +45,14 @@ public class PointsFunction : ICallable
     public int GetArgumentsAmount() => 1;
     public GSharpType GetType(TypeChecker checker, List<GSharpType> argumentsTypes) => new(GTypeNames.GSequence, GTypeNames.Point);
 }
+public class SamplesFunction : ICallable
+{
+    public GSObject? Evaluate(Evaluator evaluator, List<GSObject?> arguments) 
+    {
+        if (arguments.Count != 0)
+            throw new SemanticError("Function 'randoms'", "0 arguments", $"{arguments.Count}");
+        return GSequence.GetRandomPoints();
+    }
+    public int GetArgumentsAmount() => throw new NotImplementedException();
+    public GSharpType GetType(TypeChecker checker, List<GSharpType> argumentsTypes) => new(GTypeNames.GSequence, GTypeNames.Point);
+}

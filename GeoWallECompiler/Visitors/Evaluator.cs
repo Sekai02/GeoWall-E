@@ -128,15 +128,16 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
         var objectToDraw = drawStatement.Expression.Accept(this);
         var expressionType = drawStatement.Expression.ExpressionType;
         var label = drawStatement.StringExpression?.String;
-        if (objectToDraw is IDrawable)
+        if (objectToDraw is IDrawable drawable)
         {
-            ((IDrawable)objectToDraw).Draw(Drawer, label);
+            drawable.Draw(Drawer, label);
             return;
         }
         else if (expressionType.Name == GTypeNames.GSequence && expressionType.IsFigure)
         {
             switch (expressionType.GenericType) 
             {
+                //arreglar
                 case GTypeNames.Point: 
                     var pointSequence = (GSharpSequence<GSPoint>)objectToDraw!;
                     Drawer.DrawSequence(pointSequence);
