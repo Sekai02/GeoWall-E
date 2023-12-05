@@ -133,36 +133,39 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
             drawable.Draw(Drawer, label);
             return;
         }
-        else if (expressionType.Name == GTypeNames.GSequence && expressionType.IsFigure)
+        else if (expressionType.Name == GTypeNames.GSequence && expressionType.IsFigure && objectToDraw is ISequenciable sequenciable)
         {
-            switch (expressionType.GenericType) 
-            {
-                //arreglar
-                case GTypeNames.Point: 
-                    var pointSequence = (GSharpSequence<GSPoint>)objectToDraw!;
-                    Drawer.DrawSequence(pointSequence);
-                    break;
-                case GTypeNames.Line:
-                    var lineSequence = (GSharpSequence<Line>)objectToDraw!;
-                    Drawer.DrawSequence(lineSequence);
-                    break;
-                case GTypeNames.Segment:
-                    var segmentSequence = (GSharpSequence<Segment>)objectToDraw!;
-                    Drawer.DrawSequence(segmentSequence);
-                    break;
-                case GTypeNames.Ray:
-                    var raySequence = (GSharpSequence<Ray>)objectToDraw!;
-                    Drawer.DrawSequence(raySequence);
-                    break;
-                case GTypeNames.Circle:
-                    var circleSequence = (GSharpSequence<Circle>)objectToDraw!;
-                    Drawer.DrawSequence(circleSequence);
-                    break;
-                case GTypeNames.Arc:
-                    var arcSequence = (GSharpSequence<Arc>)objectToDraw!;
-                    Drawer.DrawSequence(arcSequence);
-                    break;
-            }
+            Drawer.DrawEnumerable(sequenciable.GetSequence());
+            #region cosascomentadas
+            //switch (expressionType.GenericType) 
+            //{
+            //    //arreglar
+            //    case GTypeNames.Point: 
+            //        var pointSequence = (GSharpSequence<GSPoint>)objectToDraw!;
+            //        Drawer.DrawSequence(pointSequence);
+            //        break;
+            //    case GTypeNames.Line:
+            //        var lineSequence = (GSharpSequence<Line>)objectToDraw!;
+            //        Drawer.DrawSequence(lineSequence);
+            //        break;
+            //    case GTypeNames.Segment:
+            //        var segmentSequence = (GSharpSequence<Segment>)objectToDraw!;
+            //        Drawer.DrawSequence(segmentSequence);
+            //        break;
+            //    case GTypeNames.Ray:
+            //        var raySequence = (GSharpSequence<Ray>)objectToDraw!;
+            //        Drawer.DrawSequence(raySequence);
+            //        break;
+            //    case GTypeNames.Circle:
+            //        var circleSequence = (GSharpSequence<Circle>)objectToDraw!;
+            //        Drawer.DrawSequence(circleSequence);
+            //        break;
+            //    case GTypeNames.Arc:
+            //        var arcSequence = (GSharpSequence<Arc>)objectToDraw!;
+            //        Drawer.DrawSequence(arcSequence);
+            //        break;
+            //}
+            #endregion
             return;
         }
         throw new DefaultError("Draw argument must be a figure", "Semantic");

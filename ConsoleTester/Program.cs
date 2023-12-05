@@ -17,6 +17,7 @@ internal class Program
 public class ConsoleUI : IWalleUI
 {
     public void Print(object? obj, string message = "") => Console.WriteLine(obj + message);
+    public void PrintError(GSharpException obj) => Console.WriteLine(obj.Message);
 }
 public class DrawerDummie : IDrawer
 {
