@@ -221,7 +221,7 @@ public partial class Aplication : Form, IWalleUI
     }
     private void Run()
     {
-        Bitmap image = new(pictureBox1.Width, pictureBox1.Height);
+        Bitmap image = new(10000, 10000);
         PictureDrawer drawer = new(Graphics.FromImage(image), Pencil, pictureBox1.Height, pictureBox1.Width);
         pictureBox1.Image = image;
 
@@ -234,6 +234,7 @@ public partial class Aplication : Form, IWalleUI
             return;
         }
         ErrorHandler.Reset();
+        image.Save("C:\\Users\\Jossue\\Cosas\\test.bmp");
     }
     private static void AppendLineWithColor(RichTextBox box, string text, Color color)
     {
@@ -254,6 +255,5 @@ public partial class Aplication : Form, IWalleUI
         }
         AppendLineWithColor(Terminal, obj.ToString()! + caption, Color.White);
     }
-
     public void PrintError(GSharpException ex) => AppendLineWithColor(Terminal, ex.Message, Color.Red);
 }

@@ -91,6 +91,7 @@ public static class GSharp
     public static int CanvasHeight { get; set; }
     public static void InitializeGSharpStandard<V>(Context<V, ICallable> context)
     {
+        context.SetFunction("point", new PointGetter());
         context.SetFunction("line", new LineGetter());
         context.SetFunction("segment", new SegmentGetter());
         context.SetFunction("ray", new RayGetter());
@@ -104,6 +105,7 @@ public static class GSharp
     }
     public static void InitializeGSharpStandard(Scope scope)
     {
+        scope.Functions.Add("point", true);
         scope.Functions.Add("line", true);
         scope.Functions.Add("segment", true);
         scope.Functions.Add("ray", true);

@@ -36,7 +36,7 @@ public class GSharpType
     }
     public bool IsFigure { get; private set; }
     public GTypeNames Name { get; }
-    public GTypeNames GenericType => HasGenericType ? genericType : throw new Exception("Type does not contain generic type");
+    public GTypeNames GenericType => HasGenericType ? genericType : GTypeNames.Undetermined;
     public static Type ConvertToType(GTypeNames gType)
     {
         return gType switch

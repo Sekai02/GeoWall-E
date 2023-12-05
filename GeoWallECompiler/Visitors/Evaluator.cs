@@ -5,6 +5,8 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
 {
     public Dictionary<GSharpExpression, int> References = new();
     private IWalleUI UserInterface;
+    private readonly int MaximunStackCalls = 1000;
+    private int currentStackFrame = 0;
     public Evaluator(IDrawer drawer, IWalleUI userInterface)
     {
         EvaluationContext = new();
@@ -36,6 +38,10 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
     }
     public GSObject? VisitFunctionCall(FunctionCall functionCall)
     {
+        currentStackFrame++;
+        if (currentStackFrame > MaximunStackCalls)
+            throw new OverFlowError(functionCall.FunctionName);
+
         int distance = References[functionCall];
         ICallable callee = EvaluationContext.AccessFunctionAt(distance, functionCall.FunctionName);
         List<GSObject?> arguments = new();
@@ -43,7 +49,9 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
         {
             arguments.Add(argument.Accept(this));
         }
-        return callee.Evaluate(this, arguments);
+        var result = callee.Evaluate(this, arguments);
+        currentStackFrame--;
+        return result;
     }
     public GSObject? VisitIfThenElse(IfThenElse ifThen)
     {
@@ -228,8 +236,20 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
     }
     public void VisitStatements(List<Statement> statements)
     {
-        foreach(Statement st in statements)
-            st.Accept(this);
+        foreach (Statement st in statements)
+        {
+            try
+            {
+                st.Accept(this);
+            }
+            catch (Exception ex)
+            {
+                if (ex is GSharpException sharpException)
+                    ErrorHandler.AddError(sharpException);
+                else
+                    ErrorHandler.AddError(new DefaultError(ex.Message));
+            }
+        }
     }
     public void VisitPrintStatement(PrintStatement printStatement)
     {

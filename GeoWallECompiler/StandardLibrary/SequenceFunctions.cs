@@ -35,7 +35,7 @@ public class PointsFunction : ICallable
     public GSObject? Evaluate(Evaluator evaluator, List<GSObject?> arguments)
     {
         if (arguments.Count != 1)
-            throw new SemanticError("Function 'count'", "1 argument", $"{arguments.Count}");
+            throw new SemanticError("Function 'points'", "1 argument", $"{arguments.Count}");
         GSObject argument = arguments[0];
         if (argument is IDrawable drawable)
             return GSequence.GetRandomPoints(drawable);

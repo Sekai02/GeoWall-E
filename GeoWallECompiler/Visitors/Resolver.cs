@@ -76,15 +76,20 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
     }
     public GSObject VisitConstant(Constant constant)
     {
-        if (Scopes.Count == 0)
-            ErrorHandler.AddError(new DefaultError("Local variable is not defined", "semantic"));
-        else
+        //if (Scopes.Count == 0)
+        //    ErrorHandler.AddError(new DefaultError("Local variable is not defined", "semantic"));
+        //else
+        //{
+        //}
+
+        var scope = Scopes.Peek();
+        if (scope.Variables.ContainsKey(constant.Name))
         {
-            var scope = Scopes.Peek();
-            if (!scope.Variables.ContainsKey(constant.Name))
-                ErrorHandler.AddError(new DefaultError("Local variable is not defined", "semantic"));
-            else if (scope.Variables[constant.Name] == false) 
+            if (scope.Variables[constant.Name] == false)
+            {
                 ErrorHandler.AddError(new DefaultError("Can't read local variable in its own initializer", "semantic"));
+                return null;
+            }
         }
         BindValue(constant, constant.Name);
         return null;
@@ -156,7 +161,16 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
     public void VisitStatements(List<Statement> statements)
     {
         foreach (Statement st in statements)
-            st.Accept(this);
+        {
+            try
+            {
+                st.Accept(this);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.AddError(new DefaultError(ex.Message));
+            }
+        }
     }
     public void VisitRecieverStatement(Reciever reciever)
     {
