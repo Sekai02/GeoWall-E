@@ -181,4 +181,5 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
     }
     public void VisitPrintStatement(PrintStatement printStatement) => printStatement.Expression.Accept(this);
     public GSObject VisitLiteralUndefined(LiteralUndefined undefined) => null;
+    public void VisitImportStatement(Import import) { return; }
 }

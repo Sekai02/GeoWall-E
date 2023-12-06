@@ -5,9 +5,9 @@ public static class JsonHelper
 {
     public static void SerializeObject<T>(T obj, string filename, string path)
     {
-        string fullPath = Path.Combine(path, filename);
+        //string fullPath = Path.Combine(path, filename);
         string json = JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(fullPath, json);
+        File.WriteAllText(path, json);
     }
 
     public static T DeserializeObject<T>(string filename)

@@ -190,4 +190,11 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
         printStatement.Expression.ExpressionType = type;
     }
     public GSharpType VisitLiteralUndefined(LiteralUndefined undefined) => new(GTypeNames.GObject);
+    public void VisitImportStatement(Import import)
+    {
+        string path = import.Library;
+        Container imported = ImportHandler.LoadLibrary(path);
+        Context<GSharpType, ICallable> context = imported.TypeEnvironment;
+        TypeEnvironment.EatContext(context);
+    }
 }

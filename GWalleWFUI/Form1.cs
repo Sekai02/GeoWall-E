@@ -13,6 +13,7 @@ public partial class Aplication : Form, IWalleUI
     private Pen Pencil;
     private Color InkColor;
     private string ProgramPath;
+    private string LibraryPath;
     public Aplication()
     {
         InitializeComponent();
@@ -22,6 +23,7 @@ public partial class Aplication : Form, IWalleUI
             Width = 2
         };
         ProgramPath = "";
+        LibraryPath = "";
         //Test();
     }
     private void Test()
@@ -234,7 +236,31 @@ public partial class Aplication : Form, IWalleUI
             return;
         }
         ErrorHandler.Reset();
-        image.Save("C:\\Users\\Jossue\\Cosas\\test.bmp");
+    }
+    private void compileLibraryToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        if (LibraryPath == "")
+        {
+            saveFileDialog1.ShowDialog();
+            LibraryPath = saveFileDialog1.FileName;
+        }
+        if (LibraryPath == "")
+            return;
+        Compile();
+    }
+    private void Compile()
+    {
+        Bitmap image = new(pictureBox1.Width, pictureBox1.Height);
+        PictureDrawer drawer = new(Graphics.FromImage(image), Pencil, pictureBox1.Height, pictureBox1.Width);
+        pictureBox1.Image = image;
+
+        ImportHandler.SaveLibrary(Entry.Text, LibraryPath, drawer, this);
+        if (!ErrorHandler.HadError)
+        {
+            AppendLineWithColor(Terminal, "Library compiled succesfully whitout errors", Color.White);
+            return;
+        }
+        ErrorHandler.Reset();
     }
     private static void AppendLineWithColor(RichTextBox box, string text, Color color)
     {

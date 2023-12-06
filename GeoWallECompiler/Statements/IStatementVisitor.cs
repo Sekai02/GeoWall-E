@@ -12,4 +12,5 @@ public interface IStatementVisitor
     void VisitRestoreStatement(Restore restore);
     void VisitRecieverStatement(Reciever reciever);
     void VisitPrintStatement(PrintStatement printStatement);
+    void VisitImportStatement(Import import);
 }

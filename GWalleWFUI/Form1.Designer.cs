@@ -47,6 +47,7 @@ partial class Aplication
         Terminal = new RichTextBox();
         Input = new TextBox();
         saveFileDialog1 = new SaveFileDialog();
+        compileLibraryToolStripMenuItem = new ToolStripMenuItem();
         toolStrip1.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
         SuspendLayout();
@@ -123,18 +124,18 @@ partial class Aplication
         // DebugButton
         // 
         DebugButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
-        DebugButton.DropDownItems.AddRange(new ToolStripItem[] { startWithoutDebuggingToolStripMenuItem });
+        DebugButton.DropDownItems.AddRange(new ToolStripItem[] { startWithoutDebuggingToolStripMenuItem, compileLibraryToolStripMenuItem });
         DebugButton.Image = (Image)resources.GetObject("DebugButton.Image");
         DebugButton.ImageTransparentColor = Color.Magenta;
         DebugButton.Name = "DebugButton";
-        DebugButton.Size = new Size(68, 24);
-        DebugButton.Text = "Debug";
+        DebugButton.Size = new Size(57, 24);
+        DebugButton.Text = "Build";
         // 
         // startWithoutDebuggingToolStripMenuItem
         // 
         startWithoutDebuggingToolStripMenuItem.Name = "startWithoutDebuggingToolStripMenuItem";
-        startWithoutDebuggingToolStripMenuItem.Size = new Size(123, 26);
-        startWithoutDebuggingToolStripMenuItem.Text = "Start";
+        startWithoutDebuggingToolStripMenuItem.Size = new Size(224, 26);
+        startWithoutDebuggingToolStripMenuItem.Text = "Run";
         startWithoutDebuggingToolStripMenuItem.Click += StartButtonClick;
         // 
         // Entry
@@ -199,6 +200,13 @@ partial class Aplication
         // 
         saveFileDialog1.DefaultExt = "gw";
         // 
+        // compileLibraryToolStripMenuItem
+        // 
+        compileLibraryToolStripMenuItem.Name = "compileLibraryToolStripMenuItem";
+        compileLibraryToolStripMenuItem.Size = new Size(224, 26);
+        compileLibraryToolStripMenuItem.Text = "Compile Library";
+        compileLibraryToolStripMenuItem.Click += compileLibraryToolStripMenuItem_Click;
+        // 
         // Aplication
         // 
         AutoScaleDimensions = new SizeF(8F, 20F);
@@ -241,4 +249,5 @@ partial class Aplication
     private RichTextBox Terminal;
     private TextBox Input;
     private SaveFileDialog saveFileDialog1;
+    private ToolStripMenuItem compileLibraryToolStripMenuItem;
 }

@@ -68,6 +68,13 @@ public class Context<Var, Fun>
             ancestor = ancestor?.Enclosing;
         return ancestor.AccessFunction(name);
     }
+    public void EatContext(Context<Var,Fun> newContext)
+    {
+        foreach (string key in newContext.Variables.Keys)
+            Variables.TryAdd(key, newContext.Variables[key]);
+        foreach (string key in newContext.Functions.Keys)
+            Functions.TryAdd(key, newContext.Functions[key]);
+    }
 }
 public class Scope
 {
