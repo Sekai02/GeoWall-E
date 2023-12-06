@@ -403,7 +403,9 @@ public class Parser
     {
         string libraryName = Consume(TokenType.STRING, "Expect string after import statement.").lexeme;
         Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after string");
-        return new Import(libraryName);
+        //arreglar la siguiente linea
+        Container container= new(new Context<GSObject?, ICallable>(), new Context<GSharpType, ICallable>(), new Context<bool, bool>());
+        return new Import(libraryName, container);
     }
 
     private Statement ParseReceiverStatement(TokenType type)
