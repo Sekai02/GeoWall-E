@@ -1,6 +1,7 @@
 
 using GeoWallECompiler.StandardLibrary;
 using GeoWallECompiler.Visitors;
+using System.ComponentModel;
 using System.Text;
 
 namespace GeoWallECompiler;
@@ -33,6 +34,51 @@ public static class GSharp
         Run(Encoding.Default.GetString(bytes), drawer, userInterface);
 
         if (Error.HadError) Environment.Exit(65);
+    }
+
+    public static Container RunLibrary(string source, IDrawer drawer, IWalleUI userInterface)
+    {
+        CanvasHeight = drawer.CanvasHeight;
+        CanvasWidth = drawer.CanvasWidth;
+        drawer.Reset();
+        List<Token> tokens = Scan(source);
+        if (ErrorHandler.HadError)
+        {
+            userInterface.PrintErrors(ErrorHandler.GetErrors());
+            return null;
+        }
+        Parser parser = new(tokens);
+        List<Statement> statements = parser.Parse();
+        if (ErrorHandler.HadError)
+        {
+            userInterface.PrintErrors(ErrorHandler.GetErrors());
+            return null;
+        }
+        Evaluator evaluator = new(drawer, userInterface);
+        Resolver resolver = new(evaluator);
+        TypeChecker typeChecker = new(evaluator);
+        resolver.VisitStatements(statements);
+        if (ErrorHandler.HadError)
+        {
+            userInterface.PrintErrors(ErrorHandler.GetErrors());
+            return null;
+        }
+        typeChecker.VisitStatements(statements);
+        if (ErrorHandler.HadError)
+        {
+            userInterface.PrintErrors(ErrorHandler.GetErrors());
+            return null;
+        }
+        try
+        {
+            evaluator.VisitStatements(statements);
+            return new Container(evaluator.EvaluationContext, typeChecker.TypeEnvironment);
+        }
+        catch (GSharpException ex)
+        {
+            userInterface.PrintError(ex);
+            return null;
+        }
     }
 
     /// <summary>
