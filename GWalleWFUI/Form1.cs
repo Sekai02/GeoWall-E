@@ -234,6 +234,7 @@ public partial class Aplication : Form, IWalleUI
             return;
         }
         ErrorHandler.Reset();
+        image.Save("C:\\Users\\Jossue\\Cosas\\test.bmp");
     }
     private static void AppendLineWithColor(RichTextBox box, string text, Color color)
     {
@@ -254,6 +255,5 @@ public partial class Aplication : Form, IWalleUI
         }
         AppendLineWithColor(Terminal, obj.ToString()! + caption, Color.White);
     }
-
     public void PrintError(GSharpException ex) => AppendLineWithColor(Terminal, ex.Message, Color.Red);
 }

@@ -28,4 +28,5 @@ public interface IDrawable
 {
     public void Draw(IDrawer drawer, GString? label = null);
     public GSPoint GetRandomPoint();
+    public Equation Equation { get; }
 }

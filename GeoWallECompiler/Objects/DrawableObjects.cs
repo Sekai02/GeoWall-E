@@ -31,6 +31,7 @@ public class GSPoint : GSObject, IDrawable, IRandomable<GSPoint>, IUserParameter
         return new GSPoint(x, y);
     }
     public GSPoint GetRandomPoint() => this;
+    public Equation Equation { get; }
 
     /// <summary>
     /// Coordendas rectangulares del punto
@@ -56,6 +57,7 @@ public class Line : GSObject, IDrawable, IRandomable<Line>, IUserParameter<Line>
         double y1 = Point1.Coordinates.Y;
         double y2 = Point2.Coordinates.Y;
         DirectionVector = new(x2-x1, y2-y1);
+        Equation = Equation.GetLineEquation(Point1, Point2);
     }
     public GSPoint Point1 { get; private set; }
     public GSPoint Point2 { get; private set; }
@@ -83,6 +85,7 @@ public class Line : GSObject, IDrawable, IRandomable<Line>, IUserParameter<Line>
         Vector movementVector = alpha * DirectionVector.GetNormalized();
         return Point1 + movementVector;
     }
+    public Equation Equation { get; }
 }
 /// <summary>
 /// Representa un segmento en el espacio bidimensional
@@ -103,6 +106,9 @@ public class Segment : GSObject, IDrawable, IRandomable<Segment>, IUserParameter
         double y1 = Point1.Coordinates.Y;
         double y2 = Point2.Coordinates.Y;
         DirectionVector = new(x2 - x1, y2 - y1);
+        ParameterConstrains constrainsX = new("x", x1, x2);
+        ParameterConstrains constrainsY = new("y", y1, y2);
+        Equation = Equation.GetLineEquation(Point1, Point2, constrainsX, constrainsY);
     }
     /// <summary>
     /// Punto extremo 1
@@ -137,6 +143,7 @@ public class Segment : GSObject, IDrawable, IRandomable<Segment>, IUserParameter
         Vector movementVector = alpha * DirectionVector.GetNormalized();
         return Point1 + movementVector;
     }
+    public Equation Equation { get; }
 }
 /// <summary>
 /// Representa una linea que se extiende infnitamente por solo un extremo
@@ -157,6 +164,24 @@ public class Ray : GSObject, IDrawable, IRandomable<Ray>, IUserParameter<Ray>
         double y1 = Point1.Coordinates.Y;
         double y2 = Point2.Coordinates.Y;
         DirectionVector = new(x2 - x1, y2 - y1);
+        double limitX;
+        if (x1 == x2)
+            limitX = x1;
+        else if (x1 < x2)
+            limitX = double.PositiveInfinity;
+        else
+            limitX = double.NegativeInfinity;
+        double limitY;
+        if (y1 == y2)
+            limitY = y1;
+        else if (y1 < y2)
+            limitY = double.PositiveInfinity;
+        else
+            limitY = double.NegativeInfinity;
+
+        ParameterConstrains constrainsX = new("x", x1, limitX);
+        ParameterConstrains constrainsY = new("y", y1, limitY);
+        Equation = Equation.GetLineEquation(Point1, Point2, constrainsX, constrainsY);
     }
     /// <summary>
     /// Punto inicial
@@ -190,6 +215,7 @@ public class Ray : GSObject, IDrawable, IRandomable<Ray>, IUserParameter<Ray>
         Vector movementVector = alpha * DirectionVector.GetNormalized();
         return Point1 + movementVector;
     }
+    public Equation Equation { get; }
 }
 /// <summary>
 /// Representa una circunferencia en el espacio bidimensional
@@ -205,6 +231,7 @@ public class Circle : GSObject, IDrawable, IRandomable<Circle>, IUserParameter<C
     {
         Center = center;
         Radius = radius;
+        Equation = Equation.GetCircleEquation(Center, Radius);
     }
     /// <summary>
     /// Punto centro de la circunferencia
@@ -237,6 +264,7 @@ public class Circle : GSObject, IDrawable, IRandomable<Circle>, IUserParameter<C
         Vector movementVector = new(x, y);
         return Center + movementVector;
     }
+    public Equation Equation { get; }
 }
 /// <summary>
 /// Representa un arco de circunferencia en el plano
@@ -257,6 +285,24 @@ public class Arc : GSObject, IDrawable, IRandomable<Arc>, IUserParameter<Arc>
         StartPoint = startPoint;
         EndPoint = endPoint;
         Radius = radius;
+
+        double xc = Center.Coordinates.X;
+        double yc = Center.Coordinates.Y;
+        double x1 = StartPoint.Coordinates.X;
+        double y1 = StartPoint.Coordinates.Y;
+        double x2 = EndPoint.Coordinates.X;
+        double y2 = EndPoint.Coordinates.Y;
+
+        double startAngle = GetLineAngleRad(xc, yc, x1, y1);
+        double endAngle = GetLineAngleRad(xc, yc, x2, y2);
+
+        //if (startAngle < 0 || endAngle < 0) 
+        //{
+        //    startAngle += 2 * Math.PI;
+        //    endAngle += 2 * Math.PI;
+        //}
+        ParameterConstrains angleConstrain = new("theta", startAngle, endAngle);
+        Equation = Equation.GetCircleEquation(Center, Radius, angleConstrain);
     }
     /// <summary>
     /// Centro del arco de la circunferencia
@@ -324,4 +370,5 @@ public class Arc : GSObject, IDrawable, IRandomable<Arc>, IUserParameter<Arc>
         double angle = Math.Atan2(y, x);
         return angle;
     }
+    public Equation Equation { get; }
 }

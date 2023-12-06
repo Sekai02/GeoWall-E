@@ -95,7 +95,7 @@ public class PictureDrawer : IDrawer
     {
         float x = point.Coordinates.X;
         float y = point.Coordinates.Y;
-        drawer.DrawEllipse(DrawerPen, x - 1.75f, y - 1.75f, 3.5f, 3.5f);
+        drawer.DrawEllipse(DrawerPen, x - 1f, y - 1f, 2f, 2f);
 
         WriteMessage(name, x, y);
     }

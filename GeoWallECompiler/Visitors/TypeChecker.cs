@@ -1,5 +1,6 @@
 ﻿using GeoWallECompiler.Expressions;
 using System;
+using System.Globalization;
 using System.Reflection.Metadata;
 
 namespace GeoWallECompiler;
@@ -8,6 +9,8 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     Evaluator Interpreter;
     public Context<GSharpType, ICallable> TypeEnvironment;
     private bool IsCheckingFunctionCall = false;
+    private readonly int MaximunStackCalls = 1000;
+    private int currentStackFrame = 0;
     public TypeChecker(Evaluator evaluator)
     {
         Interpreter = evaluator;
@@ -48,7 +51,7 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
             TypeEnvironment.SetVariable(declaration.ConstantNames[0], type);
             return;
         }
-        if (!type.HasGenericType)
+        if (!type.HasGenericType && type.Name != GTypeNames.Undetermined)
         {
             ReportSemanticError(new DefaultError("Match statements can only take a sequence as value", "semantic"));
             return;
@@ -73,6 +76,10 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     }
     public GSharpType VisitFunctionCall(FunctionCall functionCall)
     {
+        currentStackFrame++;
+        if (currentStackFrame > MaximunStackCalls)
+            throw new OverFlowError(functionCall.FunctionName);
+
         int distance = Interpreter.References[functionCall];
         ICallable callee = TypeEnvironment.AccessFunctionAt(distance, functionCall.FunctionName);
         List<GSharpType> arguments = new();
@@ -83,16 +90,10 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
             arguments.Add(argumentType);
         }
         IsCheckingFunctionCall = true;
-        try
-        { 
-            return callee.GetType(this, arguments);
-        }
-        catch(SemanticError ex)
-        {
-            IsCheckingFunctionCall = false;
-            ReportSemanticError(new SemanticError($"Function {functionCall.FunctionName}", ex.ExpressionExpected, ex.ExpressionReceived));
-            return new(GTypeNames.Undetermined);
-        }
+        var result = callee.GetType(this, arguments);
+        IsCheckingFunctionCall = false;
+        currentStackFrame--;
+        return result;
     }
     public void VisitFunctionDeclaration(FunctionDeclaration declaration)
     {
@@ -120,7 +121,7 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
         foreach (Statement instruction in letIn.Instructions)
             instruction.Accept(this);
         var result = letIn.Body.Accept(this);
-        TypeEnvironment = TypeEnvironment.Enclosing;
+        TypeEnvironment = TypeEnvironment.Enclosing!;
         return result;
     }
     public GSharpType VisitLiteralNumber(LiteralNumber literal) => literal.ExpressionType = new(GTypeNames.GNumber);
@@ -166,7 +167,16 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
     public void VisitStatements(List<Statement> statements)
     {
         foreach (Statement st in statements)
-            st.Accept(this);
+        {
+            try
+            {
+                st.Accept(this);
+            }
+            catch(Exception ex)
+            {
+                ErrorHandler.AddError(new DefaultError(ex.Message));
+            }
+        }
     }
     private void ReportSemanticError(GSharpException error)
     {
