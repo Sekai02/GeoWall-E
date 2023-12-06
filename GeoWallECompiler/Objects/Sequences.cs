@@ -94,10 +94,7 @@ public class GSequence : GSObject, ISequenciable
 /// </summary>
 public class GSharpSequence<T> : GSequence where T : GSObject?
 {
-    public GSharpSequence(IEnumerable<T?> sequence, int? count) : base(sequence, count)
-    {
-        GenericSequence = sequence;
-    }    
+    public GSharpSequence(IEnumerable<T?> sequence, int? count) : base(sequence, count) => GenericSequence = sequence;
     public virtual new GSharpSequence<T> GetTail(int tailBeggining)
     {
         IEnumerable<T?> newSequence = GenericSequence.Skip(tailBeggining);

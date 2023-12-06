@@ -21,12 +21,11 @@ public class DrawStatement : Statement
 }
 public class PrintStatement : Statement
 {
-    public PrintStatement(GSharpExpression expression, LiteralString? stringExpression)
+    public PrintStatement(GSharpExpression expression, LiteralString? stringExpression = null)
     {
         Expression = expression;
         StringExpression = stringExpression;
     }
-
     public GSharpExpression Expression { get; }
     public LiteralString? StringExpression { get; }
     public override void Accept(IStatementVisitor visitor) => visitor.VisitPrintStatement(this);
