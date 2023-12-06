@@ -170,9 +170,21 @@ public class Measure : GSObject, IRandomable<Measure>, IUserParameter<Measure>
         return new((GSNumber)(int)division!);
     }
     public static bool operator <(Measure? a, Measure? b) => a?.Lenght < b?.Lenght;
+    public static bool operator <(Measure? a, int? n) => a?.Lenght < n;
+    public static bool operator <(int? n, Measure? a) => n < a?.Lenght;
     public static bool operator >(Measure? a, Measure? b) => a?.Lenght > b?.Lenght;
+    public static bool operator >(Measure? a, int? n) => a?.Lenght > n;
+    public static bool operator >(int? n, Measure? a) => n > a?.Lenght;
     public static bool operator <=(Measure? a, Measure? b) => a?.Lenght <= b?.Lenght;
+    public static bool operator <=(Measure? a, int? n) => a?.Lenght <= n;
+    public static bool operator <=(int? n, Measure? a) => n <= a?.Lenght;
     public static bool operator >=(Measure? a, Measure? b) => a?.Lenght >= b?.Lenght;
+    public static bool operator >=(Measure? a, int? n) => a?.Lenght >= n;
+    public static bool operator >=(int? n, Measure? a) => n >= a?.Lenght;
     public static bool operator ==(Measure? a, Measure? b) => a?.Lenght == b?.Lenght;
+    public static bool operator ==(Measure? a, int? n) => a?.Lenght == n;
+    public static bool operator ==(int? n, Measure? a) => n == a?.Lenght;
     public static bool operator !=(Measure? a, Measure? b) => a?.Lenght != b?.Lenght;
+    public static bool operator !=(Measure? a, int? n) => a?.Lenght != n;
+    public static bool operator !=(int? n, Measure? a) => n != a?.Lenght;
 }

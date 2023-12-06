@@ -132,7 +132,7 @@ public class TypeChecker : IExpressionVisitor<GSharpType>, IStatementVisitor
         foreach (GSharpExpression expression in sequence.Expressions)
         {
             GSharpType expressionType = expression.Accept(this);
-            if (!sequence.TypeSetted)
+            if (!sequence.TypeSetted && expressionType.Name != GTypeNames.Undetermined)
                 sequence.ExpressionType = new(GTypeNames.GSequence, expressionType.Name);
             else if (sequence.ExpressionType.GenericType != expressionType.Name)
             {

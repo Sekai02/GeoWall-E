@@ -10,12 +10,23 @@ public abstract class LiteralSequence : GSharpExpression
     {
         //List<GSObject?> values = new(ToGSharpObjectSequence(evaluator));
         //return new ArraySequence<GSObject>(values);
+        if(Count is not null)
+        {
+            return new(ToGSharpObjectList(evaluator), Count);
+        }
         return new(ToGSharpObjectSequence(evaluator), Count);
     }
     private IEnumerable<T> ToGSharpObjectSequence<T>(IExpressionVisitor<T> visitor)
     {
         foreach (GSharpExpression expression in Expressions)
             yield return expression.Accept(visitor);
+    }
+    private List<T> ToGSharpObjectList<T>(IExpressionVisitor<T> visitor)
+    {
+        List<T> list = new List<T>();
+        foreach (GSharpExpression expression in Expressions)
+            list.Add(expression.Accept(visitor));
+        return list;
     }
 }
 public class LiteralArrayExpression : LiteralSequence

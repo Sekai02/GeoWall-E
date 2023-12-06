@@ -149,10 +149,13 @@ public class PictureDrawer : IDrawer
     }
     public void DrawEnumerable(IEnumerable values)
     {
-        try 
+        try
         {
             foreach (var obj in values)
-                ((IDrawable)obj).Draw(this, null);
+            {
+                if(obj is not null)
+                    ((IDrawable)obj).Draw(this, null);
+            }
         }
         catch
         {

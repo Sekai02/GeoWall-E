@@ -20,9 +20,9 @@ public class Context<Var, Fun>
     }
     public Var AccessVariable(string variableName)
     {
-        if (!Variables.TryGetValue(variableName, out Var? value)) 
+        if (!Variables.TryGetValue(variableName, out Var? value))
         {
-            if(Enclosing is not null)
+            if (Enclosing is not null)
                 return Enclosing.AccessVariable(variableName);
             ErrorHandler.AddError(new DefaultError($"Variable {variableName} not found"));
         }

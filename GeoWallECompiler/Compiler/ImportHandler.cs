@@ -19,8 +19,8 @@ public static class ImportHandler
     private static Container GetEnvironments(string source, IDrawer drawer, IWalleUI userInterface) => GSharp.RunLibrary(source, drawer, userInterface);
 
     //El problema es aqui Jossue
-    private static void SaveLibrary(string source)
+    private static void SaveLibrary(string source, IDrawer drawer, IWalleUI userInterface)
     {
-        Container environments = GetEnvironments(source, new DrawerDummie(), new ConsoleUI())
+        Container environments = GetEnvironments(source, drawer, userInterface);
     }
 }

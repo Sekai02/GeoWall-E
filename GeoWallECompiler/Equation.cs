@@ -232,7 +232,7 @@ public static class EquationSolver
             ParameterConstrains?[] constrainsX = { circular1.ConstrainsX, circular2.ConstrainsX };
             if (!ParameterConstrains.AcceptAllConstrains(x, constrainsX))
                 continue;
-            ParameterConstrains?[] constrainsY = { circular1.ConstrainsX, circular2.ConstrainsX };
+            ParameterConstrains?[] constrainsY = { circular1.ConstrainsY, circular2.ConstrainsY };
             if (!ParameterConstrains.AcceptAllConstrains(y, constrainsY))
                 continue;
             if (circular1.IsCircular)

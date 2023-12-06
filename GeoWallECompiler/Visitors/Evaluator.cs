@@ -67,6 +67,7 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
         foreach (var statement in letIn.Instructions)
             statement.Accept(this);
         GSObject? result = letIn.Body.Accept(this);
+        //tallas turbias pasan en esta linea
         EvaluationContext = EvaluationContext!.Enclosing!;
         return result;
     }
@@ -134,6 +135,8 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
     public void VisitDrawStatement(DrawStatement drawStatement)
     {
         var objectToDraw = drawStatement.Expression.Accept(this);
+        if (objectToDraw is null)
+            return;
         var expressionType = drawStatement.Expression.ExpressionType;
         var label = drawStatement.StringExpression?.String;
         if (objectToDraw is IDrawable drawable)
@@ -176,6 +179,7 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
             #endregion
             return;
         }
+
         throw new DefaultError("Draw argument must be a figure", "Semantic");
     }
     public void VisitColorStatent(ColorStatement color) => Drawer.SetColor(color.Color);

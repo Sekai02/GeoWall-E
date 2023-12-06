@@ -30,7 +30,9 @@ public abstract class BinaryOperation : GSharpExpression
             return false;
         if(overload.LeftType.HasGenericType && overload.RightType.HasGenericType)
         {
-            if (left.GenericType != right.GenericType /*&& left.Name != GTypeNames.Undetermined && right.Name != GTypeNames.Undetermined*/)
+            if (left.Name == GTypeNames.Undetermined || right.Name == GTypeNames.Undetermined)
+                return true;
+            if (left.GenericType != right.GenericType)
                 return false;
         }
         return true;
@@ -183,7 +185,20 @@ public class LowerThan : BinaryOperation
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), compareMeasures);
-        PosibleOverloads = new() { compareNumbersInfo, compareMeasuresInfo };
+        GSObject? measureLowerNatural(GSObject? a, GSObject? b) 
+        {
+            var result = (Measure?)a < (GSNumber?)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
+        }
+        BinaryOverloadInfo measureLowerNaturalInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), new(GTypeNames.GNumber), measureLowerNatural);
+
+        GSObject? naturalLowerMeasure(GSObject? a, GSObject? b)
+        {
+            var result = (GSNumber?)a < (Measure?)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
+        }
+        BinaryOverloadInfo naturalLowerMeasureInfo = new(new(GTypeNames.GNumber), new(GTypeNames.Measure), new(GTypeNames.GNumber), naturalLowerMeasure);
+        PosibleOverloads = new() { compareNumbersInfo, compareMeasuresInfo, measureLowerNaturalInfo, naturalLowerMeasureInfo};
         OperationToken = "<";
     }
 }
@@ -213,7 +228,20 @@ public class GreaterThan : BinaryOperation
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), compareMeasures);
-        PosibleOverloads = new() { compareNumbersInfo, compareMeasuresInfo };
+        GSObject? measureGreaterNatural(GSObject? a, GSObject? b)
+        {
+            var result = (Measure?)a > (GSNumber?)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
+        }
+        BinaryOverloadInfo measureGreaterNaturalInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), new(GTypeNames.GNumber), measureGreaterNatural);
+
+        GSObject? naturalGreaterMeasure(GSObject? a, GSObject? b)
+        {
+            var result = (GSNumber?)a > (Measure?)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
+        }
+        BinaryOverloadInfo naturalGreaterMeasureInfo = new(new(GTypeNames.GNumber), new(GTypeNames.Measure), new(GTypeNames.GNumber), naturalGreaterMeasure);
+        PosibleOverloads = new() { compareNumbersInfo, compareMeasuresInfo, measureGreaterNaturalInfo, naturalGreaterMeasureInfo};
         OperationToken = ">";
     }
 }
@@ -243,7 +271,20 @@ public class LowerEqualThan : BinaryOperation
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), compareMeasures);
-        PosibleOverloads = new() { compareNumbersInfo, compareMeasuresInfo };
+        GSObject? measureLowerEqualNatural(GSObject? a, GSObject? b)
+        {
+            var result = (Measure?)a <= (GSNumber?)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
+        }
+        BinaryOverloadInfo measureLowerEqualNaturalInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), new(GTypeNames.GNumber), measureLowerEqualNatural);
+
+        GSObject? naturalLowerEqualMeasure(GSObject? a, GSObject? b)
+        {
+            var result = (GSNumber?)a <= (Measure?)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
+        }
+        BinaryOverloadInfo naturalLowerEqualMeasureInfo = new(new(GTypeNames.GNumber), new(GTypeNames.Measure), new(GTypeNames.GNumber), naturalLowerEqualMeasure);
+        PosibleOverloads = new() { compareNumbersInfo, compareMeasuresInfo, measureLowerEqualNaturalInfo, naturalLowerEqualMeasureInfo };
         OperationToken = "<=";
     }
 }
@@ -273,7 +314,20 @@ public class GreaterEqualThan : BinaryOperation
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), compareMeasures);
-        PosibleOverloads = new() { compareNumbersInfo, compareMeasuresInfo };
+        GSObject? measureGreaterEqualNatural(GSObject? a, GSObject? b)
+        {
+            var result = (Measure?)a > (GSNumber?)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
+        }
+        BinaryOverloadInfo measureGreaterEqualNaturalInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), new(GTypeNames.GNumber), measureGreaterEqualNatural);
+
+        GSObject? naturalGreaterEqualMeasure(GSObject? a, GSObject? b)
+        {
+            var result = (GSNumber?)a > (Measure?)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
+        }
+        BinaryOverloadInfo naturalGreaterEqualMeasureInfo = new(new(GTypeNames.GNumber), new(GTypeNames.Measure), new(GTypeNames.GNumber), naturalGreaterEqualMeasure);
+        PosibleOverloads = new() { compareNumbersInfo, compareMeasuresInfo, measureGreaterEqualNaturalInfo, naturalGreaterEqualMeasureInfo };
         OperationToken = ">=";
     }
 }
@@ -303,7 +357,20 @@ public class Equal : BinaryOperation
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), compareMeasures);
-        PosibleOverloads = new() { compareNumbersInfo, compareMeasuresInfo };
+        GSObject? measureEqualNatural(GSObject? a, GSObject? b)
+        {
+            var result = (Measure?)a == (GSNumber?)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
+        }
+        BinaryOverloadInfo measureEqualNaturalInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), new(GTypeNames.GNumber), measureEqualNatural);
+
+        GSObject? naturalEqualMeasure(GSObject? a, GSObject? b)
+        {
+            var result = (GSNumber?)a == (Measure?)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
+        }
+        BinaryOverloadInfo naturalEqualMeasureInfo = new(new(GTypeNames.GNumber), new(GTypeNames.Measure), new(GTypeNames.GNumber), naturalEqualMeasure);
+        PosibleOverloads = new() { compareNumbersInfo, compareMeasuresInfo, measureEqualNaturalInfo, naturalEqualMeasureInfo };
         OperationToken = "==";
     }
 }
@@ -333,7 +400,20 @@ public class UnEqual : BinaryOperation
             return result ? (GSNumber)1 : (GSNumber)0;
         }
         BinaryOverloadInfo compareMeasuresInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), compareMeasures);
-        PosibleOverloads = new() { compareNumbersInfo, compareMeasuresInfo };
+        GSObject? measureUnequalNatural(GSObject? a, GSObject? b)
+        {
+            var result = (Measure?)a != (GSNumber?)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
+        }
+        BinaryOverloadInfo measureUnequalNaturalInfo = new(new(GTypeNames.Measure), new(GTypeNames.GNumber), new(GTypeNames.GNumber), measureUnequalNatural);
+
+        GSObject? naturalUnequalMeasure(GSObject? a, GSObject? b)
+        {
+            var result = (GSNumber?)a != (Measure?)b;
+            return result ? (GSNumber)1 : (GSNumber)0;
+        }
+        BinaryOverloadInfo naturalUnequalMeasureInfo = new(new(GTypeNames.GNumber), new(GTypeNames.Measure), new(GTypeNames.GNumber), naturalUnequalMeasure);
+        PosibleOverloads = new() { compareNumbersInfo, compareMeasuresInfo, measureUnequalNaturalInfo, naturalUnequalMeasureInfo };
         OperationToken = "!=";
     }
 }
