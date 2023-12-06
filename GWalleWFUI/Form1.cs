@@ -221,7 +221,7 @@ public partial class Aplication : Form, IWalleUI
     }
     private void Run()
     {
-        Bitmap image = new(10000, 10000);
+        Bitmap image = new(pictureBox1.Width, pictureBox1.Height);
         PictureDrawer drawer = new(Graphics.FromImage(image), Pencil, pictureBox1.Height, pictureBox1.Width);
         pictureBox1.Image = image;
 

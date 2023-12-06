@@ -102,6 +102,7 @@ public static class GSharp
         context.SetFunction("randoms", new RandomsFunction());
         context.SetFunction("points", new PointsFunction());
         context.SetFunction("samples", new SamplesFunction());
+        context.SetFunction("intersect", new IntersectFunction());
     }
     public static void InitializeGSharpStandard(Scope scope)
     {
@@ -116,5 +117,6 @@ public static class GSharp
         scope.Functions.Add("randoms", true);
         scope.Functions.Add("points", true);
         scope.Functions.Add("samples", true);
+        scope.Functions.Add("intersect", true);
     }
 }

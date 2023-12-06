@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace GeoWallECompiler;
 
 public class Scanner
@@ -235,7 +237,7 @@ public class Scanner
             while (IsDigit(Peek())) Advance();
         }
 
-        AddToken(TokenType.NUMBER, Double.Parse(Substring(source, start, current)));
+        AddToken(TokenType.NUMBER, Double.Parse(Substring(source, start, current), NumberStyles.Any, new CultureInfo("en-US")));
     }
 
     /// <summary>

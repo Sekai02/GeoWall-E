@@ -16,6 +16,8 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
     private void EndScope() => Scopes.Pop();
     private void DeclareVariable(string variableName)
     {
+        if (variableName == "_")
+            return;
         if (Scopes.Count == 0)
             return;
         Scope currentScope = Scopes.Peek();
