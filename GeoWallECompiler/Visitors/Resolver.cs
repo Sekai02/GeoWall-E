@@ -4,7 +4,7 @@ namespace GeoWallECompiler.Visitors;
 public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
 {
     Evaluator Interpreter;
-    private Stack<Scope> Scopes { get; set; }
+    public Stack<Context<bool,bool>> Scopes { get; set; }
     public Resolver(Evaluator evaluator)
     {
         Scopes = new();
@@ -12,7 +12,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
         GSharp.InitializeGSharpStandard(Scopes.Peek());
         Interpreter = evaluator;
     }
-    private void BeginScope() => Scopes.Push(new Scope());
+    private void BeginScope() => Scopes.Push(new Context<bool, bool>());
     private void EndScope() => Scopes.Pop();
     private void DeclareVariable(string variableName)
     {
@@ -20,30 +20,32 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
             return;
         if (Scopes.Count == 0)
             return;
-        Scope currentScope = Scopes.Peek();
-        if (!currentScope.Variables.TryAdd(variableName, false))
-            ErrorHandler.AddError(new DefaultError($"Variable {variableName} already exist in this scope", "Semantic"));
+        var currentScope = Scopes.Peek();
+        currentScope.SetVariable(variableName, false);
+        //if (!currentScope.Variables.TryAdd(variableName, false))
+        //    ErrorHandler.AddError(new DefaultError($"Variable {variableName} already exist in this scope", "Semantic"));
     }
     private void DefineVariable(string variableName)
     {
         if (Scopes.Count == 0)
             return;
-        Scope currentScope = Scopes.Peek();
+        var currentScope = Scopes.Peek();
         currentScope.Variables[variableName] = true;
     }
     private void DeclareFunction(string functionName)
     {
         if (Scopes.Count == 0)
             return;
-        Scope currentScope = Scopes.Peek();
-        if (!currentScope.Functions.TryAdd(functionName, false))
-            ErrorHandler.AddError(new DefaultError($"Function {functionName} already exist in this scope", "Semantic"));
+        var currentScope = Scopes.Peek();
+        currentScope.SetFunction(functionName, false);
+        //if (!currentScope.Functions.TryAdd(functionName, false))
+        //    ErrorHandler.AddError(new DefaultError($"Function {functionName} already exist in this scope", "Semantic"));
     }
     private void DefineFunction(string functionName)
     {
         if (Scopes.Count == 0)
             return;
-        Scope currentScope = Scopes.Peek();
+        var currentScope = Scopes.Peek();
         currentScope.Functions[functionName] = true;
     }
     private void BindValue(GSharpExpression expr, string variableName)
@@ -181,5 +183,11 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
     }
     public void VisitPrintStatement(PrintStatement printStatement) => printStatement.Expression.Accept(this);
     public GSObject VisitLiteralUndefined(LiteralUndefined undefined) => null;
-    public void VisitImportStatement(Import import) { return; }
+    public void VisitImportStatement(Import import)
+    {
+        string path = import.Library;
+        Container imported = ImportHandler.LoadLibrary(path);
+        Context<bool, bool> context = imported.ResolvingContext;
+        Scopes.Peek().EatContext(context);
+    }
 }

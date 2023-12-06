@@ -6,8 +6,8 @@ namespace GeoWallECompiler;
 public class Context<Var, Fun>
 {
     public Context<Var,Fun>? Enclosing { get; private set; }
-    private Dictionary<string, Var> Variables;
-    private Dictionary<string, Fun> Functions;
+    public Dictionary<string, Var> Variables;
+    public Dictionary<string, Fun> Functions;
     public Context() {
         Variables = new();
         Functions = new();
@@ -74,15 +74,5 @@ public class Context<Var, Fun>
             Variables.TryAdd(key, newContext.Variables[key]);
         foreach (string key in newContext.Functions.Keys)
             Functions.TryAdd(key, newContext.Functions[key]);
-    }
-}
-public class Scope
-{
-    public Dictionary<string, bool> Variables;
-    public Dictionary<string, bool> Functions;
-    public Scope()
-    {
-        Variables = new();
-        Functions = new();
     }
 }

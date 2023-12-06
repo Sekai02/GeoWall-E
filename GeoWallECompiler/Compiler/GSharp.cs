@@ -2,6 +2,7 @@
 using GeoWallECompiler.StandardLibrary;
 using GeoWallECompiler.Visitors;
 using System.ComponentModel;
+using System.Data.SqlTypes;
 using System.Text;
 
 namespace GeoWallECompiler;
@@ -72,7 +73,7 @@ public static class GSharp
         try
         {
             evaluator.VisitStatements(statements);
-            return new Container(evaluator.EvaluationContext, typeChecker.TypeEnvironment);
+            return new Container(evaluator.EvaluationContext, typeChecker.TypeEnvironment, resolver.Scopes.Peek());
         }
         catch (GSharpException ex)
         {
@@ -150,19 +151,19 @@ public static class GSharp
         context.SetFunction("samples", new SamplesFunction());
         context.SetFunction("intersect", new IntersectFunction());
     }
-    public static void InitializeGSharpStandard(Scope scope)
+    public static void InitializeGSharpStandard(Context<bool,bool> scope)
     {
-        scope.Functions.Add("point", true);
-        scope.Functions.Add("line", true);
-        scope.Functions.Add("segment", true);
-        scope.Functions.Add("ray", true);
-        scope.Functions.Add("arc", true);
-        scope.Functions.Add("circle", true);
-        scope.Functions.Add("measure", true);
-        scope.Functions.Add("count", true);
-        scope.Functions.Add("randoms", true);
-        scope.Functions.Add("points", true);
-        scope.Functions.Add("samples", true);
-        scope.Functions.Add("intersect", true);
+        scope.SetFunction("point", true);
+        scope.SetFunction("line", true);
+        scope.SetFunction("segment", true);
+        scope.SetFunction("ray", true);
+        scope.SetFunction("arc", true);
+        scope.SetFunction("circle", true);
+        scope.SetFunction("measure", true);
+        scope.SetFunction("count", true);
+        scope.SetFunction("randoms", true);
+        scope.SetFunction("points", true);
+        scope.SetFunction("samples", true);
+        scope.SetFunction("intersect", true);
     }
 }
