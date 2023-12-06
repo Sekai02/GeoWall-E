@@ -1,8 +1,8 @@
 ﻿using GeoWallECompiler.StandardLibrary;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace GeoWallECompiler;
-
 public class Context<Var, Fun>
 {
     public Context<Var,Fun>? Enclosing { get; private set; }

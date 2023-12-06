@@ -1,33 +1,40 @@
 {
   "format": 1,
   "restore": {
-    "/home/sekai02/Documents/wallee/GeoWall-E/ConsoleTester/ConsoleTester.csproj": {}
+    "C:\\Users\\Jossue\\Cosas\\proyectos y cosas\\Proyectos de Programacion\\GeoWall-E\\ConsoleTester\\ConsoleTester.csproj": {}
   },
   "projects": {
-    "/home/sekai02/Documents/wallee/GeoWall-E/ConsoleTester/ConsoleTester.csproj": {
+    "C:\\Users\\Jossue\\Cosas\\proyectos y cosas\\Proyectos de Programacion\\GeoWall-E\\ConsoleTester\\ConsoleTester.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/sekai02/Documents/wallee/GeoWall-E/ConsoleTester/ConsoleTester.csproj",
+        "projectUniqueName": "C:\\Users\\Jossue\\Cosas\\proyectos y cosas\\Proyectos de Programacion\\GeoWall-E\\ConsoleTester\\ConsoleTester.csproj",
         "projectName": "ConsoleTester",
-        "projectPath": "/home/sekai02/Documents/wallee/GeoWall-E/ConsoleTester/ConsoleTester.csproj",
-        "packagesPath": "/home/sekai02/.nuget/packages/",
-        "outputPath": "/home/sekai02/Documents/wallee/GeoWall-E/ConsoleTester/obj/",
+        "projectPath": "C:\\Users\\Jossue\\Cosas\\proyectos y cosas\\Proyectos de Programacion\\GeoWall-E\\ConsoleTester\\ConsoleTester.csproj",
+        "packagesPath": "C:\\Users\\Jossue\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Jossue\\Cosas\\proyectos y cosas\\Proyectos de Programacion\\GeoWall-E\\ConsoleTester\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/sekai02/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Jossue\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "/home/sekai02/Documents/wallee/GeoWall-E/GeoWallECompiler/GeoWallECompiler.csproj": {
-                "projectPath": "/home/sekai02/Documents/wallee/GeoWall-E/GeoWallECompiler/GeoWallECompiler.csproj"
+              "C:\\Users\\Jossue\\Cosas\\proyectos y cosas\\Proyectos de Programacion\\GeoWall-E\\GeoWallECompiler\\GeoWallECompiler.csproj": {
+                "projectPath": "C:\\Users\\Jossue\\Cosas\\proyectos y cosas\\Proyectos de Programacion\\GeoWall-E\\GeoWallECompiler\\GeoWallECompiler.csproj"
               }
             }
           }
@@ -57,26 +64,33 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/7.0.113/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/home/sekai02/Documents/wallee/GeoWall-E/GeoWallECompiler/GeoWallECompiler.csproj": {
+    "C:\\Users\\Jossue\\Cosas\\proyectos y cosas\\Proyectos de Programacion\\GeoWall-E\\GeoWallECompiler\\GeoWallECompiler.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/sekai02/Documents/wallee/GeoWall-E/GeoWallECompiler/GeoWallECompiler.csproj",
+        "projectUniqueName": "C:\\Users\\Jossue\\Cosas\\proyectos y cosas\\Proyectos de Programacion\\GeoWall-E\\GeoWallECompiler\\GeoWallECompiler.csproj",
         "projectName": "GeoWallECompiler",
-        "projectPath": "/home/sekai02/Documents/wallee/GeoWall-E/GeoWallECompiler/GeoWallECompiler.csproj",
-        "packagesPath": "/home/sekai02/.nuget/packages/",
-        "outputPath": "/home/sekai02/Documents/wallee/GeoWall-E/GeoWallECompiler/obj/",
+        "projectPath": "C:\\Users\\Jossue\\Cosas\\proyectos y cosas\\Proyectos de Programacion\\GeoWall-E\\GeoWallECompiler\\GeoWallECompiler.csproj",
+        "packagesPath": "C:\\Users\\Jossue\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Jossue\\Cosas\\proyectos y cosas\\Proyectos de Programacion\\GeoWall-E\\GeoWallECompiler\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/sekai02/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Jossue\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -94,6 +108,12 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -110,7 +130,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/7.0.113/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
         }
       }
     }

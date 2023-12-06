@@ -10,4 +10,8 @@
     <None Remove="GSharpObject.cs~RF11d5da94.TMP" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
 </Project>

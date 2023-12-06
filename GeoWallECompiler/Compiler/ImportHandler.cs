@@ -1,12 +1,13 @@
 using GeoWallECompiler.Visitors;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace GeoWallECompiler;
 
 public class Container
-{
-    public Context<GSObject?, ICallable> Environment { get; }
-    public Context<GSharpType, ICallable> TypeEnvironment { get; }
+{    
+    public Context<GSObject?, ICallable> Environment { get; set; }
+    public Context<GSharpType, ICallable> TypeEnvironment { get; set; }
     public Context<bool, bool> ResolvingContext { get; }
 
     public Container(Context<GSObject?, ICallable> environment, Context<GSharpType, ICallable> typeEnvironment, Context<bool,bool> resolvingContext, bool IsNotJson = true)
