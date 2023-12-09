@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="GeoWallECompiler.Statement">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Statements\Statement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GeoWallECompiler.ConstantsDeclaration" Collapsed="true">
+    <Position X="2" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAgAAAAAAA=</HashCode>
+      <FileName>Statements\Declarations.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GeoWallECompiler.ExpressionStatement" Collapsed="true">
+    <Position X="4.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAA=</HashCode>
+      <FileName>Statements\BasicStatements.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GeoWallECompiler.DrawStatement" Collapsed="true">
+    <Position X="6.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAABAAAAAAAAAAAAAQAAAAAAAAAAA=</HashCode>
+      <FileName>Statements\BasicStatements.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GeoWallECompiler.FunctionDeclaration" Collapsed="true">
+    <Position X="8.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAABAAQAAAAAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>Statements\Declarations.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GeoWallECompiler.ColorStatement" Collapsed="true">
+    <Position X="11" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>Statements\BasicStatements.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GeoWallECompiler.Restore" Collapsed="true">
+    <Position X="13.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Statements\BasicStatements.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
