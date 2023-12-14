@@ -140,6 +140,8 @@ public partial class Aplication : Form, IWalleUI
         MatchCollection numbersMatch = Regex.Matches(Entry.Text, numbers);
         string variables = @"\b([A-Z]|[a-z]|\d)+\b";
         MatchCollection variablesMatch = Regex.Matches(Entry.Text, variables);
+        string comments = @"\/\/.*?$";
+        MatchCollection commentsMatch = Regex.Matches(Entry.Text, comments, RegexOptions.Multiline);
 
         int originalIndex = Entry.SelectionStart;
         int originalLength = Entry.SelectionLength;
@@ -186,6 +188,12 @@ public partial class Aplication : Form, IWalleUI
             Entry.SelectionStart = m.Index;
             Entry.SelectionLength = m.Length - 1;
             Entry.SelectionColor = Color.FromArgb(220, 220, 167);
+        }
+        foreach (Match m in commentsMatch)
+        {
+            Entry.SelectionStart = m.Index;
+            Entry.SelectionLength = m.Length;
+            Entry.SelectionColor = Color.FromArgb(67, 130, 58);
         }
         Entry.SelectionStart = originalIndex;
         Entry.SelectionLength = originalLength;

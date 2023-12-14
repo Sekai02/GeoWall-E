@@ -211,7 +211,7 @@ public static class EquationSolver
         }
         return new SimpleCuadraticEquation(a, b, c);
     }
-    private static double EvaluateEcuation(double x, double y, Equation equation)
+    public static double EvaluateEcuation(double x, double y, Equation equation)
     {
         double a = equation.AlphaX;
         double b = equation.AlphaY;

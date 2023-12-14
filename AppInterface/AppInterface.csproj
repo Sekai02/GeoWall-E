@@ -49,8 +49,27 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="6.1.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+		<PackageReference Include="UraniumUI" Version="2.5.6" />
+		<PackageReference Include="UraniumUI.Material" Version="2.5.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\GeoWallECompiler\GeoWallECompiler.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Views\DesktopMainView.xaml.cs">
+	    <DependentUpon>DesktopMainView.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Views\DesktopMainView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 </Project>

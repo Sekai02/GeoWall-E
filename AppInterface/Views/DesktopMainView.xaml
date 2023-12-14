@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+             x:Class="AppInterface.Views.DesktopMainView"
+             xmlns:viewmodel="clr-namespace:AppInterface.ViewModels"
+             x:DataType="viewmodel:DesktopMainViewModel"
+             Title="">
+    
+    <ContentPage.MenuBarItems>
+        <MenuBarItem Text="Archivo">
+            <MenuFlyoutItem Text="Abrir" 
+                            Command="{Binding OpenFolderCommand}"/>
+            <MenuFlyoutItem Text="Guardar" />
+            <MenuFlyoutItem Text="Nuevo" />
+        </MenuBarItem>
+    </ContentPage.MenuBarItems>
+    <Grid ColumnDefinitions=".60*,.40*"
+          Padding="10"
+          RowSpacing="10"
+          ColumnSpacing="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height=".70*" />
+            <RowDefinition Height=".20*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <!-- Editor de texto -->
+        <Editor Grid.Column="0" 
+                Text="{Binding CodeText}"/>
+        
+        <!-- Canvas para graficar -->
+        <GraphicsView Grid.Column="1" 
+                      Grid.RowSpan="3"/>
+        <!-- Terminal -->
+        <Editor Grid.Row="1" 
+                Grid.Column="0"
+                IsReadOnly="True"
+                Text="{Binding TerminalText}"/>
+
+        <!-- Entrada de comandos -->
+        <Entry Grid.Row="2"
+               Grid.Column="0"
+               Text="{Binding InputText}"/>
+    </Grid>
+
+</ContentPage>
