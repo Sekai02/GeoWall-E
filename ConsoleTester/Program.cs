@@ -7,7 +7,7 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        string path = "/home/sekai02/Documents/School/1ro/2do semestre/Programacion/walleepublic/GeoWall-E/test.txt";
+        string path = "C:\\Users\\Jossue\\Cosas\\proyectos y cosas\\Proyectos de Programacion\\GeoWalle\\test.txt";
         GSharp.RunFile(path, new DrawerDummie(), new ConsoleUI());
 
         foreach (var error in ErrorHandler.GetErrors())

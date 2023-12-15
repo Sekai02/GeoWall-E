@@ -406,6 +406,7 @@ public class Parser
     private Statement ParseImportStatement()
     {
         string libraryName = Consume(TokenType.STRING, "Expect string after import statement.").lexeme;
+        libraryName = libraryName[1..^1];
         Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after string");
         string extension = Path.GetExtension(libraryName);
         Container container = new(new Context<GSObject?, ICallable>(), new Context<GSharpType, ICallable>(), new Context<bool, bool>());

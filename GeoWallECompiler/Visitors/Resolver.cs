@@ -185,9 +185,7 @@ public class Resolver : IStatementVisitor, IExpressionVisitor<GSObject>
     public GSObject VisitLiteralUndefined(LiteralUndefined undefined) => null;
     public void VisitImportStatement(Import import)
     {
-        /*string path = import.Library;
-        Container imported = ImportHandler.LoadLibrary(path);
-        Context<bool, bool> context = imported.ResolvingContext;
-        Scopes.Peek().EatContext(context);*/
+        Context<bool, bool> context = import.FetchedProgram.ResolvingContext;
+        Scopes.Peek().EatContext(context);
     }
 }

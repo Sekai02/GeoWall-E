@@ -1,1 +1,1 @@
-import "lib.txt";
+import "C:\Users\Jossue\Cosas\proyectos y cosas\Proyectos de Programacion\GeoWalle\lib.geo";

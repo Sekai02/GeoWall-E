@@ -265,9 +265,7 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
     public GSObject? VisitLiteralUndefined(LiteralUndefined undefined) => null;
     public void VisitImportStatement(Import import)
     {
-        /*string path = import.Library;
-        Container imported = ImportHandler.LoadLibrary(path);
-        Context<GSObject?, ICallable> context = imported.Environment;
-        EvaluationContext.EatContext(context);*/
+        Context<GSObject?, ICallable> context = import.FetchedProgram.Environment;
+        EvaluationContext.EatContext(context);
     }
 }

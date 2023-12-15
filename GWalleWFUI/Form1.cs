@@ -254,22 +254,22 @@ public partial class Aplication : Form, IWalleUI
         }
         if (LibraryPath == "")
             return;
-        Compile();
+        //Compile();
     }
-    private void Compile()
-    {
-        Bitmap image = new(pictureBox1.Width, pictureBox1.Height);
-        PictureDrawer drawer = new(Graphics.FromImage(image), Pencil, pictureBox1.Height, pictureBox1.Width);
-        pictureBox1.Image = image;
+    //private void Compile()
+    //{
+    //    Bitmap image = new(pictureBox1.Width, pictureBox1.Height);
+    //    PictureDrawer drawer = new(Graphics.FromImage(image), Pencil, pictureBox1.Height, pictureBox1.Width);
+    //    pictureBox1.Image = image;
 
-        ImportHandler.SaveLibrary(Entry.Text, LibraryPath, drawer, this);
-        if (!ErrorHandler.HadError)
-        {
-            AppendLineWithColor(Terminal, "Library compiled succesfully whitout errors", Color.White);
-            return;
-        }
-        ErrorHandler.Reset();
-    }
+    //    ImportHandler.SaveLibrary(Entry.Text, LibraryPath, drawer, this);
+    //    if (!ErrorHandler.HadError)
+    //    {
+    //        AppendLineWithColor(Terminal, "Library compiled succesfully whitout errors", Color.White);
+    //        return;
+    //    }
+    //    ErrorHandler.Reset();
+    //}
     private static void AppendLineWithColor(RichTextBox box, string text, Color color)
     {
         if (box.Text != "")
