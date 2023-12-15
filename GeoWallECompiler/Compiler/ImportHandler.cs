@@ -31,6 +31,6 @@ public class Container
 
 public static class ImportHandler
 {
-    private static Container GetEnvironments(string source, IDrawer drawer, IWalleUI userInterface) => GSharp.RunLibrary(source, drawer, userInterface);
+    private static Container GetEnvironments(string source, IDrawer drawer, IWalleUI userInterface) => GSharp.RunLibraryFile(source, drawer, userInterface);
     public static Container LoadLibrary(string source, IDrawer drawer, IWalleUI userInterface) => GetEnvironments(source, drawer, userInterface);
 }

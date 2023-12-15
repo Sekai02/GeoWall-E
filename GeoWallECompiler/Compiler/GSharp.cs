@@ -30,30 +30,33 @@ public static class GSharp
     public static void RunFile(string path, IDrawer drawer, IWalleUI userInterface)
     {
         Scanner.Line = 0;
-
+        string full = Path.GetFullPath(path);
         byte[] bytes = File.ReadAllBytes(Path.GetFullPath(path));
         Run(Encoding.Default.GetString(bytes), drawer, userInterface);
 
         if (Error.HadError) Environment.Exit(65);
     }
 
+    public static Container RunLibraryFile(string path, IDrawer drawer, IWalleUI userInterface)
+    {
+        byte[] bytes = File.ReadAllBytes(Path.GetFullPath(path));
+        return RunLibrary(Encoding.Default.GetString(bytes), drawer, userInterface);
+    }
+
     public static Container RunLibrary(string source, IDrawer drawer, IWalleUI userInterface)
     {
-        CanvasHeight = drawer.CanvasHeight;
-        CanvasWidth = drawer.CanvasWidth;
-        drawer.Reset();
         List<Token> tokens = Scan(source);
         if (ErrorHandler.HadError)
         {
-            userInterface.PrintErrors(ErrorHandler.GetErrors());
-            return null;
+            //userInterface.PrintErrors(ErrorHandler.GetErrors());
+            return null!;
         }
-        Parser parser = new(tokens);
+        Parser parser = new(tokens, drawer, userInterface);
         List<Statement> statements = parser.Parse();
         if (ErrorHandler.HadError)
         {
-            userInterface.PrintErrors(ErrorHandler.GetErrors());
-            return null;
+            //userInterface.PrintErrors(ErrorHandler.GetErrors());
+            return null!;
         }
         Evaluator evaluator = new(drawer, userInterface);
         Resolver resolver = new(evaluator);
@@ -61,14 +64,14 @@ public static class GSharp
         resolver.VisitStatements(statements);
         if (ErrorHandler.HadError)
         {
-            userInterface.PrintErrors(ErrorHandler.GetErrors());
-            return null;
+            //userInterface.PrintErrors(ErrorHandler.GetErrors());
+            return null!;
         }
         typeChecker.VisitStatements(statements);
         if (ErrorHandler.HadError)
         {
-            userInterface.PrintErrors(ErrorHandler.GetErrors());
-            return null;
+            //userInterface.PrintErrors(ErrorHandler.GetErrors());
+            return null!;
         }
         try
         {
@@ -77,8 +80,8 @@ public static class GSharp
         }
         catch (GSharpException ex)
         {
-            userInterface.PrintError(ex);
-            return null;
+            //userInterface.PrintError(ex);
+            return null!;
         }
     }
 
@@ -97,7 +100,7 @@ public static class GSharp
             userInterface.PrintErrors(ErrorHandler.GetErrors());
             return;
         }
-        Parser parser = new(tokens);
+        Parser parser = new(tokens, drawer, userInterface);
         List<Statement> statements = parser.Parse();
         if (ErrorHandler.HadError)
         {
@@ -151,7 +154,7 @@ public static class GSharp
         context.SetFunction("samples", new SamplesFunction());
         context.SetFunction("intersect", new IntersectFunction());
     }
-    public static void InitializeGSharpStandard(Context<bool,bool> scope)
+    public static void InitializeGSharpStandard(Context<bool, bool> scope)
     {
         scope.SetFunction("point", true);
         scope.SetFunction("line", true);

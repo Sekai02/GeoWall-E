@@ -8,10 +8,14 @@ public class Parser
 {
     private readonly List<Token> tokens;
     private int current = 0;
+    private readonly IDrawer drawer;
+    private readonly IWalleUI userInterface;
 
-    public Parser(List<Token> tokens)
+    public Parser(List<Token> tokens, IDrawer drawer, IWalleUI userInterface)
     {
         this.tokens = tokens;
+        this.drawer = drawer;
+        this.userInterface = userInterface;
     }
 
     public List<Statement> Parse()
@@ -403,8 +407,15 @@ public class Parser
     {
         string libraryName = Consume(TokenType.STRING, "Expect string after import statement.").lexeme;
         Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after string");
-        //arreglar la siguiente linea
-        Container container= new(new Context<GSObject?, ICallable>(), new Context<GSharpType, ICallable>(), new Context<bool, bool>());
+        string extension = Path.GetExtension(libraryName);
+        Container container = new(new Context<GSObject?, ICallable>(), new Context<GSharpType, ICallable>(), new Context<bool, bool>());
+        if (extension != ".geo\"" && extension != ".geo") ErrorHandler.AddError(new DefaultError("Library does not match .geo extension."));
+        else
+        {
+            Container scopeContainer = ImportHandler.LoadLibrary(libraryName, drawer, userInterface);
+            if (scopeContainer is null) ErrorHandler.AddError(new DefaultError("Error during import."));
+            else container = scopeContainer;
+        }
         return new Import(libraryName, container);
     }
 
