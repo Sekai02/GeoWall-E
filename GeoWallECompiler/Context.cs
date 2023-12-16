@@ -70,8 +70,8 @@ public class Context<Var, Fun>
     }
     public void EatContext(Context<Var,Fun> newContext)
     {
-        foreach (string key in newContext.Variables.Keys)
-            Variables.TryAdd(key, newContext.Variables[key]);
+        //foreach (string key in newContext.Variables.Keys)
+        //    Variables.TryAdd(key, newContext.Variables[key]);
         foreach (string key in newContext.Functions.Keys)
             Functions.TryAdd(key, newContext.Functions[key]);
     }
