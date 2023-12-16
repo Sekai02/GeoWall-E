@@ -16,6 +16,11 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
     }
     public Context<GSObject?, ICallable> EvaluationContext { get; set; } = new();
     public IDrawer Drawer { get; }
+    public void AppendReferences(Dictionary<GSharpExpression, int> newReferences)
+    {
+        foreach (var key in newReferences.Keys)
+            References.TryAdd(key, newReferences[key]);
+    }
     public void ResolveReference(GSharpExpression expression, int depth)
     {
         References.Add(expression, depth);
@@ -67,7 +72,6 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
         foreach (var statement in letIn.Instructions)
             statement.Accept(this);
         GSObject? result = letIn.Body.Accept(this);
-        //tallas turbias pasan en esta linea
         EvaluationContext = EvaluationContext!.Enclosing!;
         return result;
     }
@@ -267,5 +271,7 @@ public class Evaluator : IExpressionVisitor<GSObject?>, IStatementVisitor
     {
         Context<GSObject?, ICallable> context = import.FetchedProgram.Environment;
         EvaluationContext.EatContext(context);
+        var newReferences = import.FetchedProgram.References;
+        AppendReferences(newReferences);
     }
 }

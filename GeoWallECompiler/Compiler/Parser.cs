@@ -409,14 +409,14 @@ public class Parser
         libraryName = libraryName[1..^1];
         Consume(TokenType.INSTRUCTION_SEPARATOR, "Expect ';' after string");
         string extension = Path.GetExtension(libraryName);
-        Container container = new(new Context<GSObject?, ICallable>(), new Context<GSharpType, ICallable>(), new Context<bool, bool>());
-        if (extension != ".geo\"" && extension != ".geo") ErrorHandler.AddError(new DefaultError("Library does not match .geo extension."));
-        else
-        {
-            Container scopeContainer = ImportHandler.LoadLibrary(libraryName, drawer, userInterface);
+        Container container = new(new Context<GSObject?, ICallable>(), new Context<GSharpType, ICallable>(), new Context<bool, bool>(), new Dictionary<GSharpExpression, int>());
+        //if (extension != ".geo\"" && extension != ".geo") ErrorHandler.AddError(new DefaultError("Library does not match .geo extension."));
+        //else
+        //{
+            Container? scopeContainer = ImportHandler.LoadLibrary(libraryName, drawer, userInterface);
             if (scopeContainer is null) ErrorHandler.AddError(new DefaultError("Error during import."));
             else container = scopeContainer;
-        }
+        //}
         return new Import(libraryName, container);
     }
 

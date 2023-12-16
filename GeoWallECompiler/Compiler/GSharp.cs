@@ -37,26 +37,26 @@ public static class GSharp
         if (Error.HadError) Environment.Exit(65);
     }
 
-    public static Container RunLibraryFile(string path, IDrawer drawer, IWalleUI userInterface)
+    public static Container? RunLibraryFile(string path, IDrawer drawer, IWalleUI userInterface)
     {
         byte[] bytes = File.ReadAllBytes(Path.GetFullPath(path));
         return RunLibrary(Encoding.Default.GetString(bytes), drawer, userInterface);
     }
 
-    public static Container RunLibrary(string source, IDrawer drawer, IWalleUI userInterface)
+    public static Container? RunLibrary(string source, IDrawer drawer, IWalleUI userInterface)
     {
         List<Token> tokens = Scan(source);
         if (ErrorHandler.HadError)
         {
             //userInterface.PrintErrors(ErrorHandler.GetErrors());
-            return null!;
+            return null;
         }
         Parser parser = new(tokens, drawer, userInterface);
         List<Statement> statements = parser.Parse();
         if (ErrorHandler.HadError)
         {
             //userInterface.PrintErrors(ErrorHandler.GetErrors());
-            return null!;
+            return null;
         }
         Evaluator evaluator = new(drawer, userInterface);
         Resolver resolver = new(evaluator);
@@ -65,23 +65,23 @@ public static class GSharp
         if (ErrorHandler.HadError)
         {
             //userInterface.PrintErrors(ErrorHandler.GetErrors());
-            return null!;
+            return null;
         }
         typeChecker.VisitStatements(statements);
         if (ErrorHandler.HadError)
         {
             //userInterface.PrintErrors(ErrorHandler.GetErrors());
-            return null!;
+            return null;
         }
         try
         {
             evaluator.VisitStatements(statements);
-            return new Container(evaluator.EvaluationContext, typeChecker.TypeEnvironment, resolver.Scopes.Peek());
+            return new Container(evaluator.EvaluationContext, typeChecker.TypeEnvironment, resolver.Scopes.Peek(), evaluator.References);
         }
         catch (GSharpException ex)
         {
             //userInterface.PrintError(ex);
-            return null!;
+            return null;
         }
     }
 
