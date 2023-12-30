@@ -2,11 +2,13 @@
 
 public class CountFunction : ICallable
 {
-    public GSObject? Evaluate(Evaluator evaluator, List<GSObject> arguments)
+    public GSObject? Evaluate(Evaluator evaluator, List<GSObject?> arguments)
     {
         if (arguments.Count != 1)
             throw new SemanticError("Function 'count'", "1 argument", $"{arguments.Count}");
-        GSObject argument = arguments[0];
+        GSObject? argument = arguments[0];
+        if (argument is null)
+            throw new DefaultError("Function 'count' cannot take an undefined argument");
         if (argument is ISequenciable sequenciable)
         {
             int? count = sequenciable.GetCount();
@@ -20,7 +22,7 @@ public class CountFunction : ICallable
 }
 public class RandomsFunction : ICallable
 {
-    public GSObject? Evaluate(Evaluator evaluator, List<GSObject> arguments)
+    public GSObject? Evaluate(Evaluator evaluator, List<GSObject?> arguments)
     {
         if (arguments.Count != 0)
             throw new SemanticError("Function 'randoms'", "0 arguments", $"{arguments.Count}");
@@ -36,7 +38,9 @@ public class PointsFunction : ICallable
     {
         if (arguments.Count != 1)
             throw new SemanticError("Function 'points'", "1 argument", $"{arguments.Count}");
-        GSObject argument = arguments[0];
+        GSObject? argument = arguments[0];
+        if (argument is null)
+            throw new DefaultError("Function 'points' cannot take an undefined argument");
         if (argument is IDrawable drawable)
             return GSequence.GetRandomPoints(drawable);
         else

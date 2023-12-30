@@ -16,6 +16,12 @@ public abstract class GSharpException : Exception
         {
             string line = LineNumber is null ? "" : $"(line {LineNumber})";
             string result = MessageStart + MessageDefinition + line  + ".";
+            result = result.Replace("GNumber", "number");
+            result = result.Replace("GString", "string");
+            result = result.Replace("GSequence", "sequence");
+            result = result.Replace("GObject", "object");
+            result = result.Replace("GSPoint", "point");
+            result = result.Replace("GSObject", "object");
             return result;
         }
     }
